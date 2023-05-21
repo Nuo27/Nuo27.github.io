@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nuo's Personal Website</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -13,9 +13,11 @@
         <h1>Nuo's Personal Website</h1>
         <nav>
             <ul>
-                <li><a href="#about">About</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="#about" onclick="scrollToSection('about')">About</a></li>
+                <li><a href="#projects" onclick="scrollToSection('projects')">Projects</a></li>
+                <li><a href="#project2" onclick="scrollToSection('project2')">Project2</a></li>
+                <li><a href="#project3" onclick="scrollToSection('project3')">Project3</a></li>
+                <li><a href="resume.html">My Resume</a></li>
             </ul>
         </nav>
     </header>
@@ -45,17 +47,81 @@
                 </li>
             </ul>
         </section>
-
-        <section id="contact">
-            <h2>Contact Me</h2>
-            <p>You can reach me via email at <a href="mailto:nuo@example.com">nuo@example.com</a> or connect with me on
-                <a href="https://linkedin.com/in/nuo">LinkedIn</a>.</p>
+        <section id="project2">
+            <h2>Projects</h2>
+            <ul>
+                <li>
+                    <h3>Project 1</h3>
+                    <p>Description of project 1.</p>
+                </li>
+                <li>
+                    <h3>Project 2</h3>
+                    <p>Description of project 2.</p>
+                </li>
+                <li>
+                    <h3>Project 3</h3>
+                    <p>Description of project 3.</p>
+                </li>
+            </ul>
         </section>
+        <section id="project3">
+            <h2>Projects</h2>
+            <ul>
+                <li>
+                    <h3>Project 1</h3>
+                    <p>Description of project 1.</p>
+                </li>
+                <li>
+                    <h3>Project 2</h3>
+                    <p>Description of project 2.</p>
+                </li>
+                <li>
+                    <h3>Project 3</h3>
+                    <p>Description of project 3.</p>
+                </li>
+            </ul>
+        </section>
+
     </main>
 
     <footer>
         <p>&copy; 2023 Nuo. All rights reserved.</p>
     </footer>
+
+    <script>
+        function scrollToSection(sectionId) {
+            var section = document.getElementById(sectionId);
+            var headerHeight = document.querySelector('header').offsetHeight;
+            var additionalHeight = 0; // Additional height to adjust scroll position
+
+            if (section) {
+                var sectionPosition = section.offsetTop - headerHeight + additionalHeight;
+                var start = window.pageYOffset;
+                var startTime = performance.now();
+                var duration = 500;
+
+                function scrollStep(timestamp) {
+                    var timeElapsed = timestamp - startTime;
+                    var scrollY = Math.max(0, start - easeInOutQuad(timeElapsed, 0, start - sectionPosition, duration));
+                    window.scrollTo(0, scrollY);
+
+                    if (timeElapsed < duration) {
+                        window.requestAnimationFrame(scrollStep);
+                    }
+                }
+
+
+
+                window.requestAnimationFrame(scrollStep);
+            }
+        }
+        function easeInOutQuad(t, b, c, d) {
+            t /= d / 2;
+            if (t < 1) return c / 2 * t * t + b;
+            t--;
+            return -c / 2 * (t * (t - 2) - 1) + b;
+        }
+    </script>
 </body>
 
 </html>
