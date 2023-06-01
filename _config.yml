@@ -28,7 +28,7 @@ github_username:  nuo27
 
 # Build settings
 markdown: GFM
-theme: minima
+theme: Midnight
 plugins:
   - jekyll-feed
 
