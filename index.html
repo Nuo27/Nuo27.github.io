@@ -5,81 +5,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nuo's Personal Website</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="js/script.js"></script>
 </head>
 
 <body>
-    <header>
-        <h1>Nuo's Personal Website</h1>
-        <nav>
-            <ul>
+    <nav class="navbar" id="mainNav">
+        <div class="navicontainer"><a class="navbar-title">Nuo27.github.io</a>
+            <button class="navbar-toggler" id=" toggleNavButton" type="button" onclick="toggleNav()">Navi</button>
+            <div id="navList">
                 <li><a href="#about" onclick="scrollToSection('about')">About</a></li>
-                <li><a href="#projects" onclick="scrollToSection('projects')">Projects</a></li>
-                <li><a href="#project2" onclick="scrollToSection('project2')">Project2</a></li>
-                <li><a href="#project3" onclick="scrollToSection('project3')">Project3</a></li>
+                <li><a href="#section1" onclick="scrollToSection('section1')">Projects</a></li>
+                <li><a href="#section2" onclick="scrollToSection('section2')">Blogs</a></li>
+                <li><a href="#section3" onclick="scrollToSection('section3')">Contact me</a></li>
                 <li><a href="resume.html">My Resume</a></li>
-            </ul>
-        </nav>
-    </header>
-
+            </div>
+        </div>
+        </div>
+    </nav>
     <main>
         <section id="about">
             <h2>About Me</h2>
-            <p>Hello, I'm Nuo, a Game Development student passionate about creating immersive gaming experiences. I have
+            <li>Hello, I'm Nuo, a Game Development student passionate about creating immersive gaming experiences. I
+                have
                 experience with various game engines and programming languages. I enjoy collaborating with others to
-                bring unique game ideas to life.</p>
+                bring unique game ideas to life.
+            </li>
         </section>
 
-        <section id="projects">
+        <section id="section1">
             <h2>Projects</h2>
-            <ul>
-                <li>
-                    <h3>Project 1</h3>
-                    <p>Description of project 1.</p>
-                </li>
-                <li>
-                    <h3>Project 2</h3>
-                    <p>Description of project 2.</p>
-                </li>
-                <li>
-                    <h3>Project 3</h3>
-                    <p>Description of project 3.</p>
-                </li>
-            </ul>
+            <p>Here are some of my projects</p>
+            <div class="project">
+                <div class="project-image">
+                    <img src="images/Project1.png" alt="Project1">
+                </div>
+                <div class="project-description">
+                    <h3>Project1</h3>
+                    <p>Project1 description</p>
+                    <li>
+                        welcome1
+                    </li>
+                    <li>
+                        welcome1
+                    </li>
+                    <li>
+                        welcome1
+                    </li>
+                    <li>
+                        welcome1
+                    </li>
+                    <li>
+                        welcome1
+                    </li>
+                    <li>
+                        welcome1
+                    </li>
+                    <li>
+                        welcome1
+                    </li>
+                    <li>
+                        welcome1
+                    </li>
+
+                </div>
+
         </section>
-        <section id="project2">
-            <h2>Projects</h2>
-            <ul>
-                <li>
-                    <h3>Project 1</h3>
-                    <p>Description of project 1.</p>
-                </li>
-                <li>
-                    <h3>Project 2</h3>
-                    <p>Description of project 2.</p>
-                </li>
-                <li>
-                    <h3>Project 3</h3>
-                    <p>Description of project 3.</p>
-                </li>
-            </ul>
+        <section id="section2">
+            <h2>Blogs</h2>
+            <p>Here are some of my blogs</p>
+            <div class="project">
+                <div class="project-image">
+                    <img src="images/Project1.png" alt="Project1">
+                </div>
+                <div class="project-description">
+                    <h3>Blog1</h3>
+                    <p>
+                        <li>
+                            hello
+                        </li>
+                    </p>
+                </div>
         </section>
-        <section id="project3">
-            <h2>Projects</h2>
-            <ul>
-                <li>
-                    <h3>Project 1</h3>
-                    <p>Description of project 1.</p>
-                </li>
-                <li>
-                    <h3>Project 2</h3>
-                    <p>Description of project 2.</p>
-                </li>
-                <li>
-                    <h3>Project 3</h3>
-                    <p>Description of project 3.</p>
-                </li>
-            </ul>
+        <section id="section3">
+            <h2>Contact me</h2>
+            <p>Here are some of my contacts</p>
+            <div class="project">
+                <div class="project-image">
+                    <img src="images/Project1.png" alt="Project1">
+                </div>
+                <div class="project-description">
+                    <h3>Contact1</h3>
+                    <p>
+                        <li>
+                            hello
+                        </li>
+                        <li>
+                            welcome1
+                        </li>
+                        <li>
+                            welcome1
+                        </li>
+                        <li>
+                            welcome1
+                        </li>
+                        <li>
+                            welcome1
+                        </li>
+                        <li>
+                            welcome1
+                        </li>
+                    </p>
+                </div>
         </section>
 
     </main>
@@ -89,38 +126,17 @@
     </footer>
 
     <script>
-        function scrollToSection(sectionId) {
-            var section = document.getElementById(sectionId);
-            var headerHeight = document.querySelector('header').offsetHeight;
-            var additionalHeight = 0; // Additional height to adjust scroll position
+        window.addEventListener('scroll', function () {
+            var navList = document.getElementById("navList");
+            navList.style.display = navList.style.display = "none";
+            var navbarTitle = document.querySelector('.navbar-title');
+            if (window.pageYOffset < 30) {
+                navbarTitle.classList.add('scrolled');
 
-            if (section) {
-                var sectionPosition = section.offsetTop - headerHeight + additionalHeight;
-                var start = window.pageYOffset;
-                var startTime = performance.now();
-                var duration = 500;
-
-                function scrollStep(timestamp) {
-                    var timeElapsed = timestamp - startTime;
-                    var scrollY = Math.max(0, start - easeInOutQuad(timeElapsed, 0, start - sectionPosition, duration));
-                    window.scrollTo(0, scrollY);
-
-                    if (timeElapsed < duration) {
-                        window.requestAnimationFrame(scrollStep);
-                    }
-                }
-
-
-
-                window.requestAnimationFrame(scrollStep);
+            } else {
+                navbarTitle.classList.remove('scrolled');
             }
-        }
-        function easeInOutQuad(t, b, c, d) {
-            t /= d / 2;
-            if (t < 1) return c / 2 * t * t + b;
-            t--;
-            return -c / 2 * (t * (t - 2) - 1) + b;
-        }
+        });
     </script>
 </body>
 
