@@ -1,7 +1,7 @@
 ---
 layout: page
-title: "NUO"
-permalink: /nuo
+title: "Resume"
+permalink: /myresume
 ---
 
 # Nuo
