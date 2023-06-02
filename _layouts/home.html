@@ -1,14 +1,16 @@
 ---
-layout: default
+layout: full-width
 ---
-<article class="post">
 
-  <header class="post-header">
-    <h1 class="post-title">{{ page.title | escape }}</h1>
-  </header>
-
-  <div class="post-content">
-    {{ content }}
-  </div>
-
-</article>
+<script>
+  $(document).ready(function() {
+    $("#typewriteText").typewrite({
+      actions: [{ type: "{{site.typewrite-text}}" }]
+    });
+  });
+</script>
+    <!-- hero section-->
+    {%- include hero.html -%}
+    <div class="col-lg-8 offset-md-2">
+      {%- include recent_articles.html -%}
+    </div>
