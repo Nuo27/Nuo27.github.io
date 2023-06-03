@@ -1,0 +1,12 @@
+Nuo Chen:
+  name: "Nuo Chen"
+  bio: "Auther"
+  avatar: "/assets/images/bio-photo.jpg"
+  location: "Sydney, Australia"
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: ""
+    - label: "Twitter"
+      icon: "fab fa-fw fa-twitter-square"
+      url: ""

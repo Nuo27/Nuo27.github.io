@@ -18,8 +18,6 @@ header:
       url: "https://github.com/Nuo27/Nuo27.github.io/blob/dev/nuo.md"
 ---
 
-![image-center](/assets/images/13542.jpg){: .align-center}
-
 # Nuo
 
 > I'm a current student studying Game Development and Data Analytics in UTS.
