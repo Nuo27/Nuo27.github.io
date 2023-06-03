@@ -1,22 +1,26 @@
 ---
 layout: archive
+author_profile: true
 ---
 
 {{ content }}
 
-<h3 class="archive__subtitle">{{ site.data.ui-text[site.locale].recent_posts | default: "Recent Posts" }}</h3>
+{% for post in paginator.posts %}
+{% include archive-single.html type=entries_layout %}
+{% endfor %}
 
-{% if paginator %}
-{% assign posts = paginator.posts %}
-{% else %}
-{% assign posts = site.posts %}
+{% if paginator.total_pages > 1 %}
+<ul>
+    {% if paginator.previous_page %}
+    <li>
+        <a href="{{ paginator.previous_page_path | prepend: site.baseurl }}">Newer</a>
+    </li>
+    {% endif %}
+    {% if paginator.next_page %}
+    <li>
+        <a href="{{ paginator.next_page_path | prepend: site.baseurl }}">Older</a>
+    </li>
+    {% endif %}
+    <li>Page {{page.pagination_info.curr_page}} of {{page.pagination_info.total_pages}}</li>
+</ul>
 {% endif %}
-
-{% assign entries_layout = page.entries_layout | default: 'list' %}
-<div class="entries-{{ entries_layout }}">
-    {% for post in posts %}
-    {% include archive-single.html type=entries_layout %}
-    {% endfor %}
-</div>
-
-{% include paginator.html %}
