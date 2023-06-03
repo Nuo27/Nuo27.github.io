@@ -57,7 +57,7 @@ header:
 
 # **👩🏻‍💻** Work experience
 
-#### Content Marketing and Sales Intern
+## Content Marketing and Sales Intern
 
 **\*Vikadata**, China – (Dec 2020→Feb 2021)\*
 
@@ -67,15 +67,15 @@ I worked in the position of Data collection and content miner. Analysed product 
 
 # 🛠 Skills
 
-### Unity and C#
+## Unity and C#
 
 I’ve finished 2 projects with Unity and C#.
 
-### Game Design
+## Game Design
 
 asd
 
-### UE and C++
+## UE and C++
 
 asd
 
