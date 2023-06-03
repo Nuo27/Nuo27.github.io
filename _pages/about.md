@@ -1,20 +1,19 @@
 ---
-layout: page
-title: "Resume"
-permalink: /myresume
+layout: single
+title: "About"
+permalink: /about
 ---
 
 # Nuo
 
 > I'm a current student studying Game Development and Data Analytics in UTS.
-> 
 
 ---
 
 # About me
 
 > **NEIL**
-> 
+
 - Current Student in UTS - Major: Game Development; Sub-Major: Data Analytics
 - 2 Years experience in working in teams and projects
 - Passion for Games and innovations
@@ -22,25 +21,21 @@ permalink: /myresume
 
 # ☎️ Contact me
 
-📧**Email address** 
+📧**Email address**
 
 > nuochen27@icloud.com
-> 
 
-📞**Phone Number** 
+📞**Phone Number**
 
 > +61 0492484987
-> 
 
-🚩**Address** 
+🚩**Address**
 
 > Oatley, NSW, Australia, 2223
-> 
 
-🗒️**LinkedIn** 
+🗒️**LinkedIn**
 
 > [www.linkedin.com/in/nuochen27](http://www.linkedin.com/in/nuochen27)
-> 
 
 ---
 
@@ -48,9 +43,9 @@ permalink: /myresume
 
 ## Content Marketing and Sales Intern
 
-***Vikadata**, China – (Dec 2020→Feb 2021)*
+**\*Vikadata**, China – (Dec 2020→Feb 2021)\*
 
-I worked in the position of Data collection and content miner. Analysed product marketing value, competitive products, future markets and customers. Created content for international growth. 
+I worked in the position of Data collection and content miner. Analysed product marketing value, competitive products, future markets and customers. Created content for international growth.
 
 ---
 
@@ -58,7 +53,7 @@ I worked in the position of Data collection and content miner. Analysed product 
 
 ### Unity and C#
 
-I’ve finished 2 projects with Unity and C#. 
+I’ve finished 2 projects with Unity and C#.
 
 ### Game Design
 
@@ -91,7 +86,6 @@ Studying
 ## **The Tragedy of Pondiberry Lodge**
 
 > Unity Game
-> 
 
 Apr 2022 - Jun 2022
 
@@ -102,13 +96,12 @@ Apr 2022 - Jun 2022
 ## **Wistful**
 
 > Unity Game
-> 
 
 Apr 2022 - Jun 2022
 
 “Wistful” is a 3D exploration puzzle game featuring the suffocating voids of space, and the hopeless struggle to find salvation. This project was developed in the UTS Subject 'Game Design Studio 1' with Unity and I collaborated with other 5 group members. I worked as the UI designer and programmer in the team. This game was selected and presented in the 2022 School Game Jam Presentation.
 
-[link](https://k1ngslayer.itch.io/wistful-group-6)**
+[link](https://k1ngslayer.itch.io/wistful-group-6)\*\*
 
 ---
 
@@ -117,11 +110,10 @@ Apr 2022 - Jun 2022
 ## **Bachelor's Degree in Game Development**
 
 > **Sub Major in Data Analytics**
-> 
 
 <aside>
 <img src="https://www.notion.so/icons/school_blue.svg" alt="https://www.notion.so/icons/school_blue.svg" width="40px" /> **University of Technology Sydney**
 
-*2020→2023*
+_2020→2023_
 
 </aside>
