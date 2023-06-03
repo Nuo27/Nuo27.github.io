@@ -13,7 +13,8 @@
 theme: "minimal-mistakes-jekyll"
 # remote_theme           : "mmistakes/minimal-mistakes"
 minimal_mistakes_skin: "dark" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
-
+github: [metadata]
+github_username: nuo27
 # Site Settings
 locale: "en-US"
 title: "Nuo"
@@ -21,7 +22,7 @@ title_separator: "-"
 subtitle: # site tagline that appears below site title in masthead
 name: "Nuo Chen"
 description: "Personal website."
-url: # the base hostname & protocol for your site e.g. "https://nuo27.github.io"
+url: https://nuo27.github.io # the base hostname & protocol for your site e.g. "https://nuo27.github.io"
 baseurl: # the subpath of your site, e.g. "/blog"
 repository: "nuo27/nuo27.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser: # path of fallback teaser image, e.g. "/assets/images/500x300.png"
@@ -331,6 +332,6 @@ defaults:
       layout: single
       author_profile: true
       read_time: true
-      comments: # true
-      share: true
-      related: true
+      comments: false
+      share: false
+      related: false

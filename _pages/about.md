@@ -7,7 +7,6 @@ toc_label: "Table of Contents"
 toc_icon: "cog"
 toc_sticky: true
 author_profile: true
-author: Nuo Chen
 ---
 
 # Nuo
