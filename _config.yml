@@ -26,7 +26,7 @@ url: https://nuo27.github.io # the base hostname & protocol for your site e.g. "
 baseurl: # the subpath of your site, e.g. "/blog"
 repository: "nuo27/nuo27.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser: # path of fallback teaser image, e.g. "/assets/images/500x300.png"
-logo: "/assets/images/3542.png" # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
+logo: # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 masthead_title: # overrides the website title displayed in the masthead, use " " for no title
 # breadcrumbs            : false # true, false (default)
 words_per_minute: 200
@@ -58,7 +58,7 @@ atom_feed:
   path: # blank (default) uses feed.xml
   hide: # true, false (default)
 search: true # true, false (default)
-search_full_content: # true, false (default)
+search_full_content: true # true, false (default)
 search_provider: # lunr (default), algolia, google
 lunr:
   search_within_pages: # true, false (default)
@@ -222,6 +222,7 @@ plugins:
   - jekyll-sitemap
   - jekyll-gist
   - jekyll-feed
+  - jemoji
   - jekyll-include-cache
 
 # mimic GitHub Pages with --safe
@@ -230,6 +231,7 @@ whitelist:
   - jekyll-sitemap
   - jekyll-gist
   - jekyll-feed
+  - jemoji
   - jekyll-include-cache
 
 # Archives
