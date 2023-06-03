@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: archive
 title: "About"
 permalink: /about/
 toc: true
@@ -72,15 +72,14 @@ asd
 
 # 🗣 Languages
 
-### Mandarin & Cantonese 🇨🇳🇭🇰🇲🇴
+Mandarin & Cantonese 🇨🇳🇭🇰🇲🇴
 
 Native speaker
-
-### English🇦🇺
+English🇦🇺
 
 Fluent, 5 years in Australia
 
-### Korean & Japanese🇰🇷🇯🇵
+Korean & Japanese🇰🇷🇯🇵
 
 Studying
 
@@ -88,7 +87,7 @@ Studying
 
 # 📜 Projects
 
-## **The Tragedy of Pondiberry Lodge**
+**The Tragedy of Pondiberry Lodge**
 
 > Unity Game
 
@@ -98,7 +97,7 @@ Apr 2022 - Jun 2022
 
 [Link](https://nuochen.itch.io/the-tragedy-of-pondiberry-lodge)
 
-## **Wistful**
+**Wistful**
 
 > Unity Game
 
@@ -112,7 +111,7 @@ Apr 2022 - Jun 2022
 
 # 📚 Education
 
-## **Bachelor's Degree in Game Development**
+**Bachelor's Degree in Game Development**
 
 > **Sub Major in Data Analytics**
 
