@@ -7,6 +7,9 @@ toc_label: "Table of Contents"
 toc_icon: "cog"
 toc_sticky: true
 author_profile: true
+header:
+  overlay_image: /assets/images/IMG_3542.jpg
+  caption: "All about me"
 ---
 
 # Nuo
