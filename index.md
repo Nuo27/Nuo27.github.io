@@ -1,6 +1,6 @@
 ---
 header:
-  overlay_image: /assets/images/3542.jpg
+  image: /assets/images/3542.jpg
   caption: "My website"
 ---
 
