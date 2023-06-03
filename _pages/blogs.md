@@ -1,7 +1,7 @@
 ---
 layout: blogs
 title: "Blogs"
-permalink: /blogs
+permalink: /blogs/
 pagination:
   enabled: true
 ---

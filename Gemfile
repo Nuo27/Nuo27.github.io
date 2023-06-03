@@ -12,6 +12,8 @@ source "https://rubygems.org"
 gem "github-pages", "~> 228", group: :jekyll_plugins
 
 # To upgrade, run `bundle update`.
+
+gem "minimal-mistakes-jekyll", :github => "mmistakes/minimal-mistakes"
 gem "jekyll-include-cache", group: :jekyll_plugins
 
 # The following plugins are automatically loaded by the theme-gem:
@@ -20,11 +22,9 @@ gem "jekyll-include-cache", group: :jekyll_plugins
 #   gem "jekyll-gist"
 #   gem "jekyll-feed"
 #   gem "jekyll-include-cache"
-
 #
 # If you have any other plugins, put them here!
 # Cf. https://jekyllrb.com/docs/plugins/installation/
 group :jekyll_plugins do
-    gem "jekyll-paginate-v2"
 end
 gem "webrick", "~> 1.8"

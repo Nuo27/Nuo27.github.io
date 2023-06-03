@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "About"
-permalink: /about
+permalink: /about/
 toc: true
 toc_label: "Table of Contents"
 toc_icon: "cog"
