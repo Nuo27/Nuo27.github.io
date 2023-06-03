@@ -10,6 +10,9 @@ author_profile: true
 header:
   overlay_image: /assets/images/IMG_3542.jpg
   caption: "All about me"
+  actions:
+    - label: "Download Resume"
+      url: "https://github.com/Nuo27/Nuo27.github.io/blob/dev/nuo.md"
 ---
 
 # Nuo
