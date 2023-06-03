@@ -5,45 +5,19 @@ author_profile: true
 
 {{ content }}
 
-{% for post in paginator.posts %}
-{% include archive-single.html type=entries_layout %}
-{% endfor %}
+<h3 class="archive__subtitle">{{ site.data.ui-text[site.locale].recent_posts | default: "Recent Posts" }}</h3>
 
-{% if paginator.total_pages > 1 %}
-<nav class="pagination">
-    <ul>
-        {% if paginator.previous_page %}
-        <li>
-            <a href="{{ paginator.previous_page_path | prepend: site.baseurl }}">Newer</a>
-        </li>
-        {% else %}
-        <li>
-            <a href="#" class="disabled"><span aria-hidden="true">Newer</span></a>
-        </li>
-        {% endif %}
-        {% if paginator.page_trail %}
-        {% for trail in paginator.page_trail %}
-        {% if trail.num == page.pagination_info.curr_page%}
-        <li>
-            <a href="{{ trail.path | prepend: site.baseurl }}" class="disabled current">{{ trail.num }}</a>
-        </li>
-        {% else %}
-        <li>
-            <a href="{{ trail.path | prepend: site.baseurl }}" title="{{trail.title}}">{{ trail.num }}</a>
-        </li>
-        {% endif %}
-        {% endfor %}
-        {% endif %}
-        {% if paginator.next_page %}
-        <li>
-            <a href="{{ paginator.next_page_path | prepend: site.baseurl }}">Older</a>
-        </li>
-        {% else %}
-        <li>
-            <a href="#" class="disabled"><span aria-hidden="true">Older</span></a>
-        </li>
-        {% endif %}
-        <li>Page {{page.pagination_info.curr_page}} of {{page.pagination_info.total_pages}}</li>
-    </ul>
-</nav>
+{% if paginator %}
+{% assign posts = paginator.posts %}
+{% else %}
+{% assign posts = site.posts %}
 {% endif %}
+
+{% assign entries_layout = page.entries_layout | default: 'list' %}
+<div class="entries-{{ entries_layout }}">
+    {% for post in posts %}
+    {% include archive-single.html type=entries_layout %}
+    {% endfor %}
+</div>
+
+{% include paginator.html %}
