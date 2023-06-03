@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/mmistakes/minimal-mistakes.git
-  revision: 8a67ce8e41ec850f2d7c373aa47739b2abfee6f1
+  revision: 7c4cd3b399891ed5dd3dfbe68d57b7cc307ceddf
+  tag: 4.24.0
   specs:
     minimal-mistakes-jekyll (4.24.0)
       jekyll (>= 3.7, < 5.0)
@@ -270,6 +271,7 @@ DEPENDENCIES
   github-pages (~> 228)
   jekyll-include-cache
   jekyll-paginate-v2
+  jekyll-remote-theme (~> 0.4.0)
   minimal-mistakes-jekyll!
   webrick (~> 1.8)
 
