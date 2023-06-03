@@ -17,7 +17,7 @@ github: [metadata]
 github_username: nuo27
 # Site Settings
 locale: "en-US"
-title: "nuo27.github.io"
+title: "nuo"
 title_separator: "-"
 subtitle: # site tagline that appears below site title in masthead
 name: "Nuo Chen"
@@ -26,7 +26,7 @@ url: https://nuo27.github.io # the base hostname & protocol for your site e.g. "
 baseurl: # the subpath of your site, e.g. "/blog"
 repository: "nuo27/nuo27.github.io" # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser: # path of fallback teaser image, e.g. "/assets/images/500x300.png"
-logo: # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
+logo: "/assets/images/3542.png" # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 masthead_title: # overrides the website title displayed in the masthead, use " " for no title
 # breadcrumbs            : false # true, false (default)
 words_per_minute: 200
@@ -102,7 +102,7 @@ analytics:
 # Site Author
 author:
   name: "Nuo Chen"
-  avatar: # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  avatar: "/assets/images/bio-photo.jpg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio: "Game--GameDev--GameDesign--Coding--Data"
   location: "Sydney, Australia"
   email: nuoch3n@gmail.com
