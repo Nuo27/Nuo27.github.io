@@ -26,5 +26,6 @@ gem "jekyll-include-cache", group: :jekyll_plugins
 # If you have any other plugins, put them here!
 # Cf. https://jekyllrb.com/docs/plugins/installation/
 group :jekyll_plugins do
+    jekll-paginate-v2
 end
 gem "webrick", "~> 1.8"
