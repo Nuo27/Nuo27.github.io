@@ -1,10 +1,13 @@
 ---
-title: "Wistful"
+title: "Shatter"
 excerpt: "A UE5 Game"
 header:
-  image: /assets/images/foo-bar-identity.jpg
-  teaser: /assets/images/foo-bar-identity-th.jpg
+  overlay_image: /assets/images/shatter-2.png
+  teaser: /assets/images/shatter.png
 sidebar:
+  - image: /assets/images/shatter.png
+    image_alt: "logo"
+    text: "Shatter"
   - title: "Time"
     text: "Apr 2022 - Jun 2022"
   - title: "Role"
@@ -12,16 +15,18 @@ sidebar:
   - title: "Responsibilities"
     text: ""
 gallery:
-  - url: /assets/images/unsplash-gallery-image-1.jpg
-    image_path: assets/images/unsplash-gallery-image-1-th.jpg
+  - url: /assets/images/shatter-1.png
+    image_path: assets/images/shatter-1.png
     alt: "placeholder image 1"
-  - url: /assets/images/unsplash-gallery-image-2.jpg
-    image_path: assets/images/unsplash-gallery-image-2-th.jpg
+  - url: /assets/images/shatter-2.png
+    image_path: assets/images/shatter-2.png
     alt: "placeholder image 2"
-  - url: /assets/images/unsplash-gallery-image-3.jpg
-    image_path: assets/images/unsplash-gallery-image-3-th.jpg
+  - url: /assets/images/shatter-3.png
+    image_path: assets/images/shatter-3.png
     alt: "placeholder image 3"
 ---
+
+{% include video id="D9FGmY" provider="youtube" %}
 
 Shatter is a high-octane, 1v1, movement shooter with a de-emphasis on shooting. You have a coin in one hand, and a revolver in the other. Toss the coin up and shoot it. You have 4 different abilities to hot-swap at any time. Shoot at your enemy to increase their knockback multiplier, making them easier to knock off the map.
 
@@ -29,4 +34,4 @@ Shatter is a high-octane, 1v1, movement shooter with a de-emphasis on shooting. 
 
 [Shatter itch](https://k1ngslayer.itch.io/shatter)
 
-{% include gallery caption="This is a sample gallery to go along with this case study." %}
+{% include gallery caption="Shatter Gallery" %}
