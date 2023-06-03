@@ -1,19 +1,24 @@
 ---
-layout: archive
+layout: single
 title: "About"
 permalink: /about/
+
 toc: true
 toc_label: "Table of Contents"
 toc_icon: "cog"
 toc_sticky: true
+
 author_profile: true
+
 header:
-  overlay_image: /assets/images/IMG_3542.jpg
+  overlay_image: /assets/images/3542.jpg
   caption: "All about me"
   actions:
     - label: "Download Resume"
       url: "https://github.com/Nuo27/Nuo27.github.io/blob/dev/nuo.md"
 ---
+
+![image-center](/assets/images/IMG_3542.jpg){: .align-center}
 
 # Nuo
 
@@ -52,7 +57,7 @@ header:
 
 # **👩🏻‍💻** Work experience
 
-## Content Marketing and Sales Intern
+#### Content Marketing and Sales Intern
 
 **\*Vikadata**, China – (Dec 2020→Feb 2021)\*
 
