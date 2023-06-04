@@ -11,7 +11,7 @@ toc_sticky: true
 author_profile: true
 
 header:
-  overlay_image: /assets/images/13542.jpg
+  overlay_image: /assets/images/header-2.jpg
   caption: "All about me"
   actions:
     - label: "Download Resume"

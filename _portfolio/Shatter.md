@@ -26,12 +26,9 @@ gallery:
     alt: "placeholder image 3"
 ---
 
-{% include video id="D9FGmY" provider="youtube" %}
-
 Shatter is a high-octane, 1v1, movement shooter with a de-emphasis on shooting. You have a coin in one hand, and a revolver in the other. Toss the coin up and shoot it. You have 4 different abilities to hot-swap at any time. Shoot at your enemy to increase their knockback multiplier, making them easier to knock off the map.
 
-[shatter official website](https://www.shatter.co.in/)
-
-[Shatter itch](https://k1ngslayer.itch.io/shatter)
+[Shatter official website](https://www.shatter.co.in/){: .btn .btn--info}
+[Shatter itch](https://k1ngslayer.itch.io/shatter){: .btn .btn--info}
 
 {% include gallery caption="Shatter Gallery" %}

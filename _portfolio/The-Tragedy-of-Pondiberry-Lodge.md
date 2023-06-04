@@ -32,6 +32,6 @@ gallery:
 "The Tragedy of Pondiberry Lodge" is a 3D exploration detective game, players are invited to find our secret in this house and escape. This project was the final assignment for UTS Subject "Introduction to Game Design" and was developed with Unity.
 
 {% include video id="VD-D9FGmY-k" provider="youtube" %}
-[itch game jam repo](https://nuochen.itch.io/the-tragedy-of-pondiberry-lodge)
+[pondiberry](https://nuochen.itch.io/the-tragedy-of-pondiberry-lodge){: .btn .btn--info}
 
 {% include gallery caption="The Tragedy of Pondiberry Lodge Gallery" %}

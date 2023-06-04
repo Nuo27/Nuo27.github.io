@@ -1,6 +1,6 @@
 ---
 header:
-  overlay_image: /assets/images/13542.jpg
+  overlay_image: /assets/images/header-1.jpg
   caption: "My website"
   classes: wide
 ---

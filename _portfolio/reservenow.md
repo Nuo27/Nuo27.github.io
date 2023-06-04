@@ -27,6 +27,6 @@ gallery:
 
 Reserve Now is designed for customers who want to make restaurant reservations and staff members who need to efficiently manage those reservations. It aims to eliminate the inconvenience of traditional reservation systems by providing an intuitive online platform for both parties to easily book and cancel reservations.
 
-[Reserve now](https://github.com/Nuo27/iOS_Assignment3)
+[Reserve now](https://github.com/Nuo27/iOS_Assignment3){: .btn .btn--info}
 
 {% include gallery caption="Reserve Now Gallery" %}
