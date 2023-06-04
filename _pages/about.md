@@ -11,7 +11,7 @@ toc_sticky: true
 author_profile: true
 
 header:
-  overlay_image: /assets/images/header-2.jpg
+  overlay_image: /assets/images/header-2.png
   caption: "All about me"
   actions:
     - label: "Download Resume"
@@ -98,23 +98,15 @@ Studying
 
 **The Tragedy of Pondiberry Lodge**
 
-> Unity Game
-
-Apr 2022 - Jun 2022
-
-"The Tragedy of Pondiberry Lodge" is a 3D exploration detective game, players are invited to find our secret in this house and escape. This project was the final assignment for UTS Subject "Introduction to Game Design" and was developed with Unity. I ran this project as the Team Leader, Game Designer, Lead Programmer, UI programmer and PMP person in a small group of 4. This game was nominated for the Game Jam Presentation.
-
-[Link](https://nuochen.itch.io/the-tragedy-of-pondiberry-lodge)
-
 **Wistful**
 
-> Unity Game
+**Shatter**
 
-Apr 2022 - Jun 2022
+**Reserve Now**
 
-“Wistful” is a 3D exploration puzzle game featuring the suffocating voids of space, and the hopeless struggle to find salvation. This project was developed in the UTS Subject 'Game Design Studio 1' with Unity and I collaborated with other 5 group members. I worked as the UI designer and programmer in the team. This game was selected and presented in the 2022 School Game Jam Presentation.
+**School Labs**
 
-[link](https://k1ngslayer.itch.io/wistful-group-6)\*\*
+[View Portfolio](/portfolio/){: .btn .btn--primary .btn--large}
 
 ---
 
