@@ -18,7 +18,7 @@ header:
       url: "/resume/"
 ---
 
-> A new graduate from UTS, majoring in Game Development and Data Analytics.
+> A new graduate from UTS, majoring in Game Development and minoring Data Analytics.
 
 ---
 
@@ -52,7 +52,7 @@ I worked in the position of Data collection and content miner. Analysed product 
 
 > **Major in Game Development**
 
-> **Sub-major in Data Analytics**
+> **minor in Data Analytics**
 
 <aside>
 <img src="https://www.notion.so/icons/school_blue.svg" alt="https://www.notion.so/icons/school_blue.svg" width="40px" />

@@ -16,3 +16,6 @@ blogs:
         url: /categories/
       - title: "Tags"
         url: /tags/
+resume:
+  - title: "Download PDF"
+    url: /nuo_resume.pdf
