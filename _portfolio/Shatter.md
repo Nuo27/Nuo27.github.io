@@ -2,7 +2,7 @@
 title: "Shatter"
 excerpt: "A UE5 Game"
 header:
-  overlay_image: /assets/images/shatter-2.png
+  overlay_image: /assets/images/Shatter-2.png
   teaser: /assets/images/shatter.png
 sidebar:
   - image: /assets/images/shatter.png
@@ -15,14 +15,14 @@ sidebar:
   - title: "Responsibilities"
     text: ""
 gallery:
-  - url: /assets/images/shatter-1.png
-    image_path: assets/images/shatter-1.png
+  - url: /assets/images/Shatter-1.png
+    image_path: assets/images/Shatter-1.png
     alt: "placeholder image 1"
-  - url: /assets/images/shatter-2.png
-    image_path: assets/images/shatter-2.png
+  - url: /assets/images/Shatter-2.png
+    image_path: assets/images/Shatter-2.png
     alt: "placeholder image 2"
-  - url: /assets/images/shatter-3.png
-    image_path: assets/images/shatter-3.png
+  - url: /assets/images/Shatter-3.png
+    image_path: assets/images/Shatter-3.png
     alt: "placeholder image 3"
 ---
 
