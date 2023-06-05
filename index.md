@@ -1,10 +1,10 @@
 ---
 title: "👋🏼Here's Nuo"
 excerpt: "A new graduate from UTS, majoring in Game Development and Data Analytics."
+classes: wide
 header:
   overlay_image: /assets/images/gradient-macbook.jpg
   caption: "Coding is fun, ain't it?"
-  classes: wide
 sidebar:
   - title: "Me"
     text: "Into Games, its design and development."

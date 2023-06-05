@@ -1,10 +1,10 @@
 ---
 layout: single
-title: "About"
+title: "About me"
 permalink: /about/
 
 toc: true
-toc_label: "Table of Contents"
+toc_label: "Profile"
 toc_icon: "cog"
 toc_sticky: true
 
@@ -18,26 +18,101 @@ header:
       url: "https://github.com/Nuo27/Nuo27.github.io/blob/dev/nuo.md"
 ---
 
-# Nuo
-
-> I'm a current student studying Game Development and Data Analytics in UTS.
+> A new graduate from UTS, majoring in Game Development and Data Analytics.
 
 ---
 
-# About me
+# 👤 About me
 
-> **NEIL**
+> **Nuo Chen -> Neil**
 
-- Current Student in UTS - Major: Game Development; Sub-Major: Data Analytics
-- 2 Years experience in working in teams and projects
-- Passion for Games and innovations
-- Understanding of Game design, Interaction and Designing.
+I am a passionate game developer and designer, and planning to get into the industry to create games that are fun and meaningful.
+{: .text-center}
 
-# ☎️ Contact me
+---
+
+# 👩🏻‍💻 Work experience
+
+## Vikadata
+
+**Content and Marketing Intern**
+
+Dec 2020→Feb 2021
+{: .text-right}
+🚩Zhuhai, China
+{: .text-right}
+
+I worked in the position of Data collection and content miner. Analysed product marketing value, competitive products, future markets and customers. Created content for international growth.
+
+---
+
+# 📚 Education
+
+## Bachelor of Science
+
+> **Major in Game Development**
+
+> **Sub-major in Data Analytics**
+
+<aside>
+<img src="https://www.notion.so/icons/school_blue.svg" alt="https://www.notion.so/icons/school_blue.svg" width="40px" />
+University of Technology Sydney
+</aside> {: .text-center}
+2020→2023
+{: .text-center}
+---
+
+# 🛠 Skills
+
+## Engines and Tools
+
+- Coding
+
+**Unity, UE4/5, XCode, Git, IDEs and other tools**
+{: .text-center}
+
+- Data Analytics
+
+Excel, Tableau, SQL, Python
+{: .text-center}
+
+## Programming Languages
+
+**C#, C++, Java, Swift, Python**
+{: .text-center}
+
+## Other Skills
+
+Interative Design, Game Design, Data Analytics, Data Mining, Data Visualisation
+{: .text-center}
+
+---
+
+# 📜 Projects
+
+- The Tragedy of Pondiberry Lodge
+- Wistful
+- Shatter
+- Reserve Now
+- School Labs
+
+[View Portfolio](/portfolio/){: .btn .btn--primary .btn--large}
+
+---
+
+# 🗣 Languages
+
+- Mandarin & Cantonese 🇨🇳🇭🇰🇲🇴 -> Native speaker
+- English🇦🇺 -> Been in Australia since 2016
+- Korean & Japanese🇰🇷🇯🇵 -> Studying
+
+---
+
+# ☎️ Contact me via
 
 📧**Email address**
 
-> nuochen27@icloud.com
+> nuoch3n@gmail.com
 
 📞**Phone Number**
 
@@ -50,75 +125,3 @@ header:
 🗒️**LinkedIn**
 
 > [www.linkedin.com/in/nuochen27](http://www.linkedin.com/in/nuochen27)
-
----
-
-# **👩🏻‍💻** Work experience
-
-## Content Marketing and Sales Intern
-
-**\*Vikadata**, China – (Dec 2020→Feb 2021)\*
-
-I worked in the position of Data collection and content miner. Analysed product marketing value, competitive products, future markets and customers. Created content for international growth.
-
----
-
-# 🛠 Skills
-
-## Unity and C#
-
-I’ve finished 2 projects with Unity and C#.
-
-## Game Design
-
-asd
-
-## UE and C++
-
-asd
-
----
-
-# 🗣 Languages
-
-Mandarin & Cantonese 🇨🇳🇭🇰🇲🇴
-
-Native speaker
-English🇦🇺
-
-Fluent, 5 years in Australia
-
-Korean & Japanese🇰🇷🇯🇵
-
-Studying
-
----
-
-# 📜 Projects
-
-**The Tragedy of Pondiberry Lodge**
-
-**Wistful**
-
-**Shatter**
-
-**Reserve Now**
-
-**School Labs**
-
-[View Portfolio](/portfolio/){: .btn .btn--primary .btn--large}
-
----
-
-# 📚 Education
-
-**Bachelor's Degree in Game Development**
-
-> **Sub Major in Data Analytics**
-
-<aside>
-<img src="https://www.notion.so/icons/school_blue.svg" alt="https://www.notion.so/icons/school_blue.svg" width="40px" /> **University of Technology Sydney**
-
-_2020→2023_
-
-</aside>
