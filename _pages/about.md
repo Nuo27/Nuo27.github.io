@@ -14,8 +14,8 @@ header:
   overlay_image: /assets/images/header-2.png
   caption: "All about me"
   actions:
-    - label: "Download Resume"
-      url: "https://github.com/Nuo27/Nuo27.github.io/blob/dev/nuo.md"
+    - label: "View my Resume"
+      url: "/resume/"
 ---
 
 > A new graduate from UTS, majoring in Game Development and Data Analytics.
