@@ -25,12 +25,6 @@ feature_row:
     url: "/portfolio/"
     btn_label: "See my works"
     btn_class: "btn--primary"
-  - image_path: /assets/images/read-more.png
-    title: "Blog"
-    excerpt: "My blogs and articles"
-    url: "/blog/"
-    btn_label: "Read more"
-    btn_class: "btn--primary"
 ---
 
 {% include feature_row %}

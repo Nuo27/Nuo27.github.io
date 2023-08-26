@@ -4,10 +4,10 @@ main:
     url: /about/
   - title: "Portfolio"
     url: /portfolio/
-  - title: "My Content Library"
-    url: https://nuo.super.site/
-  - title: "Blogs"
-    url: /blogs
+  # - title: "My Content Library"
+  #   url: https://nuo.super.site/
+  # - title: "Blogs"
+  #   url: /blogs
 
 blogs:
   - title: "Sort by:"
