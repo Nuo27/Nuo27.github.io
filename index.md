@@ -57,8 +57,8 @@ Interative Design, Game Design, Data Analytics, Data Mining, Data Visualisation
 
 I've remade a few classic games demo and a few original games from uni projects.
 
-Released portfolio games:
-[View Portfolio](/portfolio/){: .btn .btn--primary .btn--large}
+[View Portfolio](/portfolio/){: .btn .btn--inverse .btn--large}
+{: .text-center}
 
 ---
 
