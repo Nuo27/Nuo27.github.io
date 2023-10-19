@@ -1,7 +1,7 @@
 ---
 layout: single
-title: "About me"
-permalink: /about/
+title: "More about me"
+permalink: /moreabout/
 
 toc: true
 toc_label: "Profile"

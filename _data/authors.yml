@@ -10,3 +10,5 @@ Nuo Chen:
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
       url: ""
+    - label: "Resume"
+      url: "/nuo_resume.pdf"

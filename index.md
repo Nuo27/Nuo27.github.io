@@ -2,29 +2,71 @@
 title: "👋🏼Here's Nuo"
 excerpt: "A new graduate from UTS, majoring in Game Development and Data Analytics."
 classes: wide
+author_profile: true
 header:
   overlay_image: /assets/images/gradient-macbook.jpg
   caption: "Coding is fun, ain't it?"
-sidebar:
-  - title: "Me"
-    text: "Into Games, its design and development."
-  - title: "Engines and Tools"
-    text: "Unity, UE4/5, XCode, Git, IDEs"
-  - title: "Programming Languages"
-    text: "C#, C++, Java, Swift, Python"
-feature_row:
-  - image_path: /assets/images/bio-photo.png
-    title: "Nuo Chen"
-    excerpt: "Game Dev Student from UTS"
-    url: "/about/"
-    btn_label: "More about me"
-    btn_class: "btn--primary"
-  - image_path: /assets/images/portfolio-preview.png
-    title: "Portfolio"
-    excerpt: "My projects and works"
-    url: "/portfolio/"
-    btn_label: "See my works"
-    btn_class: "btn--primary"
 ---
+
+---
+
+# 👤 About me
+
+> **Nuo Chen -> Neil**
+
+I am a passionate game programmer, and planning to get into the industry to create games that are fun and meaningful.
+
+
+---
+
+# 📚 Education
+## University of Technology Sydney(UTS)
+
+> **Bachelor of Science in Game Development**
+
+minor in Data Analytics
+{: .notice}
+
+
+
+2020→2023
+{: .text-center}
+---
+
+# 🛠 Skills
+
+- Coding
+
+**Unity, UE4/5, XCode etc**
+{: .text-center}
+
+**C#, C++, Java, Swift, Python**
+{: .text-center}
+
+- Data Analytics
+
+Excel, Tableau, SQL, Python
+{: .text-center}
+
+Interative Design, Game Design, Data Analytics, Data Mining, Data Visualisation
+{: .text-center}
+
+---
+
+# 📜 Projects
+
+I've remade a few classic games demo and a few original games from uni projects.
+
+Released portfolio games:
+[View Portfolio](/portfolio/){: .btn .btn--primary .btn--large}
+
+---
+
+# 🗣 Languages
+
+- Mandarin & Cantonese -> Native speaker
+- English -> Been in Australia since 2016
+- Korean & Japanese -> Studying
+
 
 {% include feature_row %}

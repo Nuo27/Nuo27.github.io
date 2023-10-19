@@ -16,8 +16,8 @@ minimal_mistakes_skin: "aqua" # "air", "aqua", "contrast", "dark", "dirt", "neon
 github: [metadata]
 github_username: nuo27
 # Site Settings
-locale: "en-US"
-title: "nuo27.github.io"
+locale: "en-UK"
+title: "Nuo"
 title_separator: "-"
 subtitle: # site tagline that appears below site title in masthead
 name: "Nuo Chen"
@@ -66,7 +66,7 @@ algolia:
   application_id: # YOUR_APPLICATION_ID
   index_name: # YOUR_INDEX_NAME
   search_only_api_key: # YOUR_SEARCH_ONLY_API_KEY
-  powered_by: # true (default), false
+  powered_by: false # true (default), false
 google:
   search_engine_id: # YOUR_SEARCH_ENGINE_ID
   instant_search: # false (default), true
@@ -117,6 +117,9 @@ author:
     - label: "LinkedIn"
       icon: "fab fa-fw fa-linkedin"
       url: "https://www.linkedin.com/in/nuochen27/"
+    - label: "Resume"
+      icon: "fas fa-fw fa-file-pdf"
+      url: "/nuo_resume.pdf"
 
 # Site Footer
 footer:
