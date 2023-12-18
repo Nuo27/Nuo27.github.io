@@ -24,7 +24,7 @@ nav_exclude:                                            # The following paths ar
 ### Author Info ###
 author:
   name              : Nuo Chen
-  image             : https://i.imgur.com/uyDNQnn.jpg
+  image             : assets/image/bio-photo.png
   # behance           : your_username
 # dribbble          : your_username
   email             : nuoch3n@gmail.com
@@ -61,7 +61,7 @@ collections:
 
 ### Disqus ###
 disqus:
-  shortname: nuo             # Your website Shortname on disqus
+  shortname:             # Your website Shortname on disqus
 
 
 ### Analytics ###
