@@ -1,0 +1,20 @@
+- name: C#
+  percentage: 90
+  color: danger
+
+- name: C++
+  percentage: 80
+  color:
+
+- name: Python
+  percentage: 70
+  color: secondary
+
+- name: Java
+  percentage: 70
+  color: warning
+
+- name: Swift
+  percentage: 70
+  color: info
+

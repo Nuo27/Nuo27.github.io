@@ -1,0 +1,7 @@
+- name: Excel & Tableau
+  percentage: 75
+  color: info
+
+- name: Project Management
+  percentage: 70
+  color: success
