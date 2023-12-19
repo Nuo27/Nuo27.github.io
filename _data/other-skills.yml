@@ -5,3 +5,11 @@
 - name: Project Management
   percentage: 70
   color: success
+
+- name: Marketing
+  percentage: 60
+  color: warning
+
+- name: Content research
+  percentage: 75
+  color: danger
