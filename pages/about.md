@@ -2,7 +2,7 @@
 layout: page
 title: About
 permalink: /about/
-weight: 3
+weight: 1
 ---
 
 # **About Me**
@@ -15,6 +15,16 @@ I am a recently Graduate from UTS studying Game Development as major and Data an
 {% include about/skills.html title="Other Skills" source=site.data.other-skills %}
 </div>
 
+
+
 <div class="row">
 {% include about/timeline.html %}
 </div>
+
+## Resumes
+{% capture list_items %}
+Common resume,/assets/resumes/nuo_resume_common.pdf
+academy texted resume,/assets/resumes/nuo_resume_academy.pdf
+casual resume,/assets/resumes/nuo_resume_casual.pdf
+{% endcapture %}
+{% include elements/list.html title="Resumes in PDF" %}
