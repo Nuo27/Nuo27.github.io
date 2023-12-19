@@ -37,7 +37,3 @@ casual resume,/assets/resumes/nuo_resume_casual.pdf
 
 ## Contact Me
 if you have any questions or want to contact me, please feel free to email me at [{{ site.author.email }}](mailto:{{ site.author.email }}) or contact me on [LinkedIn](https://www.linkedin.com/in/nuochen27/).
-
-{% include elements/button.html link="https://www.linkedin.com/in/nuochen27/" text="LinkedIn" %}
-
-{% include elements/button.html link="mailto:{{ site.author.email }}" text="Email" %}
