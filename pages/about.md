@@ -6,21 +6,43 @@ weight: 1
 ---
 
 # **About Me**
+---
 
 Hi I am **{{ site.author.name }}** :wave:,<br>
 I am a recently Graduate from UTS studying Game Development as major and Data analytics as minor. I mainly using C#,C++ in Unity and Unreal Engine. Python for analysing data. Java,Swift for application Development, and SQL for Database management. I've done a few original games, which can be found in the portfolio, and some classic games recreations. I've also completed serveral applications, plugins or element systems from school projects.
 
+---
+
+# Skills
+- Unity3D game engine
+- Unreal Engine 4&5 development
+
+- Game design and mechanics
+- UI/UX design and implementation
+- Playtesting and balancing
+
+- Project management
+- Team collaboration and communication
+
+--- 
+
 <div class="row">
-{% include about/skills.html title="Programming Skills" source=site.data.programming-skills %}
-{% include about/skills.html title="Other Skills" source=site.data.other-skills %}
+{% include about/skills.html title="Programming Languages" source=site.data.programming-skills %}
+{% include about/skills.html title="Others" source=site.data.other-skills %}
 </div>
 
+
 ## Languages
-* Mandarin  | Native
-* Cantonese | Native
-* English   | Proficient
-* Japanese  | Beginner
-* Korean    | Beginner
+
+| Language | Proficiency |
+| :---: |:---:|
+| Mandarin | Native |
+| Cantonese | Native |
+| English | Fluent |
+| Japanese | Basic |
+| Korean | Basic |
+
+
 
 
 <div class="row">
