@@ -15,7 +15,11 @@ Shatter was a game project for the Game Design Studio 2 in 2022. We first used U
 
 Shatter is a high-octane, 1v1, movement shooter with a de-emphasis on shooting. You have a coin in one hand, and a revolver in the other. Toss the coin up and shoot it. You have 4 different abilities to hot-swap at any time. Shoot at your enemy to increase their knockback multiplier, making them easier to knock off the map. The first player to 5 points wins.
 
+(The official website of Shatter is expired)
 [Shatter Official](https://www.shatter.co.in/)
 
+The repo was deleted due to some issues and we left the playable demo which can be found on itch.io:
 [Shatter itch.io Page](https://k1ngslayer.itch.io/shatter)
+
+
 

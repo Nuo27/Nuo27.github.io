@@ -8,8 +8,16 @@ description: Reserve Now was an app I created for the final assessment for the c
 
 Reserve Now is designed for customers who want to make restaurant reservations and staff members who need to efficiently manage those reservations. It aims to eliminate the inconvenience of traditional reservation systems by providing an intuitive online platform for both parties to easily book and cancel reservations.
 
+The main tech of the app include:
+- Swift
+- XCode
+- iOS
+- SQL
+- CocoaPods
+
+More details can be found in the readme file on Github.
 <p class="text-center">
-{% include elements/button.html link="https://github.com/Nuo27/iOS_Assignment3" text="Learn More on Github" %}
+{% include elements/button.html link="https://github.com/Nuo27/reserve_now" text="Learn More on Github" %}
 </p>
 
 {% capture carousel_images %}
