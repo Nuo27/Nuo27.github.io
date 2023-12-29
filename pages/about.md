@@ -6,6 +6,8 @@ weight: 1
 ---
 
 # **About Me**
+
+
 ---
 
 Hi I am **{{ site.author.name }}** :wave:,<br>
@@ -23,7 +25,7 @@ I am a recently Graduate from UTS studying Game Development as major and Data an
 
 - Project management
 - Team collaboration and communication
-
+ 
 --- 
 
 <div class="row">
@@ -51,11 +53,17 @@ I am a recently Graduate from UTS studying Game Development as major and Data an
 
 ## Resumes
 {% capture list_items %}
-Common resume,/assets/resumes/nuo_resume_common.pdf
+common resume,/assets/resumes/nuo_resume_common.pdf
 academy texted resume,/assets/resumes/nuo_resume_academy.pdf
 casual resume,/assets/resumes/nuo_resume_casual.pdf
 {% endcapture %}
 {% include elements/list.html title="Resumes in PDF" %}
 
 ## Contact Me
-if you have any questions or want to contact me, please feel free to email me at [{{ site.author.email }}](mailto:{{ site.author.email }}) or contact me on [LinkedIn](https://www.linkedin.com/in/nuochen27/).
+
+| - | - |
+| Nuo/Neil | **Email** : [nuoch3n@gmail.com](mailto:nuoch3n@gmail.com) |
+| | **LinkedIn** : [LinkedIn](https://www.linkedin.com/in/nuochen27/) |
+| | **Github** : [Github](https://www.github.com/nuochen27) |
+| | **Phone** : 0492484987 |
+| | **Location** : Sydney, Australia |
