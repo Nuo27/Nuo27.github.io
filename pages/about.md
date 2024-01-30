@@ -11,7 +11,7 @@ weight: 1
 ---
 
 Hi I am **{{ site.author.name }}** :wave:,<br>
-I am a recently Graduate from UTS studying Game Development as major and Data analytics as minor. I mainly using C#,C++ in Unity and Unreal Engine. Python for analysing data. Java,Swift for application Development, and SQL for Database management. I've done a few original games, which can be found in the portfolio, and some classic games recreations. I've also completed serveral applications, plugins or element systems from school projects.
+I am a recent Graduate from UTS studying Game Development as a major and Data Analytics as a minor. I mainly use C#, C++ in Unity and Unreal Engine. Python for analysing data. Java, Swift for Application Development, and SQL for Database Management. I've done a few original games, which can be found below, and some classic game recreations. I've also completed several applications, plugins, and element systems from school projects.
 
 ---
 
