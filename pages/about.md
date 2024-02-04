@@ -65,6 +65,6 @@ casual resume,/assets/resumes/nuo_resume_casual.pdf
 | - | - |
 | Nuo/Neil | **Email** : [nuoch3n@gmail.com](mailto:nuoch3n@gmail.com) |
 | | **LinkedIn** : [LinkedIn](https://www.linkedin.com/in/nuochen27/) |
-| | **Github** : [Github](https://www.github.com/nuochen27) |
+| | **Github** : [Github](https://www.github.com/nuo27) |
 | | **Phone** : 0492484987 |
 | | **Location** : Sydney, Australia |
