@@ -53,12 +53,10 @@ I am a recent Graduate from UTS studying Game Development as a major and Data An
 
 ## Resumes
 {% capture list_items %}
-programmer resume,/assets/resumes/nuo_resume_programmer.pdf
-common resume,/assets/resumes/nuo_resume_common.pdf
-academy texted resume,/assets/resumes/nuo_resume_academy.pdf
-casual resume,/assets/resumes/nuo_resume_casual.pdf
+Resume-Programmer,/assets/resumes/nuo_resume_programmer.pdf
+Resume-plain-text,/assets/resumes/nuo_resume_academy.pdf
 {% endcapture %}
-{% include elements/list.html title="Resumes in PDF" %}
+{% include elements/list.html title="View Resumes in PDF" %}
 
 ## Contact Me
 
