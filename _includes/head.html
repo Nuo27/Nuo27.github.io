@@ -22,8 +22,6 @@
 
   <!-- ============================================================
        Cursor controller (pre-paint, inline, runs ONCE).
-       A single global cursor instance that survives PJAX navigations
-       because the node lives on <body>, outside the swapped <main>.
        Sections: RENDER NODE / POINTER TRACKING / HOVER / RENDER.
        ============================================================ -->
   <style>html.custom-cursor,html.custom-cursor * { cursor: none !important; }</style>
@@ -36,18 +34,66 @@
       var html = document.documentElement;
       html.classList.add('custom-cursor');          // hide native cursor pre-paint
 
-      // ── RENDER NODE (single, persistent, namespaced) ──
-      var el = document.createElement('div');
-      el.id = 'cursor-root';                        // namespaced — no .cursor collision
+      // ── cfg: every effect is tunable / independently toggleable ──
+      var cfg = {
+        lerp: 0.45,             // render→pointer easing (higher = more precise)
+        maxTilt: 12,            // deg — how far the triangle leans into movement
+        velScaleMax: 0.14,      // speed-based enlargement ceiling
+        velScaleRef: 24,        // px/frame at which enlargement saturates
+        velTiltMin: 0.6,        // px/frame below which tilt decays to 0
+        trail: { minSpeed: 0.6, lerp: [0.5, 0.4, 0.32, 0.25], opacity: [0.22, 0.13, 0.07, 0.03] },
+        enable: { trail: true, tilt: true }
+      };
 
-      // ── POINTER TRACKING module ──
+      // ── RENDER NODE (single persistent root; children = effect layers) ──
+      var el = document.createElement('div');
+      el.id = 'cursor-root';
+
+      var body = document.createElement('div'); body.className = 'cursor-body';
+
+      var glow = document.createElement('div'); glow.className = 'cursor-glow';
+      body.appendChild(glow);
+
+      var NS = 'http://www.w3.org/2000/svg';
+      var svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('class', 'cursor-vector');
+      svg.setAttribute('viewBox', '0 0 40 40');
+      function poly(cls, points, extras) {
+        var p = document.createElementNS(NS, 'polygon');
+        p.setAttribute('class', cls);
+        p.setAttribute('points', points);
+        if (extras) for (var k in extras) p.setAttribute(k, extras[k]);
+        svg.appendChild(p);
+        return p;
+      }
+      // Paint order = DOM order (later paints on top). The inner aurora is last
+      // so its multiply blend darkens the core fill beneath it.
+      poly('cursor-aurora-outer-halo', '0,0 24,0 0,24', { pathLength: '1' });
+      poly('cursor-outline', '0,0 24,0 0,24');
+      poly('cursor-aurora-outer-core', '0,0 24,0 0,24', { pathLength: '1' });
+      poly('cursor-core', '0,0 14,0 0,14');
+      poly('cursor-aurora-inner', '2.5,2.5 9,2.5 2.5,9', { pathLength: '1' });
+      body.appendChild(svg);
+
+      // Trail clones — siblings of body so they don't inherit tilt/scale.
+      var trails = [];
+      if (cfg.enable.trail) {
+        for (var i = 0; i < cfg.trail.lerp.length; i++) {
+          var t = document.createElement('div'); t.className = 'cursor-trail';
+          el.appendChild(t);
+          trails.push({ el: t, x: 0, y: 0 });
+        }
+      }
+      el.appendChild(body);
+
+      // ── POINTER TRACKING (position + velocity, persisted across nav) ──
       var p = { x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0, t: 0, seen: false };
       try {
         var s = JSON.parse(sessionStorage.getItem('cursor-state') || 'null');
         if (s && typeof s.x === 'number') { p.x = s.x; p.y = s.y; p.seen = true; }
       } catch (e) {}
       var persistPending = false;
-      function persistSoon() {                      // throttled to 1 write/frame
+      function persistSoon() {
         if (persistPending) return;
         persistPending = true;
         requestAnimationFrame(function () {
@@ -57,7 +103,7 @@
       }
       window.addEventListener('mousemove', function (e) {
         var now = performance.now(), dt = Math.max(1, now - (p.t || now));
-        p.vx = (e.clientX - p.x) / dt;              // velocity tracked (preserved across nav)
+        p.vx = (e.clientX - p.x) / dt;              // px/ms, preserved across navigation
         p.vy = (e.clientY - p.y) / dt;
         p.x = e.clientX; p.y = e.clientY; p.t = now; p.seen = true;
         persistSoon();
@@ -65,25 +111,91 @@
       document.addEventListener('mouseleave', function () { el.style.opacity = '0'; });
       document.addEventListener('mouseenter', function () { if (p.seen) el.style.opacity = '1'; });
 
-      // ── HOVER DETECTION module (delegated → survives <main> swaps) ──
-      var SEL = 'a,button,label[for],.nav-link,.social,.skill-tag,input,textarea,[data-cursor="hover"],[contenteditable]';
-      var hovered = false;
-      document.addEventListener('mouseover', function (e) {
-        hovered = !!(e.target.closest && e.target.closest(SEL));
-      });
-      // Hook so the PJAX router can re-evaluate hover after a content swap
-      // (for the element currently under the stationary pointer).
-      window.cursorRefresh = function () {
-        var t = document.elementFromPoint(p.x, p.y);
-        hovered = !!(t && t.closest && t.closest(SEL));
-      };
+      // ── STATE DETECTION (delegated; sets classes on #cursor-root) ──
+      var HOVER_SEL = 'a,button,label[for],.nav-link,.social,.skill-tag,input,textarea,[data-cursor="hover"],[contenteditable]';
+      var ZOOM_SEL  = '.gallery-slide,[data-lightbox],.featured-item--project img,[data-cursor="zoom"]';
+      var PULSE_SEL = 'a,button,[role="button"],.btn-primary-custom,.btn-secondary-custom,.btn-project,.btn-resume,[data-magnetic]';
+      var DRAG_SEL  = '.gallery-stage,[data-cursor="drag"]';
 
-      // ── RENDER module (single rAF loop, GPU translate3d, no trailing) ──
+      var hoverEl = null, pulse = false, zoom = false, drag = false, down = false;
+      function sync() {
+        var c = el.classList;
+        c.toggle('is-hover', !!hoverEl);
+        c.toggle('is-pulse', pulse);
+        c.toggle('is-zoom', zoom);
+        c.toggle('is-drag', drag);
+        c.toggle('is-down', down);
+      }
+      document.addEventListener('mouseover', function (e) {
+        var t = e.target;
+        hoverEl = (t.closest && (t.closest(HOVER_SEL) || t.closest(ZOOM_SEL))) || null;
+        pulse = !!(hoverEl && hoverEl.matches && hoverEl.matches(PULSE_SEL));
+        zoom = !!(hoverEl && hoverEl.matches && hoverEl.matches(ZOOM_SEL));
+        sync();
+      });
+      window.addEventListener('pointerdown', function (e) {
+        down = true;
+        var t = e.target;
+        drag = !!(t.closest && t.closest(DRAG_SEL));
+        sync();
+      });
+      function release() { down = false; drag = false; sync(); }
+      window.addEventListener('pointerup', release);
+      window.addEventListener('pointercancel', release);
+
+      // ── RENDER (single rAF loop) ──
+      function lerp(a, b, k) { return a + (b - a) * k; }
+
+      var rx = p.x, ry = p.y;                        // rendered (eased) pointer pos
+      var tilt = 0, velScale = 1;
+      for (var j = 0; j < trails.length; j++) { trails[j].x = p.x; trails[j].y = p.y; }
+
       function render() {
-        el.style.transform = 'translate3d(' + p.x + 'px,' + p.y + 'px,0) scale(' + (hovered ? 1.15 : 1) + ')';
+        // Render position always tracks the real pointer (no magnetic bias);
+        // LERP smooths, snapping exactly to the pointer on click for precision.
+        var k = down ? 1 : cfg.lerp;
+        rx = lerp(rx, p.x, k);
+        ry = lerp(ry, p.y, k);
+
+        var sp = Math.hypot(p.vx, p.vy) * 16;        // ≈ px/frame at 60fps
+
+        // Tilt: lean into movement direction (triangle forward = down-right = 45°).
+        if (cfg.enable.tilt && sp > cfg.velTiltMin) {
+          var target = Math.atan2(p.vy, p.vx) * 180 / Math.PI - 45;
+          target = ((target + 180) % 360 + 360) % 360 - 180;
+          target = Math.max(-cfg.maxTilt, Math.min(cfg.maxTilt, target));
+          tilt = lerp(tilt, target, 0.18);
+        } else {
+          tilt = lerp(tilt, 0, 0.2);
+        }
+
+        // Velocity scale × state multipliers (zoom enlarges, down compresses).
+        var ts = 1 + Math.min(sp / cfg.velScaleRef, cfg.velScaleMax);
+        if (zoom) ts *= 1.12;
+        if (down) ts *= 0.86;
+        velScale = lerp(velScale, ts, 0.2);
+
+        // Root: translate (tip on pointer). Body: tilt + scale (pivot at tip).
+        el.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0)';
+        body.style.transform = 'rotate(' + tilt.toFixed(2) + 'deg) scale(' + velScale.toFixed(3) + ')';
+
+        // Trail: each clone lerps toward its predecessor, rendered as offset from pointer.
+        if (trails.length) {
+          var px = rx, py = ry, show = sp > cfg.trail.minSpeed;
+          for (var i = 0; i < trails.length; i++) {
+            var tr = trails[i];
+            tr.x = lerp(tr.x, px, cfg.trail.lerp[i]);
+            tr.y = lerp(tr.y, py, cfg.trail.lerp[i]);
+            tr.el.style.transform = 'translate3d(' + (tr.x - rx).toFixed(1) + 'px,' + (tr.y - ry).toFixed(1) + 'px,0)';
+            tr.el.style.opacity = show ? cfg.trail.opacity[i] : 0;
+            px = tr.x; py = tr.y;
+          }
+        }
+
         if (p.seen && el.style.opacity !== '1') el.style.opacity = '1';
         requestAnimationFrame(render);
       }
+
       el.style.opacity = p.seen ? '1' : '0';
       function boot() { document.body.appendChild(el); render(); }
       if (document.body) boot();

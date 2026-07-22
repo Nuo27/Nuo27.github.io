@@ -56,16 +56,6 @@ layout: default
         </div>
         {% endif %}
         <div class="deck-actions">
-          {% if page.external_url %}
-          <a href="{{ page.external_url }}" class="btn btn-primary-custom" target="_blank" rel="noopener" data-magnetic>
-            <i class="fas fa-external-link-alt"></i> View Project
-          </a>
-          {% endif %}
-          {% if page.github_url %}
-          <a href="{{ page.github_url }}" class="btn btn-secondary-custom" target="_blank" rel="noopener" data-magnetic>
-            <i class="fab fa-github"></i> Source Code
-          </a>
-          {% endif %}
         </div>
       </div>
     </div>
@@ -240,23 +230,6 @@ layout: default
     color: var(--ink-mut);
     background: color-mix(in srgb, var(--phosphor-soft) 5%, transparent);
   }
-  .project-body code {
-    background: color-mix(in srgb, var(--phosphor-soft) 12%, transparent);
-    padding: 0.15em 0.4em;
-    border-radius: var(--radius-xs);
-    font-family: var(--font-mono);
-    font-size: 0.85em;
-    color: var(--phosphor-soft);
-  }
-  .project-body pre {
-    background: var(--bg-raised);
-    border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-    border-radius: 6px;
-    padding: 1.2rem;
-    overflow-x: auto;
-    margin: 1.5rem 0;
-  }
-  .project-body pre code { background: none; padding: 0; color: var(--ink); }
   .project-body hr {
     border: none;
     border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);

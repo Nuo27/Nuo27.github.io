@@ -1,14 +1,7 @@
 /**
  * main.js — Nuo.Dev frontend
- * Vanilla JS. PJAX soft-navigation + page lifecycle. Respects prefers-reduced-motion.
- *
- * Architecture:
- *   - GLOBAL inits (mount once, survive PJAX swaps): atmosphere, scroll-progress,
- *     back-to-top, lightbox overlay.
- *   - PER-PAGE inits (mountPage/disposePage around each <main> swap): reveals,
- *     magnetic, glitch, parallax, hero-scroll, hero-aurora, galleries,
- *     navbar-scroll, markdown-image opt-in.
- *   - The cursor controller lives in _includes/head.html (runs once, persists).
+ * Vanilla JS. Native navigation; no soft-router.
+ * Respects prefers-reduced-motion.
  */
 
 (function () {
@@ -18,20 +11,7 @@
   var isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
   // ============================================================
-  // Page lifecycle — disposal registry for per-page listeners
-  // ============================================================
-  var disposables = [];
-  function track(fn) { disposables.push(fn); }
-  function pageOn(target, type, fn, opts) {
-    target.addEventListener(type, fn, opts);
-    track(function () { target.removeEventListener(type, fn, opts); });
-  }
-  function disposePage() {
-    disposables.splice(0).forEach(function (d) { try { d(); } catch (e) {} });
-  }
-
-  // ============================================================
-  // GLOBAL: CRT atmosphere overlay
+  // Atmosphere overlay (CRT grain, vignette, scanlines, HUD corners)
   // ============================================================
   function injectAtmosphere() {
     var frag = document.createDocumentFragment();
@@ -52,7 +32,7 @@
   }
 
   // ============================================================
-  // GLOBAL: scroll progress bar
+  // Scroll progress bar
   // ============================================================
   function initScrollProgress() {
     var progressBar = document.createElement('div');
@@ -69,7 +49,7 @@
   }
 
   // ============================================================
-  // GLOBAL: back to top (button lives in footer, outside <main>)
+  // Back to top (button lives in footer)
   // ============================================================
   function initBackToTop() {
     var btn = document.getElementById('backToTop');
@@ -83,7 +63,7 @@
   }
 
   // ============================================================
-  // PER-PAGE: navbar scroll state (navbar is inside swapped <main>)
+  // Navbar scroll state
   // ============================================================
   function initNavbarScroll() {
     var navbar = document.querySelector('.navbar-themed');
@@ -91,12 +71,12 @@
     var onScroll = function () {
       navbar.classList.toggle('scrolled', window.scrollY > 50);
     };
-    pageOn(window, 'scroll', onScroll, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
   }
 
   // ============================================================
-  // PER-PAGE: scroll reveal (toggle on enter/exit → reversible)
+  // Scroll reveal (toggle on enter/exit → reversible)
   // ============================================================
   function initScrollReveal() {
     var targets = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, [data-reveal]');
@@ -110,60 +90,52 @@
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         var el = entry.target;
-        if (entry.isIntersecting) { el.classList.add('visible', 'is-visible'); }
-        else { el.classList.remove('visible', 'is-visible'); }
+        if (entry.isIntersecting) el.classList.add('visible', 'is-visible');
+        else el.classList.remove('visible', 'is-visible');
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
     targets.forEach(function (el) { observer.observe(el); });
-    track(function () { observer.disconnect(); });
   }
 
   // ============================================================
-  // PER-PAGE: magnetic hover for primary CTAs
+  // Magnetic hover for primary CTAs
   // ============================================================
   function initMagneticButtons() {
     if (reduceMotion || isTouch) return;
-    var buttons = document.querySelectorAll('.btn-primary-custom, .btn-secondary-custom, .btn-project, .btn-resume, [data-magnetic]');
-    buttons.forEach(function (btn) {
-      pageOn(btn, 'mousemove', function (e) {
+    document.querySelectorAll('.btn-primary-custom, .btn-secondary-custom, .btn-project, .btn-resume, [data-magnetic]').forEach(function (btn) {
+      btn.addEventListener('mousemove', function (e) {
         var rect = btn.getBoundingClientRect();
         var x = e.clientX - rect.left - rect.width / 2;
         var y = e.clientY - rect.top - rect.height / 2;
         btn.style.transform = 'translate(' + (x * 0.15) + 'px, ' + (y * 0.18) + 'px)';
       });
-      pageOn(btn, 'mouseleave', function () { btn.style.transform = ''; });
+      btn.addEventListener('mouseleave', function () { btn.style.transform = ''; });
     });
   }
 
   // ============================================================
-  // PER-PAGE: glitch bursts on the cover wordmark
+  // Glitch bursts on the cover wordmark
   // ============================================================
   function initGlitch() {
     if (reduceMotion) return;
     var el = document.querySelector('[data-glitch]');
     if (!el) return;
-    var to1 = null, to2 = null;
     function burst() {
       el.classList.add('glitching');
-      to1 = setTimeout(function () { el.classList.remove('glitching'); }, 320);
-      to2 = setTimeout(burst, 3500 + Math.random() * 4000);
+      setTimeout(function () { el.classList.remove('glitching'); }, 320);
+      setTimeout(burst, 3500 + Math.random() * 4000);
     }
-    to2 = setTimeout(burst, 2800);
-    track(function () {
-      if (to1) clearTimeout(to1);
-      if (to2) clearTimeout(to2);
-      el.classList.remove('glitching');
-    });
+    setTimeout(burst, 2800);
   }
 
   // ============================================================
-  // PER-PAGE: cover-portrait mouse parallax
+  // Cover-portrait mouse parallax
   // ============================================================
   function initParallax() {
     if (reduceMotion || isTouch) return;
     var portrait = document.querySelector('.cover-portrait');
     if (!portrait) return;
-    pageOn(window, 'mousemove', function (e) {
+    window.addEventListener('mousemove', function (e) {
       var cx = (e.clientX / window.innerWidth - 0.5);
       var cy = (e.clientY / window.innerHeight - 0.5);
       portrait.style.transform = 'translate3d(' + (cx * -14) + 'px,' + (cy * -10) + 'px,0)';
@@ -171,7 +143,7 @@
   }
 
   // ============================================================
-  // PER-PAGE: hero scroll recede
+  // Hero scroll recede
   // ============================================================
   function initHeroScroll() {
     if (reduceMotion) return;
@@ -186,25 +158,24 @@
       hero.style.transform = 'scale(' + (1 - pp * 0.03) + ') translate3d(0,' + (y * 0.16) + 'px,0)';
       ticking = false;
     }
-    pageOn(window, 'scroll', function () {
+    window.addEventListener('scroll', function () {
       if (!ticking) { window.requestAnimationFrame(update); ticking = true; }
     }, { passive: true });
     update();
   }
 
   // ============================================================
-  // PER-PAGE: hero aurora (homepage only, removed on leaving)
+  // Hero aurora (homepage only)
   // ============================================================
   function initHeroAurora() {
     if (!document.querySelector('.landing-wrapper')) return;
     var aurora = document.createElement('div');
     aurora.className = 'hero-aurora';
     document.body.appendChild(aurora);
-    track(function () { aurora.remove(); });
   }
 
   // ============================================================
-  // GLOBAL: lightbox overlay (mounted once; delegation survives swaps)
+  // Lightbox overlay (mounted once; delegation)
   // ============================================================
   var lightboxApi = null;
   function initLightbox() {
@@ -304,7 +275,7 @@
   }
 
   // ============================================================
-  // PER-PAGE: opt markdown images into the lightbox
+  // Opt markdown images into the lightbox
   // ============================================================
   function augmentMarkdownImages() {
     document.querySelectorAll('.markdown-body').forEach(function (body, bi) {
@@ -318,7 +289,7 @@
   }
 
   // ============================================================
-  // PER-PAGE: galleries — slide track, swipe/drag, thumbs, in-view keyboard
+  // Galleries — slide track, swipe/drag, thumbs, in-view keyboard
   // ============================================================
   function initGalleries() {
     var galleries = document.querySelectorAll('.gallery');
@@ -345,10 +316,10 @@
       }
       gallery._go = go;
 
-      if (prevBtn) pageOn(prevBtn, 'click', function (e) { e.stopPropagation(); go(index - 1); });
-      if (nextBtn) pageOn(nextBtn, 'click', function (e) { e.stopPropagation(); go(index + 1); });
+      if (prevBtn) prevBtn.addEventListener('click', function (e) { e.stopPropagation(); go(index - 1); });
+      if (nextBtn) nextBtn.addEventListener('click', function (e) { e.stopPropagation(); go(index + 1); });
       thumbs.forEach(function (t, ti) {
-        pageOn(t, 'click', function (e) { e.stopPropagation(); go(ti); });
+        t.addEventListener('click', function (e) { e.stopPropagation(); go(ti); });
       });
 
       var startX = 0, dragging = false, moved = 0, lastDelta = 0;
@@ -379,25 +350,23 @@
           if (grp) setTimeout(function () { lightboxApi.open(grp, index); }, 0);
         }
       }
-      pageOn(stage, 'pointerdown', down);
-      pageOn(stage, 'pointermove', move);
-      pageOn(stage, 'pointerup', up);
-      pageOn(stage, 'pointercancel', up);
-      pageOn(stage, 'dragstart', function (e) { e.preventDefault(); });
+      stage.addEventListener('pointerdown', down);
+      stage.addEventListener('pointermove', move);
+      stage.addEventListener('pointerup', up);
+      stage.addEventListener('pointercancel', up);
+      stage.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
       if ('IntersectionObserver' in window) {
-        var io = new IntersectionObserver(function (entries) {
+        new IntersectionObserver(function (entries) {
           entries.forEach(function (en) {
             if (en.isIntersecting) inViewGallery = gallery;
             else if (inViewGallery === gallery) inViewGallery = null;
           });
-        }, { threshold: 0.6 });
-        io.observe(gallery);
-        track(function () { io.disconnect(); });
+        }, { threshold: 0.6 }).observe(gallery);
       }
     });
 
-    pageOn(document, 'keydown', function (e) {
+    document.addEventListener('keydown', function (e) {
       if (!inViewGallery) return;
       if (document.querySelector('.lightbox.open')) return;
       var ae = document.activeElement;
@@ -409,158 +378,41 @@
   }
 
   // ============================================================
-  // PJAX router — soft navigation (fetch + swap <main>)
+  // Per-card image parallax on featured projects
   // ============================================================
-  var pjaxOverlay = null;
-  var pjaxNavigating = false;
-
-  function initRouter() {
-    history.scrollRestoration = 'manual';
-    // seed initial history entry so back-to-first works
-    try { history.replaceState({ url: location.href, scroll: window.scrollY }, ''); } catch (e) {}
-
-    if (!reduceMotion) {
-      pjaxOverlay = document.createElement('div');
-      pjaxOverlay.className = 'page-transition';
-      document.body.appendChild(pjaxOverlay);
-    }
-
-    document.addEventListener('click', function (e) {
-      var link = e.target.closest('a');
-      if (!link) return;
-      var href = link.getAttribute('href');
-      if (!href || href.charAt(0) === '#') return;
-      if (/^(mailto:|tel:|javascript:)/i.test(href)) return;
-      if (link.target === '_blank' || link.target === '_new') return;
-      if (link.hasAttribute('download')) return;
-      if (link.dataset.noTransition !== undefined) return;
-      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-      var url;
-      try { url = new URL(link.href, location.href); } catch (err) { return; }
-      if (url.origin !== location.origin) return;
-      // same-page: handle hash only
-      if (url.pathname === location.pathname && url.search === location.search) {
-        if (url.hash) {
-          var t = document.querySelector(url.hash);
-          if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
-        }
-        return;
-      }
-      e.preventDefault();
-      try { history.replaceState(Object.assign({}, history.state || {}, { scroll: window.scrollY, url: location.href }), ''); } catch (err) {}
-      pjaxNavigate(url.href, { push: true, scroll: 0 });
-    });
-
-    window.addEventListener('popstate', function (e) {
-      var st = e.state || {};
-      if (!st.url) { // initial entry with no PJAX state
-        if (st.scroll !== undefined) window.scrollTo(0, st.scroll);
-        return;
-      }
-      pjaxNavigate(st.url, { push: false, scroll: st.scroll || 0 });
+  function initCardParallax() {
+    if (reduceMotion || isTouch) return;
+    document.querySelectorAll('.featured-item--project').forEach(function (card) {
+      var img = card.querySelector('.fi-media img');
+      if (!img) return;
+      card.addEventListener('mousemove', function (e) {
+        var r = card.getBoundingClientRect();
+        var dx = (e.clientX - r.left - r.width / 2) / r.width;
+        var dy = (e.clientY - r.top - r.height / 2) / r.height;
+        img.style.transform = 'translate3d(' + (dx * 10) + 'px,' + (dy * 10) + 'px,0) scale(1.05)';
+      });
+      card.addEventListener('mouseleave', function () { img.style.transform = ''; });
     });
   }
 
-  function pjaxNavigate(url, opts) {
-    if (pjaxNavigating) return;
-    pjaxNavigating = true;
-    if (pjaxOverlay) pjaxOverlay.classList.add('is-leaving');
-
-    fetch(url, { credentials: 'same-origin' })
-      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
-      .then(function (html) {
-        var doc = new DOMParser().parseFromString(html, 'text/html');
-        // head updates
-        var newTitle = doc.querySelector('title');
-        if (newTitle) document.title = newTitle.textContent;
-        var newDesc = doc.querySelector('meta[name="description"]');
-        if (newDesc) {
-          var cur = document.querySelector('meta[name="description"]');
-          if (cur) cur.setAttribute('content', newDesc.getAttribute('content'));
-        }
-        var newMain = doc.querySelector('main');
-        var curMain = document.querySelector('main');
-        if (!newMain || !curMain) throw new Error('no <main>');
-        // tear down old page, swap, mount new
-        disposePage();
-        curMain.innerHTML = newMain.innerHTML;
-        if (opts.push !== false) history.pushState({ url: url, scroll: 0 }, '', url);
-        window.scrollTo(0, opts.scroll || 0);
-        mountPage();
-        if (window.cursorRefresh) window.cursorRefresh();
-        if (pjaxOverlay) setTimeout(function () { pjaxOverlay.classList.remove('is-leaving'); }, 80);
-        pjaxNavigating = false;
-      })
-      .catch(function () {
-        // graceful fallback to hard navigation
-        window.location.href = url;
-      });
-  }
-
-// ============================================================
-// PER-PAGE: unified content stream — filter pills + image parallax
-// ============================================================
-function initStreamFilter() {
-  var stream = document.querySelector('.stream');
-  if (!stream) return;
-
-  // Filter pills — toggle data-filter on the stream; CSS hides non-matches
-  document.querySelectorAll('.stream-filter-pill').forEach(function (pill) {
-    pageOn(pill, 'click', function () {
-      var f = pill.dataset.filter || 'all';
-      stream.setAttribute('data-filter', f);
-      document.querySelectorAll('.stream-filter-pill').forEach(function (p) {
-        var active = p === pill;
-        p.classList.toggle('is-active', active);
-        p.setAttribute('aria-selected', active ? 'true' : 'false');
-      });
-    });
-  });
-
-  // Per-card image parallax (project cards only, fine pointer + motion)
-  if (reduceMotion || isTouch) return;
-  document.querySelectorAll('.featured-item--project').forEach(function (card) {
-    var img = card.querySelector('.fi-media img');
-    if (!img) return;
-    pageOn(card, 'mousemove', function (e) {
-      var r = card.getBoundingClientRect();
-      var dx = (e.clientX - r.left - r.width / 2) / r.width;
-      var dy = (e.clientY - r.top - r.height / 2) / r.height;
-      img.style.transform = 'translate3d(' + (dx * 10) + 'px,' + (dy * 10) + 'px,0) scale(1.05)';
-    });
-    pageOn(card, 'mouseleave', function () { img.style.transform = ''; });
-  });
-}
-
-// ============================================================
-// Mount orchestration
-// ============================================================
-function initGlobals() {
-  injectAtmosphere();
-  initScrollProgress();
-  initBackToTop();
-  initLightbox();
-}
-function mountPage() {
-  initScrollReveal();
-  initMagneticButtons();
-  initGlitch();
-  initParallax();
-  initHeroScroll();
-  initHeroAurora();
-  initNavbarScroll();
-  initGalleries();
-  augmentMarkdownImages();
-  initStreamFilter();
-}
-
   // ============================================================
-  // Bootstrap (runs once on first load)
+  // Bootstrap
   // ============================================================
   document.addEventListener('DOMContentLoaded', function () {
-    initGlobals();
-    mountPage();
-    initRouter();
+    injectAtmosphere();
+    initScrollProgress();
+    initBackToTop();
+    initLightbox();
+    initNavbarScroll();
+    initScrollReveal();
+    initMagneticButtons();
+    initGlitch();
+    initParallax();
+    initHeroScroll();
+    initHeroAurora();
+    initGalleries();
+    augmentMarkdownImages();
+    initCardParallax();
   });
 
 })();

@@ -46,8 +46,6 @@
   .h1, .h2, .h3, .h4, .h5, .h6 { color: $ink !important; }
 
   .text-muted { color: $ink-mut !important; }
-  .text-primary { color: $phosphor !important; }
-  .text-secondary { color: $ink-mut !important; }
 
   // Links only — buttons (btn-primary-custom / btn-secondary-custom / .btn)
   // carry their own text colors and must not inherit the phosphor hover here.
@@ -64,7 +62,6 @@
   }
   .card-body { color: rgba($ink, 0.86); }
   .card-title { color: $ink !important; }
-  .card-text { color: $ink-mut !important; }
 
   .project.card, .post.card {
     background-color: $bg-surface;
@@ -78,32 +75,7 @@
 
   .bg-themed { background-color: transparent !important; }
 
-  // Code — phosphor on dark
-  code {
-    color: $phosphor;
-    background-color: rgba($phosphor, 0.08);
-    padding: 0.15em 0.4em;
-    border-radius: $radius-xs;
-    font-family: $font-mono;
-    font-size: 0.85em;
-  }
-
-  .progress { background-color: rgba($ink, 0.10); }
-
   .timeline-body { background-color: transparent !important; }
-
-  .badge { color: $ink !important; }
-
-  .carousel {
-    background-color: $bg-surface;
-    border: 1px solid rgba($ink, 0.10);
-  }
-  .carousel-control-next-icon,
-  .carousel-control-prev-icon {
-    background-color: rgba($ink, 0.18);
-    border-radius: 0;
-    padding: 1rem;
-  }
 
   .btn-outline-primary {
     color: $phosphor;
@@ -120,28 +92,10 @@
       color: $ink;
       border-bottom-color: rgba($phosphor, 0.18);
     }
-    code { background-color: rgba($phosphor, 0.10); color: $phosphor; }
-    pre {
-      background-color: $bg-raised;
-      border: 1px solid rgba($ink, 0.10);
-    }
     a { color: $cyan; }
     blockquote {
       border-left: 2px solid $phosphor;
       color: $ink-mut;
-    }
-  }
-
-  .form-control {
-    background-color: $bg-raised;
-    border: 1px solid rgba($ink, 0.18);
-    color: $ink;
-    border-radius: $radius-xs;
-    &:focus {
-      background-color: $bg-overlay;
-      border-color: $phosphor;
-      color: $ink;
-      box-shadow: 0 0 0 2px rgba($phosphor, 0.18);
     }
   }
 }
@@ -157,14 +111,6 @@
   .project.card, .post.card {
     background-color: $paper-raised;
     border-color: rgba($carbon, 0.18);
-  }
-  code {
-    color: $print-phosphor-deep;
-    background-color: rgba($carbon, 0.06);
-    padding: 0.15em 0.4em;
-    border-radius: $radius-xs;
-    font-family: $font-mono;
-    font-size: 0.85em;
   }
 }
 

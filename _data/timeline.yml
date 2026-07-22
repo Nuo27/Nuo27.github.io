@@ -1,11 +1,8 @@
-# Timeline entries.
-# `side: left` or `side: right` places each entry on that side of the central
-# line. Omit `side` to auto-alternate (first item left, then right, ...).
+# Timeline entries — left/right alternation is automatic.
 
 - title: "B.Sc. Game Development — UTS, Sydney"
   from: 2020
   to: 2023
-  side: left
   description: >-
     Graduated with a Bachelor of Science majoring in Game Development, minor in
     Data Analytics. Coursework included Game Design Studio I & II, iOS App
@@ -16,7 +13,6 @@
 - title: "Lead Programmer — The Tragedy of Pondiberry Lodge"
   from: 2022
   to: 2023
-  side: right
   description: >-
     Led programming for a 3D exploration detective game (Unity, C#) in a
     five-person team. Architected the complete game system — gameplay loop,
@@ -27,7 +23,6 @@
 - title: "Gameplay Programmer — Shatter (UE5 Multiplayer)"
   from: 2022
   to: 2022
-  side: left
   description: >-
     Built a 1v1 movement shooter in Unreal Engine 5 (C++ / Blueprints) for Game
     Design Studio II. Implemented online multiplayer via Epic Online Services,
@@ -37,7 +32,6 @@
 - title: "Indie Game Developer — Solo & Collaborative Projects"
   from: 2023
   to: present
-  side: right
   description: >-
     Independently developing original game titles post-graduation, including a
     LAN-based multiplayer card game on the Mirror networking framework (3-month

@@ -11,17 +11,7 @@
   </header>
 
   {% if site.articles.size > 0 %}
-  <div class="search-bar" id="search-bar">
-    <div class="search-content">
-      <span class="search-prompt mono">&gt;</span>
-      <input type="text" id="article-search" class="search-input mono"
-             placeholder="grep articles..." autocomplete="off" aria-label="Search articles">
-      <span class="search-result-count mono" id="search-count">{{ site.articles.size }} entries</span>
-    </div>
-    <button class="search-toggle" id="search-toggle" type="button" aria-label="Toggle search">/search</button>
-  </div>
-
-  <div class="articles-list" id="articles-list">
+  <div class="articles-list">
     {% for article in site.articles %}
       <a href="{{ article.url | relative_url }}" class="article-entry">
         <span class="article-entry-index mono">{{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
@@ -41,10 +31,6 @@
         <span class="article-entry-arrow"><i class="fas fa-arrow-right"></i></span>
       </a>
     {% endfor %}
-  </div>
-
-  <div class="articles-no-results" id="no-results" style="display:none;">
-    <p class="mono">&gt; 0 matches for "<span id="no-results-query"></span>"<span class="cursor-blink">_</span></p>
   </div>
   {% else %}
   <div class="articles-empty">
@@ -111,132 +97,22 @@
   }
   .meta-sep { opacity: 0.5; }
 
-  /* Search — expandable bar that grows from the / badge */
-  .search-bar {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.5rem;
-    border: 1px solid transparent;
-    border-radius: var(--radius-xs);
-    transition: border-color 0.35s ease, background 0.35s ease, box-shadow 0.2s ease;
-  }
-  .search-bar.active {
-    border-color: color-mix(in srgb, var(--phosphor-soft) 22%, transparent);
-    background: color-mix(in srgb, var(--phosphor-soft) 4%, transparent);
-  }
-  .search-bar.active:focus-within {
-    border-color: color-mix(in srgb, var(--phosphor) 50%, transparent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--phosphor) 10%, transparent);
-  }
-
-  .search-content {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    height: 42px;
-    padding: 0 0.9rem;
-    overflow: hidden;
-    white-space: nowrap;
-    flex: 1 1 0;
-    max-width: 0;
-    opacity: 0;
-    min-width: 0;
-    transition: max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 0.25s ease;
-  }
-  .search-bar.active .search-content {
-    max-width: 100%;
-    opacity: 1;
-  }
-
-  .search-prompt {
-    font-size: 0.8rem;
-    color: var(--phosphor);
-    font-weight: 700;
-    flex-shrink: 0;
-  }
-
-  .search-input {
-    flex: 1;
-    min-width: 0;
-    background: none;
-    border: none;
-    outline: none;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--ink);
-    letter-spacing: 0.02em;
-  }
-  .search-input::placeholder { color: var(--ink-faint); }
-
-  .search-result-count {
-    font-size: 0.62rem;
-    color: var(--ink-faint);
-    letter-spacing: 0.06em;
-    flex-shrink: 0;
-  }
-
-  .search-toggle {
-    height: 42px;
-    padding: 0 0.8rem;
-    border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
-    border-radius: var(--radius-xs);
-    background: transparent;
-    color: var(--ink-faint);
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    flex-shrink: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: border-color 0.35s ease, color 0.25s ease, background 0.25s ease;
-  }
-  .search-toggle:hover {
-    border-color: color-mix(in srgb, var(--phosphor) 40%, transparent);
-    color: var(--phosphor);
-  }
-  .search-bar.active .search-toggle {
-    border-color: transparent;
-    color: var(--ink-faint);
-    cursor: pointer;
-  }
-
-  /* No-results state */
-  .articles-no-results {
-    padding: 2.5rem 0;
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: var(--ink-faint);
-  }
-
-  /* Terminal-style vertical list */
   .articles-list {
     display: flex;
     flex-direction: column;
   }
 
-  .article-entry {
+  .article-entry,
+  .article-entry:hover {
     display: flex;
     align-items: flex-start;
     gap: 1.25rem;
     padding: 1.4rem 0.5rem;
     border-bottom: 1px solid color-mix(in srgb, var(--phosphor-soft) 14%, transparent);
     text-decoration: none;
-    transition: padding 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-                background 0.25s ease,
-                border-color 0.25s ease;
   }
 
   .article-entry:last-child { border-bottom: none; }
-
-  .article-entry:hover {
-    padding-left: 0.5rem;
-    background: color-mix(in srgb, var(--phosphor) 5%, transparent);
-    border-bottom-color: color-mix(in srgb, var(--phosphor) 32%, transparent);
-  }
 
   .article-entry-index {
     font-size: 0.68rem;
@@ -262,9 +138,6 @@
     color: var(--ink);
     letter-spacing: -0.012em;
     line-height: 1.3;
-    /* Precise, title-width underline that slides in on hover. The
-       inline-block + background-size trick scopes the underline to the
-       title's own text width (not the parent card width). */
     display: inline-block;
     background-image: linear-gradient(var(--phosphor), var(--phosphor));
     background-size: 0 1px;
@@ -276,6 +149,11 @@
   .article-entry:hover .article-entry-title {
     color: var(--phosphor);
     background-size: 100% 1px;
+  }
+
+  .article-entry-desc,
+  .article-entry-tag {
+    text-decoration: none;
   }
 
   .article-entry-desc {
@@ -307,7 +185,6 @@
     padding: 0.3rem 0 2px;
     font-size: 0.85rem;
     color: color-mix(in srgb, var(--phosphor) 45%, transparent);
-    /* Same underline treatment as the title, scaled to the arrow's width. */
     background-image: linear-gradient(var(--phosphor), var(--phosphor));
     background-size: 0 1px;
     background-position: 0 100%;
@@ -321,7 +198,6 @@
     transform: translateX(4px);
   }
 
-  /* Empty state */
   .articles-empty {
     padding: 3rem 0;
     text-align: center;
@@ -333,88 +209,12 @@
   }
   .cursor-blink { animation: articles-blink 1.1s steps(1) infinite; }
 
-  /* Mobile — tighten the row */
   @media (max-width: 576px) {
     .article-entry {
       gap: 0.75rem;
       padding: 1.2rem 0.25rem;
     }
-    .article-entry:hover { padding-left: 0.25rem; }
     .article-entry-index { min-width: 2rem; font-size: 0.62rem; }
     .article-entry-title { font-size: 1.05rem; }
   }
 </style>
-
-<script>
-(function() {
-  var bar     = document.getElementById('search-bar');
-  var toggle  = document.getElementById('search-toggle');
-  if (!bar || !toggle) return;
-
-  var input   = document.getElementById('article-search');
-  var entries = document.querySelectorAll('.article-entry');
-  var total   = entries.length;
-  var countEl = document.getElementById('search-count');
-  var noRes   = document.getElementById('no-results');
-  var noResQ  = document.getElementById('no-results-query');
-  var list    = document.getElementById('articles-list');
-
-  function open() {
-    bar.classList.add('active');
-    setTimeout(function() { input.focus(); }, 150);
-  }
-
-  function close() {
-    input.value = '';
-    bar.classList.remove('active');
-    countEl.textContent = total + ' entries';
-    list.style.display = '';
-    noRes.style.display = 'none';
-    entries.forEach(function(el) { el.style.display = ''; });
-  }
-
-  function run() {
-    var q = input.value.toLowerCase().trim();
-    var visible = 0;
-
-    entries.forEach(function(el) {
-      var match = q === '' || el.textContent.toLowerCase().indexOf(q) !== -1;
-      el.style.display = match ? '' : 'none';
-      if (match) visible++;
-    });
-
-    if (q === '') {
-      countEl.textContent = total + ' entries';
-      list.style.display = '';
-      noRes.style.display = 'none';
-    } else {
-      countEl.textContent = visible + '/' + total;
-      list.style.display = visible > 0 ? '' : 'none';
-      noRes.style.display = visible === 0 ? '' : 'none';
-      if (visible === 0) noResQ.textContent = input.value.trim();
-    }
-  }
-
-  toggle.addEventListener('click', function() {
-    if (bar.classList.contains('active')) close();
-    else open();
-  });
-  input.addEventListener('input', run);
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === '/' && document.activeElement !== input && !e.ctrlKey && !e.metaKey && !e.altKey) {
-      e.preventDefault();
-      open();
-    }
-    if (e.key === 'Escape' && bar.classList.contains('active')) {
-      close();
-    }
-  });
-
-  input.addEventListener('blur', function() {
-    if (input.value.trim() === '') {
-      bar.classList.remove('active');
-    }
-  });
-})();
-</script>

@@ -5,18 +5,6 @@ description         : >-
                       Unity (C#) and Unreal Engine 5 (C++). UTS Game Development graduate, Sydney.
 baseurl             : ""
 repository          : nuo27/nuo27.github.io
-open_new_tab        : false
-
-
-### Plugins ###
-plugins:
-  - jemoji
-
-
-### Navbar Settings ###
-nav_exclude:
-  - pages/404.html
-  - pages/index.md
 
 
 ### Author Info ###

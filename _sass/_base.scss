@@ -50,20 +50,6 @@ h1, h2, h3, h4, h5, h6 {
   color: $carbon;
 }
 
-// Badges — terminal chip baseline
-.badge {
-  font-weight: 500;
-  letter-spacing: 0.04em;
-}
-
-.bg-light, .badge-light {
-  &, * { color: $carbon !important; }
-}
-
-.bg-dark, .badge-dark {
-  &, * { color: $ink !important; }
-}
-
 // ---- CRT scanline + noise overlay (fixed, full-viewport, pointer-events:none) ----
 .crt-overlay {
   position: fixed;

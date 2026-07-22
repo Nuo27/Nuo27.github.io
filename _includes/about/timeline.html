@@ -1,12 +1,6 @@
 <div class="timeline-body bg-themed">
   {% for item in site.data.timeline %}
-    {%- if item.side == 'left' or item.side == 'right' -%}
-      {%- assign side = item.side -%}
-    {%- else -%}
-      {%- assign mod = forloop.index0 | modulo: 2 -%}
-      {%- if mod == 0 -%}{% assign side = 'left' %}{%- else -%}{% assign side = 'right' %}{%- endif -%}
-    {%- endif -%}
-    <div class="timeline-item side-{{ side }} reveal" style="transition-delay: {{ forloop.index0 | times: 120 }}ms;">
+    <div class="timeline-item side-{% cycle 'left', 'right' %} reveal" style="transition-delay: {{ forloop.index0 | times: 120 }}ms;">
       <div class="timeline-marker"></div>
       <div class="timeline-content">
         <span class="timeline-index mono">// {{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
