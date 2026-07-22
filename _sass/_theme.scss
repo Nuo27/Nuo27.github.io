@@ -49,7 +49,9 @@
   .text-primary { color: $phosphor !important; }
   .text-secondary { color: $ink-mut !important; }
 
-  a {
+  // Links only — buttons (btn-primary-custom / btn-secondary-custom / .btn)
+  // carry their own text colors and must not inherit the phosphor hover here.
+  a:not([class*="btn"]) {
     color: $cyan;
     &:hover { color: $phosphor; }
   }
@@ -173,6 +175,17 @@ body {
   transition: background-color $dur-base $ease-out-expo, color $dur-base $ease-out-expo;
 }
 
+// Substrate depth — fixed spotlight gradient (lifted crown → deep edges).
+// Gives the page the quiet volumetric depth of premium product sites.
+[data-theme="dark"] body {
+  background-image: radial-gradient(ellipse 130% 85% at 50% -18%, #14171F 0%, $bg-void 48%, $bg-deep 100%);
+  background-attachment: fixed;
+}
+[data-theme="light"] body {
+  background-image: radial-gradient(ellipse 130% 85% at 50% -18%, $paper-raised 0%, $paper 52%, $paper-deep 100%);
+  background-attachment: fixed;
+}
+
 // Faint blueprint grid on body
 body::before {
   content: "";
@@ -181,13 +194,37 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background-image:
-    linear-gradient(rgba($phosphor, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba($phosphor, 0.025) 1px, transparent 1px);
+    linear-gradient(rgba($phosphor, 0.016) 1px, transparent 1px),
+    linear-gradient(90deg, rgba($phosphor, 0.016) 1px, transparent 1px);
   background-size: 64px 64px;
 
   [data-theme="light"] & {
     background-image:
-      linear-gradient(rgba($carbon, 0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba($carbon, 0.04) 1px, transparent 1px);
+      linear-gradient(rgba($carbon, 0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba($carbon, 0.028) 1px, transparent 1px);
+  }
+}
+
+// ==========================================================
+// Mobile — match the theme toggler to the navbar toggler size
+// (placed here in _theme.scss so it wins the cascade)
+// ==========================================================
+@media (max-width: 991.98px) {
+  #theme-toggler,
+  .navbar-toggler {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 32px !important;
+    padding: 0 0.6rem !important;
+  }
+  // Collapse the nested ::before chip to plain text so only the outer
+  // button frame shows — a single compact chip matching the hamburger.
+  #theme-toggler:before {
+    font-size: 0.56rem;
+    padding: 0;
+    border: none;
+    background: transparent !important;
+    letter-spacing: 0.1em;
   }
 }

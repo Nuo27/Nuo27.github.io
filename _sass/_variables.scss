@@ -3,30 +3,34 @@
 // Dark gaming/dev aesthetic. CRT substrate, phosphor accents.
 // ==========================================================
 
-// --- Substrate (Dark / primary) ---
-$bg-void:      #07080C;   // Deactivated CRT, near-black w/ blue tint
-$bg-surface:   #0E1016;   // Panels
-$bg-raised:    #151823;   // Raised cards / inputs
-$bg-overlay:   #1B1F2C;   // Hover surfaces
+// --- Substrate (Dark / primary) — lifted off pure-black, cooler-neutral ---
+$bg-void:      #0B0D14;   // Deactivated CRT — primary substrate
+$bg-surface:   #11141C;   // Panels
+$bg-raised:    #181C26;   // Raised cards / inputs
+$bg-overlay:   #1F2430;   // Hover surfaces
+$bg-deep:      #06070B;   // Deepest layer — depth gradients / vignette base
 
 // --- Substrate (Light / blueprint print) ---
 $paper:        #E8E5DC;   // Unbleached documentation paper
 $paper-surface:#DEDBD0;
 $paper-raised: #F2F0E8;
+$paper-deep:   #D4D1C6;   // Deeper paper for shadows / recessed areas
 
-// --- Ink / Foreground ---
-$ink:          #E8EAF0;   // Phosphor white (dark mode text)
-$ink-mut:      rgba(232, 234, 240, 0.58);
-$ink-faint:    rgba(232, 234, 240, 0.32);
+// --- Ink / Foreground — softened off-white ---
+$ink:          #ECEEF5;   // Phosphor white (dark mode text)
+$ink-mut:      rgba(236, 238, 245, 0.60);
+$ink-faint:    rgba(236, 238, 245, 0.34);
 
 $carbon:       #0A0B0F;   // Carbon ink (light mode text)
-$carbon-mut:   rgba(10, 11, 15, 0.60);
-$carbon-faint: rgba(10, 11, 15, 0.32);
+$carbon-mut:   rgba(10, 11, 15, 0.62);
+$carbon-faint: rgba(10, 11, 15, 0.34);
 
 // --- Accents (duotone phosphor + hazard) ---
-$phosphor:     #00FF9C;   // Signature electric green — status / active / primary
-$phosphor-bright: #4DFFB1; // Brighter hover state
-$phosphor-dim: rgba(0, 255, 156, 0.14);
+// 2-stop phosphor: vivid for active/glow, soft (editorial) for fills/borders/sustained reads.
+$phosphor:        #00FF9C;   // Signature electric green — status / active / glow / interactive
+$phosphor-bright: #4DFFB1;   // Brighter hover state
+$phosphor-soft:   #1FB886;   // Editorial green — large fills, borders, sustained surfaces
+$phosphor-dim:    rgba(0, 255, 156, 0.14);
 $cyan:         #2BE4FF;   // HUD cyan — links / secondary data
 $cyan-dim:     rgba(43, 228, 255, 0.14);
 $hazard:       #FF2E4C;   // Aviation red — alerts, vital highlights
@@ -36,6 +40,7 @@ $violet:       #A779FF;   // Tertiary tag accent
 
 // --- Print-mode (light theme) readable accents ---
 $print-phosphor:      #00805C;  // Readable forest green for text/borders on paper
+$print-phosphor-soft: #0E8F6A;  // Editorial green for fills/borders on paper
 $print-phosphor-deep: #006049;  // Deeper green for button fills
 $print-cyan:          #0891B2;  // Readable teal for links on paper
 $print-cyan-deep:     #0E7490;  // Deeper teal for fills
@@ -63,6 +68,7 @@ $border-hair: 1px;
 $border-rule: 2px;
 
 // --- Typography ---
+$font-serif:   "Fraunces", "Georgia", "Times New Roman", serif;
 $font-display: "Space Grotesk", "Outfit", system-ui, sans-serif;
 $font-body:    "Inter", "DM Sans", system-ui, sans-serif;
 $font-mono:    "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;

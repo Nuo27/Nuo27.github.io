@@ -2,23 +2,25 @@
 // Timeline — alternating experience log with central line
 // ==========================================================
 
+@use "variables" as *;
+
 .timeline-body {
   position: relative;
   padding: 0.5rem 0;
 }
 
-// central vertical line
+// central vertical line — sustained rule uses the editorial soft green
 .timeline-body::before {
   content: "";
   position: absolute;
   left: 50%;
   top: 0; bottom: 0;
   width: 1px;
-  background: linear-gradient(to bottom, #00FF9C, rgba(0, 255, 156, 0.12));
+  background: linear-gradient(to bottom, $phosphor-soft, rgba($phosphor-soft, 0.12));
   transform: translateX(-50%);
 }
 [data-theme="light"] .timeline-body::before {
-  background: linear-gradient(to bottom, #00805C, rgba(0, 128, 92, 0.15));
+  background: linear-gradient(to bottom, $print-phosphor-soft, rgba($print-phosphor-soft, 0.15));
 }
 
 .timeline-item {
@@ -31,22 +33,22 @@
 .timeline-item.side-left  { left: 0;   text-align: right; }
 .timeline-item.side-right { left: 50%; text-align: left;  }
 
-// diamond marker anchored on the center line
+// diamond marker anchored on the center line — vivid glowing point
 .timeline-marker {
   position: absolute;
   top: 1.1rem;
   width: 12px; height: 12px;
-  background: #07080C;
-  border: 2px solid #00FF9C;
+  background: $bg-void;
+  border: 2px solid $phosphor;
   transform: rotate(45deg);
-  box-shadow: 0 0 8px rgba(0, 255, 156, 0.5);
+  box-shadow: 0 0 8px rgba($phosphor, 0.5);
   z-index: 2;
 }
 .side-left  .timeline-marker { right: -6px; }
 .side-right .timeline-marker { left: -6px; }
 [data-theme="light"] .timeline-marker {
-  background: #E8E5DC;
-  border-color: #00805C;
+  background: $paper;
+  border-color: $print-phosphor;
   box-shadow: none;
 }
 
@@ -54,38 +56,38 @@
 .timeline-content {
   display: inline-block;
   text-align: left;
-  background: #0E1016;
-  border: 1px solid rgba(0, 255, 156, 0.16);
+  background: $bg-surface;
+  border: 1px solid rgba($phosphor-soft, 0.22);
   padding: 0.9rem 1.05rem;
-  border-radius: 2px;
+  border-radius: $radius-xs;
   max-width: 100%;
-  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  transition: border-color $dur-base $ease-out-expo, transform $dur-base $ease-out-expo, box-shadow $dur-base $ease-out-expo;
 }
 .timeline-content:hover {
-  border-color: rgba(0, 255, 156, 0.45);
+  border-color: rgba($phosphor, 0.45);
   transform: translateY(-2px);
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
 }
 [data-theme="light"] .timeline-content {
-  background: #F2F0E8;
-  border-color: rgba(10, 11, 15, 0.14);
+  background: $paper-raised;
+  border-color: rgba($carbon, 0.16);
 }
 [data-theme="light"] .timeline-content:hover {
-  border-color: rgba(10, 11, 15, 0.35);
+  border-color: rgba($carbon, 0.38);
   box-shadow: 0 8px 18px rgba(10, 11, 15, 0.10);
 }
 
 .timeline-index {
   display: block;
   font-size: 0.58rem;
-  color: #2BE4FF;
+  color: $cyan;
   letter-spacing: 0.18em;
   margin-bottom: 0.25rem;
 }
-[data-theme="light"] .timeline-index { color: #0891B2; }
+[data-theme="light"] .timeline-index { color: $print-cyan; }
 
 .timeline-title {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: $font-display;
   font-size: 1.05rem;
   font-weight: 700;
   margin-bottom: 0.2rem;
@@ -94,22 +96,22 @@
 }
 
 .timeline-date {
-  font-family: "JetBrains Mono", monospace;
+  font-family: $font-mono;
   font-size: 0.62rem;
-  color: #00FF9C;
+  color: $phosphor;
   font-weight: 500;
   letter-spacing: 0.1em;
   margin-bottom: 0.5rem;
 }
-[data-theme="light"] .timeline-date { color: #00805C; }
+[data-theme="light"] .timeline-date { color: $print-phosphor; }
 
 .timeline-description {
   font-size: 0.88rem;
   line-height: 1.6;
-  color: rgba(232, 234, 240, 0.65);
+  color: $ink-mut;
   margin: 0;
 }
-[data-theme="light"] .timeline-description { color: rgba(10, 11, 15, 0.65); }
+[data-theme="light"] .timeline-description { color: $carbon-mut; }
 
 // Mobile — collapse to a single column with the line on the left
 @media (max-width: 768px) {

@@ -5,6 +5,7 @@
 // Sass module system (@use). Loaded by Jekyll; partials resolve from /_sass.
 // =============================================================================
 
+@use "tokens";     // CSS custom properties — runtime theme vars (load first)
 @use "notfound";   // 404 page SVG animations
 @use "base";       // substrate, typography, CRT overlay, scrollbar
 @use "motion";     // custom cursor + atmosphere
@@ -12,6 +13,7 @@
 @use "navbar";     // HUD command bar
 @use "landing";    // cinematic hero
 @use "projects";   // terminal data cards
+@use "gallery";    // image carousel + lightbox
 @use "footer";     // status bar + scroll progress
 @use "about";      // about page sections
 @use "timeline";   // experience log

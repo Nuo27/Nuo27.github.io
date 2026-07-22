@@ -4,57 +4,88 @@
 
 @use "variables" as *;
 
-// ---- Custom cursor (additive, native cursor kept) ----
-.cursor-dot,
-.cursor-ring {
+// ---- Custom cursor (minimal triangle, native hidden when active) ----
+// The .custom-cursor class is added to <html> by main.js only when the triangle
+// is created (fine pointer + motion allowed). Touch / reduced-motion / no-JS
+// never get the class, so they keep the native cursor.
+html.custom-cursor,
+html.custom-cursor * {
+  cursor: none !important;
+}
+
+#cursor-root {
   position: fixed;
   top: 0;
   left: 0;
   pointer-events: none;
-  z-index: 10000;
+  z-index: 10003;
   opacity: 0;
-  transition: opacity 0.3s ease;
   will-change: transform;
-}
-
-.cursor-dot {
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
+  width: 14px;
+  height: 14px;
   background: $phosphor;
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba($phosphor, 0.8);
-  [data-theme="light"] & { background: $print-phosphor; box-shadow: none; }
+  // Right-angle triangle: tip at top-left (0,0), extends down-right.
+  // The fixed-position origin + translate3d to (clientX, clientY) puts the
+  // tip exactly on the pointer for 1px precision.
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+  transition: opacity 0.25s ease, background 0.2s ease;
+  [data-theme="light"] & { background: $print-phosphor; }
 }
 
-.cursor-ring {
-  width: 32px;
-  height: 32px;
-  margin: -16px 0 0 -16px;
-  border: 1px solid rgba($phosphor, 0.45);
-  border-radius: 50%;
-  transition: opacity 0.3s ease, width 0.22s $ease-out-expo, height 0.22s $ease-out-expo,
-              margin 0.22s $ease-out-expo, border-color 0.22s ease, background 0.22s ease;
-  [data-theme="light"] & { border-color: rgba($carbon, 0.45); }
+// Hover state is driven entirely from the inline head controller (scale in
+// the rAF transform). No CSS transform rule here — it would override the
+// translate3d and strand the cursor at (0,0).
+
+// Hide custom cursor on touch / coarse pointers and under reduced motion
+@media (hover: none), (pointer: coarse) {
+  #cursor-root { display: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #cursor-root { display: none !important; }
 }
 
-.cursor-ring--active {
-  width: 52px;
-  height: 52px;
-  margin: -26px 0 0 -26px;
-  border-color: $phosphor;
-  background: rgba($phosphor, 0.06);
-  [data-theme="light"] & {
-    border-color: $print-phosphor;
-    background: rgba($carbon, 0.04);
+// ==========================================================
+// Page transition — curtain fall + phosphor sweep
+// ==========================================================
+.page-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  pointer-events: none;
+  background: var(--bg-void);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.28s $ease-in-out, visibility 0.28s $ease-in-out;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 0;
+    height: 2px;
+    background: var(--phosphor);
+    box-shadow: 0 0 14px var(--phosphor);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.4s $ease-out-expo;
+  }
+
+  &.is-leaving {
+    opacity: 1;
+    visibility: visible;
+    &::before { transform: scaleX(1); }
   }
 }
 
-// Hide custom cursor on touch / coarse pointers
-@media (hover: none), (pointer: coarse) {
-  .cursor-dot, .cursor-ring { display: none !important; }
+// Gentle stage opacity lift on each page enter
+main {
+  animation: stage-enter 0.45s $ease-out-expo both;
+}
+@keyframes stage-enter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cursor-dot, .cursor-ring { display: none !important; }
+  main { animation: none; }
+  .page-transition { display: none !important; }
 }

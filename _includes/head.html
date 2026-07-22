@@ -20,6 +20,77 @@
   <title>{{ title }}</title>
   <meta name="description" content="{{ description }}">
 
+  <!-- ============================================================
+       Cursor controller (pre-paint, inline, runs ONCE).
+       A single global cursor instance that survives PJAX navigations
+       because the node lives on <body>, outside the swapped <main>.
+       Sections: RENDER NODE / POINTER TRACKING / HOVER / RENDER.
+       ============================================================ -->
+  <style>html.custom-cursor,html.custom-cursor * { cursor: none !important; }</style>
+  <script>
+    (function () {
+      // Gate: only fine pointers + motion allowed. Touch/reduced-motion keep native.
+      if (window.matchMedia('(hover: none),(pointer: coarse)').matches) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      var html = document.documentElement;
+      html.classList.add('custom-cursor');          // hide native cursor pre-paint
+
+      // ── RENDER NODE (single, persistent, namespaced) ──
+      var el = document.createElement('div');
+      el.id = 'cursor-root';                        // namespaced — no .cursor collision
+
+      // ── POINTER TRACKING module ──
+      var p = { x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0, t: 0, seen: false };
+      try {
+        var s = JSON.parse(sessionStorage.getItem('cursor-state') || 'null');
+        if (s && typeof s.x === 'number') { p.x = s.x; p.y = s.y; p.seen = true; }
+      } catch (e) {}
+      var persistPending = false;
+      function persistSoon() {                      // throttled to 1 write/frame
+        if (persistPending) return;
+        persistPending = true;
+        requestAnimationFrame(function () {
+          persistPending = false;
+          try { sessionStorage.setItem('cursor-state', JSON.stringify({ x: p.x, y: p.y })); } catch (e) {}
+        });
+      }
+      window.addEventListener('mousemove', function (e) {
+        var now = performance.now(), dt = Math.max(1, now - (p.t || now));
+        p.vx = (e.clientX - p.x) / dt;              // velocity tracked (preserved across nav)
+        p.vy = (e.clientY - p.y) / dt;
+        p.x = e.clientX; p.y = e.clientY; p.t = now; p.seen = true;
+        persistSoon();
+      }, { passive: true });
+      document.addEventListener('mouseleave', function () { el.style.opacity = '0'; });
+      document.addEventListener('mouseenter', function () { if (p.seen) el.style.opacity = '1'; });
+
+      // ── HOVER DETECTION module (delegated → survives <main> swaps) ──
+      var SEL = 'a,button,label[for],.nav-link,.social,.skill-tag,input,textarea,[data-cursor="hover"],[contenteditable]';
+      var hovered = false;
+      document.addEventListener('mouseover', function (e) {
+        hovered = !!(e.target.closest && e.target.closest(SEL));
+      });
+      // Hook so the PJAX router can re-evaluate hover after a content swap
+      // (for the element currently under the stationary pointer).
+      window.cursorRefresh = function () {
+        var t = document.elementFromPoint(p.x, p.y);
+        hovered = !!(t && t.closest && t.closest(SEL));
+      };
+
+      // ── RENDER module (single rAF loop, GPU translate3d, no trailing) ──
+      function render() {
+        el.style.transform = 'translate3d(' + p.x + 'px,' + p.y + 'px,0) scale(' + (hovered ? 1.15 : 1) + ')';
+        if (p.seen && el.style.opacity !== '1') el.style.opacity = '1';
+        requestAnimationFrame(render);
+      }
+      el.style.opacity = p.seen ? '1' : '0';
+      function boot() { document.body.appendChild(el); render(); }
+      if (document.body) boot();
+      else document.addEventListener('DOMContentLoaded', boot, { once: true });
+    })();
+  </script>
+
   <link rel="shortcut icon" type="image/x-icon" href="{{ '/assets/favicon.ico' | relative_url }}">
 
   <!-- Preconnect for fonts -->
@@ -29,8 +100,8 @@
   <!-- Theme style (sets data-theme before paint) -->
   <script src="{{ '/assets/js/theme.js' | relative_url }}"></script>
 
-  <!-- Type system: Space Grotesk (display) + Inter (body) + JetBrains Mono (data) -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <!-- Type system: Fraunces (editorial serif) + Space Grotesk (display) + Inter (body) + JetBrains Mono (data) -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap">
 
   <!-- Font Awesome CDN -->
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
