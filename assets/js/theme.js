@@ -7,26 +7,25 @@ const themes = {
   DARK: "dark",
 };
 
+// Run immediately to set theme before first paint (prevents FOUC)
 initTheme();
 
 function initTheme() {
   const savedTheme = localStorage.getItem(STORAGE_KEY);
 
   if (savedTheme) {
-    // Storage theme
     setTheme(savedTheme);
   } else if (window.matchMedia && window.matchMedia(QUERY_KEY).matches) {
-    // system theme
     setTheme(themes.DARK);
   } else {
-    // Default theme
-    setTheme(themes.LIGHT);
+    // Default to DARK — the site's primary aesthetic
+    setTheme(themes.DARK);
   }
 
-  // Watch for system theme changes
+  // Watch for system theme changes only when the user hasn't chosen explicitly
   window.matchMedia(QUERY_KEY).addEventListener("change", (e) => {
-    const newTheme = e.matches ? themes.DARK : themes.LIGHT;
-    setTheme(newTheme);
+    if (localStorage.getItem(STORAGE_KEY)) return;
+    setTheme(e.matches ? themes.DARK : themes.LIGHT);
   });
 }
 

@@ -1,20 +1,45 @@
 ---
+layout: project
 name: Wistful
 tools: [C#, Unity]
 image: /assets/image/projects/wistful.png
-description: “Wistful” is a 3D exploration puzzle game featuring the suffocating voids of space, and the hopeless struggle to find salvation. 
+description: 3D exploration puzzle game (Unity/C#) — selected for the 2022 UTS Tech Festival.
 ---
-“Wistful” is a 3D exploration puzzle game featuring the suffocating voids of space, and the hopeless struggle to find salvation.
 
-It's a low poly 3D game with a sci-fi theme. The player will play as a kid astronaut and explore the world to find the way to escape. The player will need to solve puzzles to get throught different levels.
+**Wistful** is a 3D low-poly exploration puzzle game set against the suffocating void of space. Players control a child astronaut navigating atmospheric sci-fi environments, solving environmental puzzles to progress through interconnected levels.
 
-This project was developed in the UTS Subject ‘Game Design Studio 1’ with Unity and I collaborated with other 5 group members. This game was promoted to present in the 2022 School Tech Festival Presentation.
+## Role
 
-playable demo can be found on itch.io:
-[Wistful itch.io Page](https://k1ngslayer.itch.io/wistful-group-6)
+Gameplay Programmer (6-person team)
 
-and source code can be found on Github:
-{% include elements/button.html link="https://github.com/SpazyPear/Wistful" text="Learn more on Github" %}
+## Contributions
+
+- Built core puzzle and interaction systems in C# within Unity
+- Collaborated on player movement, camera mechanics, and level design
+- Integrated environmental storytelling elements and gameplay feedback systems
+
+## Technical Challenges
+
+<!-- TODO: Answer these — see CONTENT-SUPPLEMENT.md §1 -->
+
+> - How does the environmental puzzle chain system work? How do puzzles trigger each other across levels?
+> - How did you handle the "interconnected levels" data flow?
+> - How did you coordinate code with the 5 other team members? Git workflow?
+
+## Lessons Learned
+
+<!-- TODO: Reflect — see CONTENT-SUPPLEMENT.md §7 -->
+
+> - What would you do differently?
+> - What did this project teach you?
+
+## Recognition
+
+Selected for presentation at the **2022 UTS Tech Festival**.
+
+---
+
+Playable demo: [itch.io](https://k1ngslayer.itch.io/wistful-group-6) · Source: [GitHub](https://github.com/SpazyPear/Wistful)
 
 {% capture carousel_images %}
 /assets/image/projects/wistful-1.png

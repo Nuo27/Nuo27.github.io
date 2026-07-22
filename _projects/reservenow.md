@@ -1,24 +1,42 @@
 ---
+layout: project
 name: Reserve Now
 tools: [Swift, XCode, iOS, SQL]
 image: /assets/image/projects/reserve-now.png
-description: Reserve Now was an app I created for the final assessment for the course iOS development, it was designed for customers who want to make restaurant reservations and staff members who need to efficiently manage those reservations.
+description: Native iOS restaurant reservation app (Swift) with dual customer and staff interfaces.
+---
+
+**Reserve Now** is a native iOS application developed for UTS iOS App Development. It provides a streamlined reservation platform with separate interfaces for customers — who can browse, book, modify, and cancel reservations — and staff — who manage and track all incoming bookings through a dedicated dashboard.
+
+## Role
+
+Solo Developer
+
+## Contributions
+
+- Built the complete application end-to-end in Swift using Xcode
+- Designed and implemented dual-role interface system (customer / staff workflows)
+- Integrated a SQL database for persistent reservation management
+- Used CocoaPods for dependency management
+
+## Technical Challenges
+
+<!-- TODO: Answer these — see CONTENT-SUPPLEMENT.md §1 -->
+
+> - How is the dual-role architecture (customer / staff) structured? How much code is shared?
+> - What does the SQL schema look like? Core tables?
+> - What did you learn in iOS dev that translates back to game dev (or vice versa)?
+
+## Lessons Learned
+
+<!-- TODO: Reflect — see CONTENT-SUPPLEMENT.md §7 -->
+
+> - What would you do differently?
+> - What did this project teach you?
 
 ---
 
-Reserve Now is designed for customers who want to make restaurant reservations and staff members who need to efficiently manage those reservations. It aims to eliminate the inconvenience of traditional reservation systems by providing an intuitive online platform for both parties to easily book and cancel reservations.
-
-The main tech of the app include:
-- Swift
-- XCode
-- iOS
-- SQL
-- CocoaPods
-
-More details can be found in the readme file on Github.
-<p class="text-center">
-{% include elements/button.html link="https://github.com/Nuo27/reserve_now" text="Learn More on Github" %}
-</p>
+Source: [GitHub](https://github.com/Nuo27/reserve_now)
 
 {% capture carousel_images %}
 /assets/image/projects/reserve-now-1.png

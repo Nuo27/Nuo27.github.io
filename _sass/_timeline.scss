@@ -1,46 +1,131 @@
+// ==========================================================
+// Timeline — alternating experience log with central line
+// ==========================================================
+
 .timeline-body {
   position: relative;
-  border-radius: 0 $rounded-borders $rounded-borders 0;
-  padding: 5px 0;
+  padding: 0.5rem 0;
+}
 
-  &:after {
-    // Left Border
-    content: "";
-    width: 4px;
-    height: 100%;
-    background-color: $primary;
-    position: absolute;
-    left: -4px;
-    top: 0;
+// central vertical line
+.timeline-body::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, #00FF9C, rgba(0, 255, 156, 0.12));
+  transform: translateX(-50%);
+}
+[data-theme="light"] .timeline-body::before {
+  background: linear-gradient(to bottom, #00805C, rgba(0, 128, 92, 0.15));
+}
+
+.timeline-item {
+  position: relative;
+  width: 50%;
+  margin-bottom: 1.5rem;
+  padding: 0 2.25rem;
+  box-sizing: border-box;
+}
+.timeline-item.side-left  { left: 0;   text-align: right; }
+.timeline-item.side-right { left: 50%; text-align: left;  }
+
+// diamond marker anchored on the center line
+.timeline-marker {
+  position: absolute;
+  top: 1.1rem;
+  width: 12px; height: 12px;
+  background: #07080C;
+  border: 2px solid #00FF9C;
+  transform: rotate(45deg);
+  box-shadow: 0 0 8px rgba(0, 255, 156, 0.5);
+  z-index: 2;
+}
+.side-left  .timeline-marker { right: -6px; }
+.side-right .timeline-marker { left: -6px; }
+[data-theme="light"] .timeline-marker {
+  background: #E8E5DC;
+  border-color: #00805C;
+  box-shadow: none;
+}
+
+// content card
+.timeline-content {
+  display: inline-block;
+  text-align: left;
+  background: #0E1016;
+  border: 1px solid rgba(0, 255, 156, 0.16);
+  padding: 0.9rem 1.05rem;
+  border-radius: 2px;
+  max-width: 100%;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.timeline-content:hover {
+  border-color: rgba(0, 255, 156, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+}
+[data-theme="light"] .timeline-content {
+  background: #F2F0E8;
+  border-color: rgba(10, 11, 15, 0.14);
+}
+[data-theme="light"] .timeline-content:hover {
+  border-color: rgba(10, 11, 15, 0.35);
+  box-shadow: 0 8px 18px rgba(10, 11, 15, 0.10);
+}
+
+.timeline-index {
+  display: block;
+  font-size: 0.58rem;
+  color: #2BE4FF;
+  letter-spacing: 0.18em;
+  margin-bottom: 0.25rem;
+}
+[data-theme="light"] .timeline-index { color: #0891B2; }
+
+.timeline-title {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.timeline-date {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.62rem;
+  color: #00FF9C;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+[data-theme="light"] .timeline-date { color: #00805C; }
+
+.timeline-description {
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: rgba(232, 234, 240, 0.65);
+  margin: 0;
+}
+[data-theme="light"] .timeline-description { color: rgba(10, 11, 15, 0.65); }
+
+// Mobile — collapse to a single column with the line on the left
+@media (max-width: 768px) {
+  .timeline-body::before { left: 8px; transform: none; }
+  .timeline-item,
+  .timeline-item.side-left,
+  .timeline-item.side-right {
+    width: 100%;
+    left: 0;
+    padding: 0 0 0 2rem;
+    text-align: left;
+    margin-bottom: 1.25rem;
   }
-
-  .timeline-item {
-    position: relative;
-
-    &:after {
-      // Circle
-      content: "";
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      border: 4px solid $primary;
-      background-color: $light;
-      position: absolute;
-      left: -12px;
-      top: 8px;
-      z-index: 10;
-    }
-
-    .content {
-      margin: 40px;
-      padding-bottom: 20px;
-      border-bottom: 1px dashed $dark;
-
-      .date {
-        margin-top: -5px;
-        margin-bottom: 15px;
-        color: #6c757d;
-      }
-    }
+  .side-left  .timeline-marker,
+  .side-right .timeline-marker {
+    left: 2px;
+    right: auto;
   }
 }

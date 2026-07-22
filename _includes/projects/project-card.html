@@ -1,21 +1,39 @@
-<div class="wow animated fadeIn" data-wow-delay=".15s">
+<div class="reveal" style="transition-delay: {{ forloop.index0 | modulo: 3 | times: 80 }}ms;">
   <a href="{{ project_url }}" class="project card text-themed" {%- if external and site.open_new_tab -%} target="_blank" {%- endif -%}>
+
+    <div class="card-meta mono">
+      <span class="card-id">#{{ card_index | default: '00' | prepend: '00' | slice: -2, 2 }}</span>
+      <span class="card-status">
+        {%- if project_type == "remote" -%}
+        <i class="fab fa-github"></i> REPO
+        {%- else -%}
+        <span class="dot"></span> LOCAL
+        {%- endif -%}
+      </span>
+    </div>
+
     {%- if project_img -%}
-    <img id="{{ project_id }}-img" class="card-img-top" src="{{ project_img }}" alt="{{ project_name }}" />
+    <div class="card-img-wrap">
+      <img id="{{ project_id }}-img" class="card-img-top" src="{{ project_img }}" alt="{{ project_name }}" />
+      <div class="card-img-scan"></div>
+    </div>
     {%- endif -%}
+
     <div class="card-body">
       <h5 id="{{ project_id }}-name" class="card-title">
-          {%- if project_type == "remote" -%}
-          <i class="fab fa-github" data-toggle="tooltip" data-placement="bottom" data-delay="250" title="GitHub Repository"></i> |&nbsp;
-          {%- endif -%}
         {{ project_name }}
       </h5>
       <p id="{{ project_id }}-desc" class="card-text">{{ project_desc }}</p>
-      <p id="{{ project_id }}-tools" class="card-text">
+      <p id="{{ project_id }}-tools" class="card-text card-tools">
         {%- for tool in project_tools -%}
-        <span class="badge badge-pill text-primary border border-primary ml-1">{{ tool }}</span>
+        <span class="badge tool-badge">{{ tool }}</span>
         {%- endfor -%}
       </p>
+    </div>
+
+    <div class="card-cta mono">
+      <span>OPEN</span>
+      <i class="fas fa-arrow-right"></i>
     </div>
   </a>
 </div>

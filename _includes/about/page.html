@@ -1,0 +1,142 @@
+<div class="about-wrapper">
+  <section class="reveal mb-5">
+    <div class="section-head">
+      <span class="section-eyebrow mono">// 01</span>
+      <h1 class="section-title">About<span class="title-prompt">_</span></h1>
+    </div>
+    <div class="about-intro">
+      <p>I'm <strong>{{ site.author.name }}</strong> — a gameplay programmer who works across both major engines: <strong>Unity (C#)</strong> and <strong>Unreal Engine 5 (C++)</strong>. I specialize in multiplayer networking, combat systems, and gameplay architecture, with shipped experience ranging from 1v1 online shooters to LAN card games.</p>
+      <p>I've operated at both ends of the scale — as lead programmer coordinating five- and six-person teams (architecture, code integration, cross-level consistency), and as a solo developer building entire games end-to-end. This range is deliberate: I want to understand how games work at every layer, from the network packet to the player experience.</p>
+      <p>My Data Analytics minor shapes how I approach systems — I break down complex mechanics methodically, whether that's a game economy, a networking pipeline, or a player behavior dataset. Outside of code, I study why great games <em>feel</em> great to play, pick up new languages (human and programming), and prototype my next mechanic.</p>
+      <!-- TODO: Origin story — see CONTENT-SUPPLEMENT.md §2 -->
+      <p class="placeholder">[ Origin story: How did you get into game development? First game, first line of code, the "aha" moment. ]</p>
+    </div>
+  </section>
+
+  <section class="reveal mb-5">
+    <div class="section-head">
+      <span class="section-eyebrow mono">// 02</span>
+      <h2 class="section-title">Currently</h2>
+    </div>
+    <div class="now-grid">
+      <!-- TODO: Fill in current activities — see CONTENT-SUPPLEMENT.md §3 -->
+      <div class="now-item">
+        <span class="now-label mono">LEARNING</span>
+        <span class="now-value placeholder">[ e.g. UE5 Gameplay Ability System ]</span>
+      </div>
+      <div class="now-item">
+        <span class="now-label mono">BUILDING</span>
+        <span class="now-value placeholder">[ current prototype or project ]</span>
+      </div>
+      <div class="now-item">
+        <span class="now-label mono">PLAYING</span>
+        <span class="now-value placeholder">[ game + what you're studying about it ]</span>
+      </div>
+      <div class="now-item">
+        <span class="now-label mono">READING</span>
+        <span class="now-value placeholder">[ book / article / paper ]</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal mb-5">
+    <div class="section-head">
+      <span class="section-eyebrow mono">// 03</span>
+      <h2 class="section-title">Skills</h2>
+    </div>
+    <ul class="skills-list">
+      <li>Gameplay Programming (C# / C++)</li>
+      <li>Multiplayer Networking (Mirror, EOS)</li>
+      <li>Unity 3D Engine Development</li>
+      <li>Unreal Engine 5 / Blueprints</li>
+      <li>Game Systems Architecture</li>
+      <li>UI/HUD Implementation</li>
+      <li>FMOD Audio Integration</li>
+      <li>Version Control (Git)</li>
+      <li>iOS Development (Swift)</li>
+      <li>Data Analytics (Python, SQL)</li>
+    </ul>
+  </section>
+
+  <section class="reveal mb-5">
+    <div class="row">
+      <div class="col-md-6 reveal reveal-left">
+        {% include about/skills.html title="Programming Languages" source=site.data.programming-skills %}
+      </div>
+      <div class="col-md-6 reveal reveal-right">
+        {% include about/skills.html title="Tools & Technologies" source=site.data.other-skills %}
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal mb-5">
+    <div class="section-head">
+      <span class="section-eyebrow mono">// 04</span>
+      <h2 class="section-title">Experience</h2>
+    </div>
+    {% include about/timeline.html %}
+  </section>
+
+  <section class="reveal mb-5">
+    <div class="section-head">
+      <span class="section-eyebrow mono">// 05</span>
+      <h2 class="section-title">Languages</h2>
+    </div>
+    <div class="languages-grid">
+      <div class="language-item reveal">
+        <span class="language-name">Mandarin</span>
+        <span class="language-level">Native</span>
+      </div>
+      <div class="language-item reveal reveal-delay-1">
+        <span class="language-name">Cantonese</span>
+        <span class="language-level">Native</span>
+      </div>
+      <div class="language-item reveal reveal-delay-2">
+        <span class="language-name">English</span>
+        <span class="language-level">Fluent</span>
+      </div>
+      <div class="language-item reveal reveal-delay-3">
+        <span class="language-name">Japanese</span>
+        <span class="language-level">Basic</span>
+      </div>
+      <div class="language-item reveal reveal-delay-4">
+        <span class="language-name">Korean</span>
+        <span class="language-level">Basic</span>
+      </div>
+    </div>
+    <p class="languages-note mono">// Connecting across CN/EN/JP/KR game dev communities &amp; documentation</p>
+  </section>
+
+  <section class="reveal mb-5">
+    <div class="section-head">
+      <span class="section-eyebrow mono">// 06</span>
+      <h2 class="section-title">Resume</h2>
+    </div>
+    <div class="resumes-row">
+      <a href="/assets/resumes/nuo_resume_programmer.pdf" class="btn-resume reveal" target="_blank">
+        <i class="fas fa-file-pdf"></i>
+        <span>Programmer Resume</span>
+        <i class="fas fa-arrow-right resume-arrow"></i>
+      </a>
+      <a href="/assets/resumes/nuo_resume_academy.pdf" class="btn-resume reveal reveal-delay-1" target="_blank">
+        <i class="fas fa-file-alt"></i>
+        <span>Academy Resume</span>
+        <i class="fas fa-arrow-right resume-arrow"></i>
+      </a>
+    </div>
+  </section>
+
+  <section class="reveal mb-5">
+    <div class="section-head">
+      <span class="section-eyebrow mono">// 07</span>
+      <h2 class="section-title">Recommendations</h2>
+    </div>
+    <div class="testimonials">
+      <!-- TODO: Ask teammates / professors for short recommendations — see CONTENT-SUPPLEMENT.md §8 -->
+      <blockquote class="testimonial placeholder">
+        <p>"[ Recommendation quote — ask a teammate from Pondiberry Lodge or Shatter, or a UTS professor. ]"</p>
+        <cite>— [ Name, Role / Relationship ]</cite>
+      </blockquote>
+    </div>
+  </section>
+</div>

@@ -1,3 +1,5 @@
+@use "variables" as *;
+
 .markdown-body {
   h1,
   h2 {
@@ -6,6 +8,7 @@
 
   hr {
     background: $secondary;
+    [data-theme="light"] & { background: $carbon-mut; }
   }
 
   img:not(.emoji) {
@@ -32,7 +35,8 @@
     text-decoration: none;
 
     &:hover {
-      color: $primary;
+      color: $phosphor;
+      [data-theme="light"] & { color: $print-phosphor-deep; }
     }
 
     &::after {
@@ -41,8 +45,9 @@
       height: 0.15em;
       margin-top: -0.15em;
       width: 0;
-      background: $primary;
+      background: $cyan;
       transition: width 0.35s;
+      [data-theme="light"] & { background: $print-cyan; }
     }
 
     &:hover::after {
@@ -51,9 +56,9 @@
   }
 
   pre {
-    background: $light;
-    border: 1px solid #ddd;
-    color: $dark;
+    background: $bg-raised;
+    border: 1px solid rgba($ink, 0.10);
+    color: $ink;
     font-family: monospace;
     font-size: 14px;
     line-height: 20px;
@@ -64,20 +69,34 @@
     page-break-inside: avoid;
     overflow: auto;
     word-wrap: break-word;
+
+    [data-theme="light"] & {
+      background: $paper-raised;
+      border-color: rgba($carbon, 0.18);
+      color: $carbon;
+    }
   }
 
   code.highlighter-rouge {
-    background-color: $light;
-    color: $dark;
+    background-color: rgba($phosphor, 0.10);
+    color: $phosphor;
     border-radius: 3px;
     margin: 0;
     padding: 0.2em 0.65em;
+    [data-theme="light"] & {
+      background-color: rgba($carbon, 0.06);
+      color: $print-phosphor-deep;
+    }
   }
 
   blockquote {
-    border-left: 0.25em solid $primary;
-    color: $secondary;
+    border-left: 2px solid $phosphor;
+    color: $ink-mut;
     padding: 0 1em;
+    [data-theme="light"] & {
+      border-left-color: $print-phosphor;
+      color: $carbon-mut;
+    }
   }
 
   ul.task-list {
@@ -96,22 +115,34 @@
     margin: 1rem 0;
 
     td {
-      border: 1px solid #ddd;
+      border: 1px solid rgba($ink, 0.15);
       padding: 8px 16px;
+      color: $ink;
+      [data-theme="light"] & {
+        border-color: rgba($carbon, 0.20);
+        color: $carbon;
+      }
     }
 
     th {
       @extend td;
       padding-top: 12px;
       padding-bottom: 12px;
-      font-weight: 500;
+      font-weight: 700;
       text-align: left;
-      background-color: $primary;
-      color: white;
+      background-color: rgba($phosphor, 0.12);
+      color: $phosphor;
+      border-color: rgba($phosphor, 0.30);
+      [data-theme="light"] & {
+        background-color: rgba($carbon, 0.06);
+        color: $carbon;
+        border-color: rgba($carbon, 0.20);
+      }
     }
 
     tr:nth-child(even) {
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: rgba($ink, 0.04);
+      [data-theme="light"] & { background-color: rgba($carbon, 0.04); }
     }
   }
 }

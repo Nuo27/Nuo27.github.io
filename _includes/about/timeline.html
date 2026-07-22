@@ -1,13 +1,19 @@
-<div class="col mt-4">
-  <div class="timeline-body bg-themed">
-    {% for item in site.data.timeline %}
-      <div class="timeline-item">
-        <div class="content">
-          <h2>{{ item.title }}</h2>
-          <h6 class="date">{{ item.from }} — {{ item.to }}</h6>
-          <p>{{ item.description }}</p>
-        </div>
+<div class="timeline-body bg-themed">
+  {% for item in site.data.timeline %}
+    {%- if item.side == 'left' or item.side == 'right' -%}
+      {%- assign side = item.side -%}
+    {%- else -%}
+      {%- assign mod = forloop.index0 | modulo: 2 -%}
+      {%- if mod == 0 -%}{% assign side = 'left' %}{%- else -%}{% assign side = 'right' %}{%- endif -%}
+    {%- endif -%}
+    <div class="timeline-item side-{{ side }} reveal" style="transition-delay: {{ forloop.index0 | times: 120 }}ms;">
+      <div class="timeline-marker"></div>
+      <div class="timeline-content">
+        <span class="timeline-index mono">// {{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
+        <h2 class="timeline-title">{{ item.title }}</h2>
+        <h6 class="timeline-date mono">{{ item.from }} — {{ item.to }}</h6>
+        <p class="timeline-description">{{ item.description }}</p>
       </div>
-    {% endfor %}
-  </div>
+    </div>
+  {% endfor %}
 </div>

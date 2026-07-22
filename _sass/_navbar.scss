@@ -1,35 +1,197 @@
-.link-after {
-  content: "";
-  display: block;
-  height: 0.15em;
-  background: $primary;
+// ==========================================================
+// Navbar — HUD terminal command bar
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+.navbar-themed {
+  padding: 0.9rem 0;
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background $dur-base $ease-out-expo,
+              padding $dur-base $ease-out-expo,
+              border-color $dur-base $ease-out-expo;
+
+  [data-theme="dark"] & { background: rgba($bg-void, 0.0); }
+
+  &.scrolled {
+    padding: 0.6rem 0;
+    @include themed(background, rgba($paper, 0.86), rgba($bg-void, 0.78));
+    @include themed(border-bottom-color, rgba($carbon, 0.18), rgba($phosphor, 0.22));
+    box-shadow: 0 1px 0 rgba($phosphor, 0.08);
+  }
 }
 
-.nav-link,
+// Brand — terminal prompt prefix
 .navbar-brand {
-  &::after {
-    @extend .link-after;
-    width: 0;
-    transition: width 0.35s;
+  font-family: $font-mono;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  // Prompt glyph
+  &::before {
+    content: "▶";
+    color: $phosphor;
+    font-size: 0.7em;
+    [data-theme="light"] & { color: $print-phosphor; }
   }
 
-  &:hover::after {
-    width: 100%;
+  // Underline sweep replaced with phosphor baseline
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -3px; left: 0;
+    width: 0; height: 2px;
+    background: $phosphor;
+    box-shadow: 0 0 8px rgba($phosphor, 0.6);
+    transition: width $dur-base $ease-out-expo;
+    [data-theme="light"] & { background: $print-phosphor; box-shadow: none; }
+  }
+  &:hover::after { width: 100%; }
+}
+
+// Nav links — mono, framed brackets on hover
+.navbar-nav .nav-link {
+  font-family: $font-mono;
+  font-weight: 500;
+  font-size: 0.78rem;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.85rem !important;
+  position: relative;
+  transition: color $dur-fast $ease-out-expo;
+
+  &::before {
+    content: "[";
+    position: absolute;
+    left: 0.2rem;
+    opacity: 0;
+    color: $phosphor;
+    transition: opacity $dur-fast $ease-out-expo, transform $dur-fast $ease-out-expo;
+    transform: translateX(-4px);
+    [data-theme="light"] & { color: $print-phosphor; }
+  }
+  &::after {
+    content: "]";
+    position: absolute;
+    right: 0.2rem;
+    opacity: 0;
+    color: $phosphor;
+    transition: opacity $dur-fast $ease-out-expo, transform $dur-fast $ease-out-expo;
+    transform: translateX(4px);
+    [data-theme="light"] & { color: $print-phosphor; }
+  }
+
+  &:hover {
+    &::before, &::after { opacity: 1; transform: translateX(0); }
+  }
+
+  &.active {
+    color: $phosphor !important;
+    [data-theme="light"] & { color: $print-phosphor !important; }
+    &::before, &::after { opacity: 1; transform: translateX(0); }
   }
 }
 
-.nav-item.active {
-  font-weight: bold;
+// Right-aligned action group — always visible (lives outside the collapse)
+.nav-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
 
-  &::after {
-    @extend .link-after;
-    width: 100% !important;
+// Desktop: let the link column grow so the toggle clears the last nav link
+@media (min-width: 992px) {
+  .navbar-themed .navbar-collapse { flex-grow: 1; }
+  .nav-right { margin-left: 1.25rem; }
+}
+
+// Theme toggle — persistent VOID/SOLID chip (always visible, all viewports)
+#theme-toggler {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font-family: $font-mono;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.7rem;
+  background: rgba($phosphor, 0.06);
+  border: 1px solid rgba($phosphor, 0.35);
+  border-radius: $radius-xs;
+  color: $phosphor;
+  position: relative;
+  transition: background $dur-fast $ease-out-expo,
+              border-color $dur-fast $ease-out-expo,
+              transform $dur-fast $ease-out-expo,
+              box-shadow $dur-fast $ease-out-expo,
+              color $dur-fast $ease-out-expo;
+
+  // VOID in dark mode, SOLID in light mode
+  &::before {
+    content: "VOID";
+    [data-theme="light"] & { content: "SOLID"; }
+  }
+
+  [data-theme="light"] & {
+    background: transparent;
+    border-color: rgba($carbon, 0.30);
+    color: $carbon;
+  }
+
+  &:hover {
+    background: rgba($phosphor, 0.16);
+    border-color: $phosphor;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 0 16px rgba($phosphor, 0.25);
+
+    [data-theme="light"] & {
+      background: rgba($carbon, 0.06);
+      border-color: $carbon;
+      color: $carbon;
+      box-shadow: none;
+    }
+  }
+
+  &:active { transform: translateY(0) scale(0.96); }
+  &:focus-visible {
+    outline: 2px solid $phosphor;
+    outline-offset: 2px;
   }
 }
 
-.navbar-brand {
-  margin-bottom: -14px;
-  &::after {
-    margin-top: -0.25em;
+// Mobile menu toggler — mono icon
+.navbar-toggler {
+  border: 1px solid rgba($phosphor, 0.30) !important;
+  border-radius: $radius-xs !important;
+  padding: 0.35rem 0.6rem !important;
+  outline: none !important;
+  box-shadow: none !important;
+
+  .fa-bars { color: $phosphor; }
+  [data-theme="light"] & {
+    border-color: rgba($carbon, 0.35) !important;
+    .fa-bars { color: $carbon; }
+  }
+}
+
+// On mobile, let nav links stack cleanly when the menu drops down
+@media (max-width: 991.98px) {
+  .navbar-themed .navbar-nav {
+    padding: 0.75rem 0;
+    .nav-link { padding: 0.6rem 0.25rem !important; }
   }
 }

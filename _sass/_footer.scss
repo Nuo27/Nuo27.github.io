@@ -1,31 +1,132 @@
+// ==========================================================
+// Footer — terminal status bar
+// ==========================================================
+
+@use "variables" as *;
+@use "mixins" as *;
+
+footer {
+  border-top: 1px solid rgba($phosphor, 0.18);
+  background: transparent;
+  position: relative;
+  font-family: $font-mono;
+
+  [data-theme="light"] & { border-top-color: rgba($carbon, 0.18); }
+
+  small {
+    font-family: $font-mono;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $ink-mut;
+    [data-theme="light"] & { color: $carbon-mut; }
+  }
+
+  small .fa-heart { color: $hazard; }
+  small .fa-code { color: $phosphor; [data-theme="light"] & { color: $print-phosphor; } }
+  small .fa-map-marker-alt { color: $cyan; [data-theme="light"] & { color: $print-cyan; } }
+}
+
+// Social icons — terminal chip style
 .social {
   text-decoration: none !important;
-}
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: $radius-xs !important;
+  border: 1px solid rgba($ink, 0.14);
+  background: $bg-surface;
+  transition: transform $dur-base $ease-out-back,
+              border-color $dur-base $ease-out-expo,
+              background $dur-base $ease-out-expo,
+              color $dur-base $ease-out-expo;
 
-#attribution {
-  opacity: 0.5;
-  a {
-    text-decoration: none;
-    font-weight: bold;
+  [data-theme="light"] & {
+    border-color: rgba($carbon, 0.18);
+    background: $paper-raised;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    border-color: $phosphor !important;
+    background: rgba($phosphor, 0.10) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 18px rgba($phosphor, 0.18);
+    [data-theme="light"] & {
+      border-color: $print-phosphor !important;
+      color: $print-phosphor !important;
+      box-shadow: 0 6px 14px rgba($carbon, 0.10);
+    }
   }
 }
 
-@media only screen and (min-width: 768px) {
-  #attribution {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-    position: fixed;
-    bottom: 120px;
-    right: 22px;
+// Back to top — HUD button
+.back-to-top {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: $radius-xs;
+  background: $bg-surface;
+  color: $phosphor;
+  border: 1px solid rgba($phosphor, 0.35);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: opacity $dur-base $ease-out-expo,
+              transform $dur-base $ease-out-expo,
+              background $dur-fast $ease-out-expo,
+              border-color $dur-fast $ease-out-expo,
+              box-shadow $dur-fast $ease-out-expo;
+  z-index: 100;
+  font-size: 0.85rem;
+
+  [data-theme="light"] & {
+    background: $paper-raised;
+    color: $print-phosphor;
+    border-color: rgba($carbon, 0.35);
   }
+
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  &:hover {
+    background: $phosphor;
+    color: #fff;
+    border-color: $phosphor;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba($phosphor, 0.35);
+    [data-theme="light"] & {
+      background: $print-phosphor;
+      color: $paper;
+      box-shadow: 0 8px 18px rgba($carbon, 0.18);
+    }
+  }
+
+  &:active { transform: translateY(0) scale(0.95); }
 }
 
-.github-footer {
-  font-size: 10px;
-  color: #6c757d;
-  text-decoration: underline;
-  text-decoration-color: yellow;
-  text-align: right;
-  margin-top: 4em;
-  margin-right: 2em;
+// Scroll progress — phosphor telemetry bar
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: $phosphor;
+  box-shadow: 0 0 10px rgba($phosphor, 0.6);
+  z-index: 9999;
+  transition: width 0.1s linear;
+
+  [data-theme="light"] & {
+    background: $print-phosphor;
+    box-shadow: none;
+  }
 }

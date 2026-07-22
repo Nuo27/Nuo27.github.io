@@ -1,16 +1,194 @@
-.project.card {
-  border-radius: $rounded-borders;
-  text-decoration: none !important;
-  margin: 10px auto;
+// ==========================================================
+// Project cards — terminal data panels
+// ==========================================================
 
-  .card-img-top {
-    border-radius: $rounded-borders $rounded-borders 0 0;
+@use "variables" as *;
+
+.project.card {
+  display: flex;
+  flex-direction: column;
+  border-radius: $radius-sm;
+  text-decoration: none !important;
+  border: 1px solid rgba($ink, 0.10);
+  background: $bg-surface;
+  overflow: hidden;
+  position: relative;
+  transition: transform $dur-base $ease-out-expo,
+              border-color $dur-base $ease-out-expo,
+              box-shadow $dur-base $ease-out-expo;
+
+  [data-theme="light"] & {
+    background: $paper-raised;
+    border-color: rgba($carbon, 0.16);
   }
 
-  transition: transform 400ms;
+  // Top-left corner registration mark
+  &::before, &::after {
+    content: "";
+    position: absolute;
+    width: 12px; height: 12px;
+    border-color: rgba($phosphor, 0.5);
+    border-style: solid;
+    border-width: 0;
+    opacity: 0;
+    transition: opacity $dur-base $ease-out-expo;
+    z-index: 4;
+    pointer-events: none;
+  }
+  &::before { top: 6px; left: 6px; border-top-width: 1px; border-left-width: 1px; }
+  &::after  { bottom: 6px; right: 6px; border-bottom-width: 1px; border-right-width: 1px; }
 
+  // Meta header strip
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    padding: 0.5rem 0.85rem;
+    border-bottom: 1px solid rgba($ink, 0.08);
+    color: $ink-mut;
+    background: rgba($bg-raised, 0.5);
+
+    [data-theme="light"] & {
+      border-bottom-color: rgba($carbon, 0.10);
+      color: $carbon-mut;
+      background: rgba($carbon, 0.03);
+    }
+
+    .card-id { color: $cyan; font-weight: 700; [data-theme="light"] & { color: $print-cyan; } }
+    .card-status { display: inline-flex; align-items: center; gap: 0.3rem; }
+    .dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: $phosphor;
+      border-radius: 50%;
+      box-shadow: 0 0 6px $phosphor;
+      [data-theme="light"] & { box-shadow: none; background: $print-phosphor; }
+    }
+  }
+
+  // Image with scanline overlay
+  .card-img-wrap {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+    background: $bg-raised;
+    [data-theme="light"] & { background: rgba($carbon, 0.04); }
+  }
+  .card-img-top {
+    border-radius: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    filter: grayscale(0.4) contrast(1.05);
+    transition: transform $dur-slow $ease-out-expo, filter $dur-slow $ease-out-expo;
+    opacity: 0.92;
+  }
+  .card-img-scan {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.20) 0px,
+      rgba(0,0,0,0.20) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    [data-theme="light"] & { opacity: 0.4; }
+  }
+
+  .card-body {
+    padding: 1.1rem 1.1rem 0.6rem;
+    flex: 1;
+  }
+
+  .card-title {
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+
+  .card-text {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: $ink-mut;
+    [data-theme="light"] & { color: $carbon-mut; }
+  }
+
+  .card-tools { margin-top: 0.6rem; }
+
+  // Tool badges — terminal chips
+  .tool-badge {
+    background: rgba($cyan, 0.10);
+    color: $cyan;
+    font-family: $font-mono;
+    font-weight: 500;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    padding: 0.3em 0.6em;
+    border: 1px solid rgba($cyan, 0.22);
+    border-radius: $radius-xs;
+    margin-right: 0.3rem;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    transition: background $dur-fast $ease-out-expo, border-color $dur-fast $ease-out-expo;
+
+    [data-theme="light"] & {
+      background: rgba($carbon, 0.05);
+      color: $print-cyan;
+      border-color: rgba($carbon, 0.22);
+    }
+  }
+
+  // CTA footer strip
+  .card-cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    padding: 0.65rem 0.85rem;
+    border-top: 1px solid rgba($ink, 0.08);
+    color: $ink-mut;
+    transition: color $dur-fast $ease-out-expo, background $dur-fast $ease-out-expo;
+
+    [data-theme="light"] & {
+      border-top-color: rgba($carbon, 0.10);
+      color: $carbon-mut;
+    }
+
+    i { transition: transform $dur-base $ease-out-expo; }
+  }
+
+  // ---- Hover state ----
   &:hover:not(.post) {
-    transform: translateY(-8px);
-    box-shadow: -2px 8px 40px -12px rgba(0, 0, 0, 0.24);
+    transform: translateY(-6px);
+    border-color: rgba($phosphor, 0.45);
+    box-shadow:
+      0 14px 40px rgba(0, 0, 0, 0.45),
+      0 0 30px rgba($phosphor, 0.10);
+
+    [data-theme="light"] & {
+      box-shadow: 0 14px 30px rgba($carbon, 0.14);
+      border-color: $print-phosphor;
+    }
+
+    &::before, &::after { opacity: 1; }
+
+    .card-img-top { transform: scale(1.06); filter: grayscale(0) contrast(1.1); opacity: 1; }
+
+    .card-cta {
+      color: #fff;
+      background: rgba($phosphor, 0.06);
+      i { transform: translateX(4px); }
+      [data-theme="light"] & { color: $print-phosphor; background: rgba($carbon, 0.03); }
+    }
   }
 }

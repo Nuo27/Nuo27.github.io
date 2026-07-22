@@ -1,18 +1,38 @@
 ---
+layout: project
 name: Ascension to Immortal
-tools: [C#, Unity]
+tools: [C#, Unity, Mirror]
 image: /assets/image/projects/Ascension-to-Immortal.png
-description: The “Ascension to Immortal” was an indie game I worked on after graduation, and it was a 2D round-based multiplayer card game that is LAN-based.
+description: 2D LAN-based multiplayer card game (Unity/C#/Mirror) — solo developer, 3-month build.
 ---
 
-The “Ascension to Immortal” was an indie game I worked on after graduation, and it was a 2D round-based multiplayer card game that is LAN-based. It used Mirror as its main network framework. 
+**Ascension to Immortal** is a 2D round-based multiplayer card game developed independently after graduation. Built on the **Mirror** networking framework for LAN multiplayer, players collect elements and strategically buy or hold cards to reach a winning score.
 
-Players can collect elements and buy or keep cards to a certain score to win. 
+## Role
 
+Solo Developer (3-month development cycle)
 
-This program took around 3 months to the current progress and I was the only programmer on the team. I was responsible for the whole game system, including the game logic, UI, and network.
+## Contributions
 
+- Built the entire game system independently: game logic, UI, and multiplayer networking
+- Implemented card mechanics, turn-based round logic, and LAN state synchronization via Mirror
+- Designed the element collection and scoring systems from scratch
 
-However, this game is only in the test version and has not been released yet. (probably never will be) considering various reasons - 2023.9.12
+## Technical Challenges
 
-![alt text](/assets/image/projects/Ascension-to-Immortal-1.png "Gameplay simulation")
+<!-- TODO: Answer these — see CONTENT-SUPPLEMENT.md §1 -->
+
+> - What limitations did you hit with Mirror's LAN sync? How did you solve them?
+> - How did you ensure state consistency for turn-based logic across the network?
+> - How did you manage a 3-month solo project? (scheduling, scope, testing)
+
+## Lessons Learned
+
+<!-- TODO: Reflect — see CONTENT-SUPPLEMENT.md §7 -->
+
+> - What would you do differently?
+> - What did this project teach you?
+
+*Status: Test build (unreleased)*
+
+![Gameplay simulation](/assets/image/projects/Ascension-to-Immortal-1.png)

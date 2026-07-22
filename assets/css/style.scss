@@ -1,3 +1,19 @@
 ---
 ---
-@import "portfolYOU";
+// =============================================================================
+// Nuo.Dev — main stylesheet entry
+// Sass module system (@use). Loaded by Jekyll; partials resolve from /_sass.
+// =============================================================================
+
+@use "notfound";   // 404 page SVG animations
+@use "base";       // substrate, typography, CRT overlay, scrollbar
+@use "motion";     // custom cursor + atmosphere
+@use "markdown";   // rendered markdown body
+@use "navbar";     // HUD command bar
+@use "landing";    // cinematic hero
+@use "projects";   // terminal data cards
+@use "footer";     // status bar + scroll progress
+@use "about";      // about page sections
+@use "timeline";   // experience log
+@use "autumn";     // syntax highlighting tokens
+@use "theme";      // theme overrides — must load last

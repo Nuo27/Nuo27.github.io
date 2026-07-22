@@ -1,0 +1,228 @@
+---
+layout: default
+---
+
+<div class="article-detail">
+  <section class="article-content-section">
+    <div class="container">
+      <div class="article-back-row">
+        <a href="/articles/" class="back-link">
+          <i class="fas fa-arrow-left"></i> Back to Articles
+        </a>
+      </div>
+
+      <header class="article-header">
+        <span class="article-eyebrow mono">// ARTICLE</span>
+        <h1 class="article-title">{{ page.title }}</h1>
+        {% if page.description %}
+        <p class="article-lead">{{ page.description }}</p>
+        {% endif %}
+        {% if page.tags.size > 0 %}
+        <div class="article-tags">
+          {% for tag in page.tags %}
+          <span class="article-tag mono">{{ tag }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </header>
+
+      <div class="markdown-body article-body">
+        {{ content }}
+      </div>
+    </div>
+  </section>
+
+  <section class="article-footer-section">
+    <div class="container">
+      <a href="/articles/" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Articles
+      </a>
+    </div>
+  </section>
+</div>
+
+<style>
+  .article-detail { padding-bottom: 4rem; }
+
+  .article-back-row { padding: 1rem 0; }
+
+  .article-header {
+    margin: 1rem 0 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(0, 255, 156, 0.18);
+  }
+  [data-theme="light"] .article-header { border-bottom-color: rgba(10, 11, 15, 0.18); }
+
+  .article-eyebrow {
+    display: block;
+    font-size: 0.65rem;
+    color: #2BE4FF;
+    letter-spacing: 0.2em;
+    margin-bottom: 0.6rem;
+  }
+  [data-theme="light"] .article-eyebrow { color: #0891B2; }
+
+  .article-title {
+    font-family: "Space Grotesk", sans-serif;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    color: #E8EAF0;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  [data-theme="light"] .article-title { color: #0A0B0F; }
+
+  .article-lead {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: rgba(232, 234, 240, 0.7);
+    margin: 0 0 1rem;
+    max-width: 640px;
+  }
+  [data-theme="light"] .article-lead { color: rgba(10, 11, 15, 0.65); }
+
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .article-tag {
+    font-size: 0.62rem;
+    padding: 0.25rem 0.55rem;
+    background: rgba(0, 255, 156, 0.06);
+    border: 1px solid rgba(0, 255, 156, 0.20);
+    border-radius: 2px;
+    color: #00FF9C;
+    letter-spacing: 0.06em;
+  }
+  [data-theme="light"] .article-tag {
+    background: rgba(10, 11, 15, 0.04);
+    border-color: rgba(10, 11, 15, 0.18);
+    color: #00805C;
+  }
+
+  .article-body {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .article-body h2,
+  .article-body h3,
+  .article-body h4 {
+    font-family: "Space Grotesk", sans-serif;
+    margin-top: 2.25rem;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+    color: #E8EAF0;
+  }
+  [data-theme="light"] .article-body h2,
+  [data-theme="light"] .article-body h3,
+  [data-theme="light"] .article-body h4 { color: #0A0B0F; }
+
+  .article-body h2 { font-size: 1.5rem; }
+  .article-body h3 { font-size: 1.2rem; }
+
+  .article-body p {
+    line-height: 1.8;
+    margin-bottom: 1.2rem;
+  }
+
+  .article-body a {
+    color: #2BE4FF;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(43, 228, 255, 0.4);
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  .article-body a:hover {
+    color: #00FF9C;
+    border-bottom-color: #00FF9C;
+  }
+
+  .article-body ul,
+  .article-body ol {
+    margin-bottom: 1.2rem;
+    padding-left: 1.5rem;
+  }
+
+  .article-body li {
+    margin-bottom: 0.5rem;
+    line-height: 1.7;
+  }
+
+  .article-body blockquote {
+    border-left: 2px solid #00FF9C;
+    padding: 0.5rem 1.25rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: rgba(232, 234, 240, 0.7);
+    background: rgba(0, 255, 156, 0.04);
+  }
+  [data-theme="light"] .article-body blockquote {
+    border-left-color: #00805C;
+    color: rgba(10, 11, 15, 0.65);
+    background: rgba(10, 11, 15, 0.03);
+  }
+
+  .article-body code {
+    background: rgba(0, 255, 156, 0.08);
+    padding: 0.15em 0.4em;
+    border-radius: 2px;
+    font-size: 0.85em;
+    font-family: "JetBrains Mono", monospace;
+    color: #00FF9C;
+  }
+  [data-theme="light"] .article-body code {
+    background: rgba(10, 11, 15, 0.06);
+    color: #00805C;
+  }
+
+  .article-body pre {
+    background: #0E1016;
+    border: 1px solid rgba(232, 234, 240, 0.10);
+    border-radius: 2px;
+    padding: 1.2rem;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+  }
+
+  .article-body pre code {
+    background: none;
+    padding: 0;
+    color: #E8EAF0;
+  }
+
+  .article-body img {
+    max-width: 100%;
+    border-radius: 2px;
+    margin: 1.5rem 0;
+    border: 1px solid rgba(0, 255, 156, 0.12);
+  }
+
+  .article-footer-section {
+    padding: 2rem 0;
+    border-top: 1px solid rgba(0, 255, 156, 0.18);
+    margin-top: 3rem;
+  }
+  [data-theme="light"] .article-footer-section { border-top-color: rgba(10, 11, 15, 0.18); }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: "JetBrains Mono", monospace;
+    color: #00FF9C;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: gap 0.25s ease, color 0.2s ease;
+  }
+  .back-link:hover {
+    gap: 0.85rem;
+    color: #2BE4FF;
+  }
+  [data-theme="light"] .back-link { color: #00805C; }
+</style>

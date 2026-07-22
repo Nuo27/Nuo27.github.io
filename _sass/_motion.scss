@@ -1,0 +1,60 @@
+// ==========================================================
+// Motion — custom cursor + atmosphere utilities
+// ==========================================================
+
+@use "variables" as *;
+
+// ---- Custom cursor (additive, native cursor kept) ----
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  will-change: transform;
+}
+
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: $phosphor;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba($phosphor, 0.8);
+  [data-theme="light"] & { background: $print-phosphor; box-shadow: none; }
+}
+
+.cursor-ring {
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  border: 1px solid rgba($phosphor, 0.45);
+  border-radius: 50%;
+  transition: opacity 0.3s ease, width 0.22s $ease-out-expo, height 0.22s $ease-out-expo,
+              margin 0.22s $ease-out-expo, border-color 0.22s ease, background 0.22s ease;
+  [data-theme="light"] & { border-color: rgba($carbon, 0.45); }
+}
+
+.cursor-ring--active {
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  border-color: $phosphor;
+  background: rgba($phosphor, 0.06);
+  [data-theme="light"] & {
+    border-color: $print-phosphor;
+    background: rgba($carbon, 0.04);
+  }
+}
+
+// Hide custom cursor on touch / coarse pointers
+@media (hover: none), (pointer: coarse) {
+  .cursor-dot, .cursor-ring { display: none !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-dot, .cursor-ring { display: none !important; }
+}

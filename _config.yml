@@ -1,11 +1,11 @@
 ### Site Settings ###
 title               : Nuo
 description         : >-
-                      A new Graduate from B.Sc.GameDev and indie game developer.
-baseurl             : ""                     # Change to empty quotes if you are hosting your site at <your-username>.github.io directly
-repository          : nuo27/nuo27.github.io    # Change to <your-username>/<your-username>.github.io (or remove it if you don't need remote projects)
-# remote_theme        : YoussefRaafatNasry/portfolYOU
-open_new_tab        : false                             # Opens external URLs in new tab (works for posts, projects and navbar only)
+                      Gameplay programmer specializing in multiplayer systems across
+                      Unity (C#) and Unreal Engine 5 (C++). UTS Game Development graduate, Sydney.
+baseurl             : ""
+repository          : nuo27/nuo27.github.io
+open_new_tab        : false
 
 
 ### Plugins ###
@@ -14,40 +14,18 @@ plugins:
 
 
 ### Navbar Settings ###
-nav_exclude:                                            # The following paths are excluded from navbar
-  - pages/tags.html
+nav_exclude:
   - pages/404.html
   - pages/index.md
-  - pages/blog.html
 
 
 ### Author Info ###
 author:
   name              : Nuo Chen
   image             : assets/image/bio-photo.png
-  # behance           : your_username
-# dribbble          : your_username
   email             : nuoch3n@gmail.com
-  # facebook          : your_username
   github            : nuo27
-# gitlab            : your_username
-# instagram         : your_username
-# kaggle            : your_username
   linkedin          : nuochen27
-  # medium            : your_username
-# soundcloud        : your_username
-# spotify           : your_username
-# stackoverflow     : your_user_id
-# tumblr            : your_username.tumblr.com
-# twitch            : your_username
-  # twitter           : your_username
-# vimeo             : your_username
-# youtube           : your_channel_name
-# keybase           : your_username
-
-
-### Posts ###
-permalink: /blog/:title
 
 
 ### Collections ###
@@ -55,28 +33,9 @@ collections:
   projects:
     output: true
     permalink: /portfolio/:name
-
-
-### Disqus ###
-disqus:
-  shortname:             # Your website Shortname on disqus
-
-
-### Analytics ###
-analytics:
-  enabled: false                                        # Set true to enable analytics
-  google:
-    tracking_id: your-google-tracking-id
-
-
-### Buy me a coffee ###
-# See https://www.buymeacoffee.com/
-buymeacoffee:
-  enabled: false
-  username: your_username
-  color: "#007bff"
-  message: "Thank you for visiting."                    # Message to be displayed aside from the button for a few seconds.
-  description: "Support me on Buy me a coffee!"
+  articles:
+    output: true
+    permalink: /articles/:name
 
 
 ### Defaults for collections ###
@@ -85,12 +44,12 @@ defaults:
       path: ""
       type: "projects"
     values:
-      layout: "page"
+      layout: "project"
   - scope:
       path: ""
-      type: "posts"
+      type: "articles"
     values:
-      comments: false                                   # Set to true to enable disqus comments
+      layout: "article"
 
 
 ### Exclude from processing ###

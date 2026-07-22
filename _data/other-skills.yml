@@ -1,15 +1,6 @@
-- name: Excel & Tableau
-  percentage: 75
-  color: info
-
-- name: Project Management
-  percentage: 70
-  color: success
-
-- name: Marketing
-  percentage: 60
-  color: warning
-
-- name: Content Research & Creation
-  percentage: 75
-  color: danger
+- name: Unity 3D
+- name: Unreal Engine 5
+- name: Git & GitHub
+- name: FMOD
+- name: iOS / Xcode
+- name: Mirror Networking

@@ -1,15 +1,80 @@
-<div class="row justify-content-center align-items-center p-4">
-  <div class="col-lg-4 col-md-6 text-center mt-4">
+<section class="landing-wrapper">
 
-    <!-- Fine Circle Responsive Image -->
-    <div id="container" class="my-2">
-      <div id="dummy"></div>
-      <div id="element">
-        <img src="{{ site.author.image }}" alt="{{ site.title }}" class="circle-image wow animated zoomIn" data-wow-delay=".1s">
+  <!-- HUD telemetry strip (top corners) -->
+  <div class="hud-telemetry" aria-hidden="true">
+    <div class="hud-row hud-row--top">
+      <span class="hud-cell">// NUO.OS <span class="blink">_</span></span>
+      <span class="hud-cell">REV.2026.07</span>
+      <span class="hud-cell">LAT -33.87 / LON 151.21</span>
+    </div>
+  </div>
+
+  <div class="row justify-content-center align-items-center landing-row">
+    <!-- Left: Terminal boot + identity -->
+    <div class="col-lg-7 col-md-10 landing-content">
+
+      <div class="boot-sequence" data-boot>
+        <p class="boot-line">&gt; initializing nuo.os<span class="cursor">█</span></p>
+        <p class="boot-line boot-ok">&gt; <span class="ok">[ OK ]</span> modules loaded</p>
+        <p class="boot-line boot-ok">&gt; <span class="ok">[ OK ]</span> identity verified</p>
+      </div>
+
+      <div class="landing-eyebrow mono" data-reveal>
+        <span class="crosshair">+</span> GAME DEVELOPER / SYDNEY AU
+      </div>
+
+      <h1 class="landing-display" data-glitch>
+        <span class="line"><span class="line-inner">{{ site.title }}</span></span>
+      </h1>
+
+      <p class="landing-subtitle" data-reveal>{{ site.description }}</p>
+
+      <div class="landing-tags" data-reveal>
+        <span class="tag-chip">C#</span>
+        <span class="tag-chip">C++</span>
+        <span class="tag-chip">UNITY</span>
+        <span class="tag-chip">UNREAL</span>
+        <span class="tag-chip">PYTHON</span>
+      </div>
+
+      <div class="landing-cta" data-reveal>
+        <a href="/portfolio/" class="btn btn-primary-custom">
+          <span class="btn-bracket">&lt;</span>
+          View Projects
+          <span class="btn-bracket">/&gt;</span>
+        </a>
+        <a href="/about/" class="btn btn-secondary-custom">
+          <span class="btn-prompt">&gt;</span> About Me
+        </a>
       </div>
     </div>
 
-    <p class="text-muted wow animated slideInUp" data-wow-delay=".15s">{{ site.description }}</p>
-
+    <!-- Right: Monitor-framed profile -->
+    <div class="col-lg-4 col-md-6 text-center mt-5 mt-lg-0">
+      <div class="profile-monitor" data-reveal>
+        <div class="monitor-frame">
+          <span class="corner corner-tl"></span>
+          <span class="corner corner-tr"></span>
+          <span class="corner corner-bl"></span>
+          <span class="corner corner-br"></span>
+          <div class="profile-scan"></div>
+          <img src="{{ site.author.image }}" alt="{{ site.title }}" class="profile-image">
+          <div class="monitor-readout mono">
+            <span>SUBJECT // NUO</span>
+            <span class="rec"><span class="rec-dot"></span>REC</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+
+  <!-- Scroll indicator -->
+  <div class="scroll-indicator" data-reveal>
+    <span class="mono scroll-label">SCROLL</span>
+    <div class="mouse">
+      <div class="wheel"></div>
+    </div>
+    <span class="mono scroll-arrow">▼</span>
+  </div>
+
+</section>
