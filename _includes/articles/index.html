@@ -11,9 +11,10 @@
   </header>
 
   {% if site.articles.size > 0 %}
-  <div class="articles-list">
+  {% include common/search.html placeholder="grep articles…" total=site.articles.size list_id="articles-list" item_selector=".article-entry" %}
+  <div class="articles-list" id="articles-list">
     {% for article in site.articles %}
-      <a href="{{ article.url | relative_url }}" class="article-entry">
+      <a href="{{ article.url | relative_url }}" class="article-entry reveal" style="transition-delay: {{ forloop.index0 | modulo: 3 | times: 80 }}ms;">
         <span class="article-entry-index mono">{{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
         <div class="article-entry-body">
           <h2 class="article-entry-title">{{ article.title }}</h2>
@@ -65,12 +66,7 @@
     margin: 0 0 0.5rem;
     line-height: 1;
   }
-  .title-prompt { color: var(--phosphor); animation: articles-blink 1.1s steps(1) infinite; }
-
-  @keyframes articles-blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
+  .title-prompt { color: var(--phosphor); animation: blink 1.1s steps(1) infinite; }
 
   .articles-subtitle {
     font-size: 1rem;
@@ -121,7 +117,7 @@
     padding-top: 0.2rem;
     min-width: 2.5rem;
     opacity: 0.7;
-    transition: opacity 0.25s ease;
+    transition: opacity 0.25s var(--ease-out-expo, ease-out);
   }
   .article-entry:hover .article-entry-index { opacity: 1; }
 
@@ -139,16 +135,24 @@
     letter-spacing: -0.012em;
     line-height: 1.3;
     display: inline-block;
-    background-image: linear-gradient(var(--phosphor), var(--phosphor));
-    background-size: 0 1px;
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    transition: background-size 0.4s cubic-bezier(0.65, 0, 0.35, 1),
-                color 0.2s ease;
+    position: relative;
+    transition: color 0.2s var(--ease-out-expo, ease-out);
+  }
+  .article-entry-title::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 1px;
+    background: var(--phosphor);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease-out-expo, ease-out);
   }
   .article-entry:hover .article-entry-title {
     color: var(--phosphor);
-    background-size: 100% 1px;
+  }
+  .article-entry:hover .article-entry-title::after {
+    transform: scaleX(1);
   }
 
   .article-entry-desc,
@@ -185,17 +189,25 @@
     padding: 0.3rem 0 2px;
     font-size: 0.85rem;
     color: color-mix(in srgb, var(--phosphor) 45%, transparent);
-    background-image: linear-gradient(var(--phosphor), var(--phosphor));
-    background-size: 0 1px;
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    transition: background-size 0.4s cubic-bezier(0.65, 0, 0.35, 1),
-                color 0.25s ease, transform 0.25s ease;
+    position: relative;
+    transition: color 0.25s var(--ease-out-expo, ease-out), transform 0.25s var(--ease-out-expo, ease-out);
+  }
+  .article-entry-arrow::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 1px;
+    background: var(--phosphor);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease-out-expo, ease-out);
   }
   .article-entry:hover .article-entry-arrow {
     color: var(--phosphor);
-    background-size: 100% 1px;
     transform: translateX(4px);
+  }
+  .article-entry:hover .article-entry-arrow::after {
+    transform: scaleX(1);
   }
 
   .articles-empty {
@@ -207,7 +219,7 @@
     font-size: 0.8rem;
     color: var(--ink-faint);
   }
-  .cursor-blink { animation: articles-blink 1.1s steps(1) infinite; }
+  .cursor-blink { animation: blink 1.1s steps(1) infinite; }
 
   @media (max-width: 576px) {
     .article-entry {

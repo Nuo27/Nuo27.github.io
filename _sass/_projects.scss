@@ -29,11 +29,7 @@
 
 .title-prompt {
   color: var(--phosphor);
-  animation: title-blink 1.1s steps(1) infinite;
-}
-@keyframes title-blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+  animation: blink 1.1s steps(1) infinite;
 }
 
 // ---- Editorial responsive grid ----
@@ -74,6 +70,13 @@
     .card-img { transform: scale(1.06); filter: grayscale(0) contrast(1.06); }
     .card-arrow { opacity: 1; transform: translateX(0); }
   }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &:active {
+      transform: translateY(0) scale(0.98);
+      transition: transform 0.12s $ease-out-expo;
+    }
+  }
 }
 
 .card-media {
@@ -90,7 +93,7 @@
   object-fit: cover;
   display: block;
   filter: grayscale(0.25) contrast(1.04);
-  transition: transform $dur-slow $ease-out-expo, filter $dur-slow $ease-out-expo;
+  transition: transform $dur-base $ease-out-expo, filter $dur-base $ease-out-expo;
 }
 .card-arrow {
   position: absolute;

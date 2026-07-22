@@ -21,20 +21,130 @@
   <meta name="description" content="{{ description }}">
 
   <!-- ============================================================
-       Cursor controller (pre-paint, inline, runs ONCE).
-       Sections: RENDER NODE / POINTER TRACKING / HOVER / RENDER.
+       Cursor controller — inline, runs once before first paint.
+       The node is created + mounted synchronously here (no external
+       request) so there is no flash. main.js never touches it.
+       JS↔CSS contract:
+         · JS owns per-frame transform on #cursor-root / .cursor-body
+           (position + tilt + velocity-scale), written inline each rAF,
+           never transitioned. Tip stays 1px-precise.
+         · CSS owns decorative layer states via classes (.is-hover
+           .is-down .is-zoom .is-drag) + vars (--glow,
+           --cursor-outline-scale) with transition.
+         · cfg exposes every tunable + per-effect enable flags.
+       The ENTIRE cursor stylesheet is inlined below — including the
+       `cursor:none` rule — so it applies from frame 1, before
+       style.css loads. The class is added eagerly at parse time.
+       Because assets/js/router.js keeps the document shell alive
+       across in-app navigation, this controller runs once and lives
+       for the lifetime of the tab — no persistence layer, no
+       navigation handoff, no sessionStorage warm-start. The cursor
+       stays visible continuously through every in-app navigation.
+       First-ever visit waits for the first mousemove to avoid a
+       centre-screen jump. See the script below.
        ============================================================ -->
-  <style>html.custom-cursor,html.custom-cursor * { cursor: none !important; }</style>
+  <style>
+    /* native cursor hidden the instant .custom-cursor is added */
+    html.custom-cursor,
+    html.custom-cursor * { cursor: none !important; }
+
+    #cursor-root {
+      position: fixed; top: 0; left: 0; pointer-events: none;
+      z-index: 10003; opacity: 0; will-change: transform;
+      --glow: 0.16; --cursor-outline-scale: 0.7;
+    }
+    .cursor-body { position: absolute; top: 0; left: 0; transform-origin: 0 0; will-change: transform; }
+
+    .cursor-glow {
+      position: absolute; top: -19px; left: -19px; width: 48px; height: 48px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 255, 156, 0.9) 0%, rgba(0, 255, 156, 0) 65%);
+      filter: blur(7px); opacity: var(--glow); transition: opacity 0.3s ease;
+    }
+    [data-theme="light"] .cursor-glow {
+      background: radial-gradient(circle, rgba(0, 128, 92, 0.9) 0%, rgba(0, 128, 92, 0) 65%);
+    }
+
+    .cursor-trail {
+      position: absolute; top: 0; left: 0; width: 14px; height: 14px;
+      background: #00FF9C; clip-path: polygon(0 0, 100% 0, 0 100%);
+      opacity: 0; will-change: transform, opacity;
+    }
+    [data-theme="light"] .cursor-trail { background: #00805C; }
+
+    .cursor-vector { position: absolute; top: 0; left: 0; width: 40px; height: 40px; overflow: visible; display: block; isolation: isolate; }
+
+    .cursor-aurora-outer-halo,
+    .cursor-aurora-outer-core {
+      fill: none; stroke: #4DFFB1; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round;
+      stroke-dasharray: 0.16 0.84; animation: cursor-flow 2.8s linear infinite;
+      transform-box: fill-box; transform-origin: 33.333% 33.333%; transform: scale(var(--cursor-outline-scale));
+      opacity: 0; transition: opacity 0.34s ease, stroke-width 0.3s ease;
+    }
+    [data-theme="light"] .cursor-aurora-outer-halo,
+    [data-theme="light"] .cursor-aurora-outer-core { stroke: #00805C; }
+    .cursor-aurora-outer-halo { stroke-width: 4; filter: blur(3px); }
+
+    .cursor-aurora-inner {
+      fill: none; stroke: #001f12; stroke-opacity: 0.7; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round;
+      stroke-dasharray: 0.16 0.84; animation: cursor-flow 2.8s linear infinite;
+      mix-blend-mode: multiply; opacity: 0.85; transition: opacity 0.3s ease;
+    }
+
+    .cursor-outline {
+      fill: none; stroke: #00FF9C; stroke-width: 1; stroke-linejoin: round;
+      transform-box: fill-box; transform-origin: 33.333% 33.333%; transform: scale(var(--cursor-outline-scale));
+      opacity: 0.18; transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.34s cubic-bezier(0.16, 1, 0.3, 1), stroke-width 0.3s ease;
+    }
+    [data-theme="light"] .cursor-outline { stroke: #00805C; }
+
+    .cursor-core { fill: #00FF9C; stroke: none; transition: fill 0.3s ease, stroke 0.3s ease; }
+    [data-theme="light"] .cursor-core { fill: #00805C; }
+
+    /* ---- interaction states ---- */
+    #cursor-root.is-hover { --glow: 0.42; --cursor-outline-scale: 1; }
+    #cursor-root.is-hover .cursor-outline { opacity: 0.9; }
+    #cursor-root.is-hover .cursor-aurora-outer-halo { opacity: 0.85; }
+    #cursor-root.is-hover .cursor-aurora-outer-core { opacity: 0.95; }
+    #cursor-root.is-hover .cursor-aurora-inner { opacity: 0; }
+    #cursor-root.is-hover .cursor-core { fill: transparent; stroke: #00FF9C; stroke-width: 1.4; }
+    [data-theme="light"] #cursor-root.is-hover .cursor-core { stroke: #00805C; }
+
+    #cursor-root.is-zoom { --glow: 0.55; --cursor-outline-scale: 1.12; }
+    #cursor-root.is-zoom .cursor-outline { opacity: 1; }
+    #cursor-root.is-zoom .cursor-aurora-outer-halo { opacity: 0.9; }
+    #cursor-root.is-zoom .cursor-aurora-outer-core { opacity: 1; }
+
+    #cursor-root.is-down { --glow: 0.6; }
+    #cursor-root.is-down .cursor-outline { stroke-width: 1.6; }
+    #cursor-root.is-drag .cursor-aurora-inner { opacity: 1; }
+    #cursor-root.is-pulse .cursor-outline { animation: cursor-pulse 1.15s ease-in-out infinite; }
+
+    @keyframes cursor-flow { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+    @keyframes cursor-pulse {
+      0%, 100% { transform: scale(var(--cursor-outline-scale)); }
+      50%      { transform: scale(calc(var(--cursor-outline-scale) * 1.06)); }
+    }
+
+    /* belt-and-suspenders: the JS gate also returns early on these */
+    @media (hover: none), (pointer: coarse) { #cursor-root { display: none !important; } }
+    @media (prefers-reduced-motion: reduce) { #cursor-root { display: none !important; } }
+  </style>
   <script>
     (function () {
-      // Gate: only fine pointers + motion allowed. Touch/reduced-motion keep native.
-      if (window.matchMedia('(hover: none),(pointer: coarse)').matches) return;
+      'use strict';
+
+      // ============================================================
+      // 1. GATE — fine pointer + motion only.
+      //    Touch / reduced-motion keep the native cursor. The class
+      //    is added eagerly so the inlined `cursor:none` rule hides
+      //    the native cursor from frame 1.
+      // ============================================================
+      if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-      var html = document.documentElement;
-      html.classList.add('custom-cursor');          // hide native cursor pre-paint
+      document.documentElement.classList.add('custom-cursor');
 
-      // ── cfg: every effect is tunable / independently toggleable ──
+      // cfg — every effect tunable / independently toggleable
       var cfg = {
         lerp: 0.45,             // render→pointer easing (higher = more precise)
         maxTilt: 12,            // deg — how far the triangle leans into movement
@@ -45,7 +155,21 @@
         enable: { trail: true, tilt: true }
       };
 
-      // ── RENDER NODE (single persistent root; children = effect layers) ──
+      // ============================================================
+      // 2. STATE — in-memory only.
+      //    assets/js/router.js keeps the document shell alive across
+      //    in-app navigation, so this controller runs once and lives
+      //    for the lifetime of the tab. No persistence layer, no
+      //    navigation handoff — state survives because the runtime
+      //    survives.
+      // ============================================================
+      var p = { x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0, t: 0 };
+      var seenMove = false;
+
+      // ============================================================
+      // 3. RENDERER — node tree + rAF loop. Pure state→transform;
+      //    knows nothing about page content.
+      // ============================================================
       var el = document.createElement('div');
       el.id = 'cursor-root';
 
@@ -59,15 +183,13 @@
       svg.setAttribute('class', 'cursor-vector');
       svg.setAttribute('viewBox', '0 0 40 40');
       function poly(cls, points, extras) {
-        var p = document.createElementNS(NS, 'polygon');
-        p.setAttribute('class', cls);
-        p.setAttribute('points', points);
-        if (extras) for (var k in extras) p.setAttribute(k, extras[k]);
-        svg.appendChild(p);
-        return p;
+        var n = document.createElementNS(NS, 'polygon');
+        n.setAttribute('class', cls);
+        n.setAttribute('points', points);
+        if (extras) for (var k in extras) n.setAttribute(k, extras[k]);
+        svg.appendChild(n);
+        return n;
       }
-      // Paint order = DOM order (later paints on top). The inner aurora is last
-      // so its multiply blend darkens the core fill beneath it.
       poly('cursor-aurora-outer-halo', '0,0 24,0 0,24', { pathLength: '1' });
       poly('cursor-outline', '0,0 24,0 0,24');
       poly('cursor-aurora-outer-core', '0,0 24,0 0,24', { pathLength: '1' });
@@ -75,49 +197,98 @@
       poly('cursor-aurora-inner', '2.5,2.5 9,2.5 2.5,9', { pathLength: '1' });
       body.appendChild(svg);
 
-      // Trail clones — siblings of body so they don't inherit tilt/scale.
       var trails = [];
       if (cfg.enable.trail) {
         for (var i = 0; i < cfg.trail.lerp.length; i++) {
           var t = document.createElement('div'); t.className = 'cursor-trail';
           el.appendChild(t);
-          trails.push({ el: t, x: 0, y: 0 });
+          trails.push({ el: t, x: p.x, y: p.y });
         }
       }
       el.appendChild(body);
 
-      // ── POINTER TRACKING (position + velocity, persisted across nav) ──
-      var p = { x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0, t: 0, seen: false };
-      try {
-        var s = JSON.parse(sessionStorage.getItem('cursor-state') || 'null');
-        if (s && typeof s.x === 'number') { p.x = s.x; p.y = s.y; p.seen = true; }
-      } catch (e) {}
-      var persistPending = false;
-      function persistSoon() {
-        if (persistPending) return;
-        persistPending = true;
-        requestAnimationFrame(function () {
-          persistPending = false;
-          try { sessionStorage.setItem('cursor-state', JSON.stringify({ x: p.x, y: p.y })); } catch (e) {}
-        });
+      function lerp(a, b, k) { return a + (b - a) * k; }
+
+      // Interaction flags — written by the delegated listeners in §5,
+      // read by render(). Declared here so render's first rAF tick (which
+      // fires only after this whole IIFE runs) sees correct values.
+      var hoverEl = null, pulse = false, zoom = false, drag = false, down = false;
+
+      // Render coords start at viewport centre; the cursor is invisible
+      // (opacity:0) until the first mousemove, so this never paints.
+      var rx = p.x, ry = p.y, tilt = 0, velScale = 1;
+
+      function render() {
+        var k = down ? 1 : cfg.lerp;
+        rx = lerp(rx, p.x, k);
+        ry = lerp(ry, p.y, k);
+
+        var sp = Math.hypot(p.vx, p.vy) * 16;        // ≈ px/frame at 60fps
+
+        if (cfg.enable.tilt && sp > cfg.velTiltMin) {
+          var target = Math.atan2(p.vy, p.vx) * 180 / Math.PI - 45;
+          target = ((target + 180) % 360 + 360) % 360 - 180;
+          target = Math.max(-cfg.maxTilt, Math.min(cfg.maxTilt, target));
+          tilt = lerp(tilt, target, 0.18);
+        } else {
+          tilt = lerp(tilt, 0, 0.2);
+        }
+
+        var ts = 1 + Math.min(sp / cfg.velScaleRef, cfg.velScaleMax);
+        if (zoom) ts *= 1.12;
+        if (down) ts *= 0.86;
+        velScale = lerp(velScale, ts, 0.2);
+
+        el.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0)';
+        body.style.transform = 'rotate(' + tilt.toFixed(2) + 'deg) scale(' + velScale.toFixed(3) + ')';
+
+        if (trails.length) {
+          var px = rx, py = ry, show = sp > cfg.trail.minSpeed;
+          for (var i = 0; i < trails.length; i++) {
+            var tr = trails[i];
+            tr.x = lerp(tr.x, px, cfg.trail.lerp[i]);
+            tr.y = lerp(tr.y, py, cfg.trail.lerp[i]);
+            tr.el.style.transform = 'translate3d(' + (tr.x - rx).toFixed(1) + 'px,' + (tr.y - ry).toFixed(1) + 'px,0)';
+            tr.el.style.opacity = show ? cfg.trail.opacity[i] : 0;
+            px = tr.x; py = tr.y;
+          }
+        }
+
+        requestAnimationFrame(render);
       }
+
+      // ============================================================
+      // 4. LIFECYCLE — mount once, run forever.
+      //    The cursor stays visible continuously; in-app navigation
+      //    via the soft router never destroys this controller.
+      // ============================================================
+      function show() { el.style.opacity = '1'; }
+      function hide() { el.style.opacity = '0'; }
+
+      document.documentElement.appendChild(el);
+      requestAnimationFrame(render);
+
       window.addEventListener('mousemove', function (e) {
         var now = performance.now(), dt = Math.max(1, now - (p.t || now));
-        p.vx = (e.clientX - p.x) / dt;              // px/ms, preserved across navigation
+        p.vx = (e.clientX - p.x) / dt;
         p.vy = (e.clientY - p.y) / dt;
-        p.x = e.clientX; p.y = e.clientY; p.t = now; p.seen = true;
-        persistSoon();
+        p.x = e.clientX; p.y = e.clientY; p.t = now;
+        seenMove = true;
+        show();
       }, { passive: true });
-      document.addEventListener('mouseleave', function () { el.style.opacity = '0'; });
-      document.addEventListener('mouseenter', function () { if (p.seen) el.style.opacity = '1'; });
+      document.addEventListener('mouseleave', hide);
+      document.addEventListener('mouseenter', function () { if (seenMove) show(); });
 
-      // ── STATE DETECTION (delegated; sets classes on #cursor-root) ──
+      // ============================================================
+      // 5. INTERACTION LAYER — page-agnostic state detection.
+      //    Delegated on document, so it adapts automatically as
+      //    <main id="app"> is swapped by the router.
+      // ============================================================
       var HOVER_SEL = 'a,button,label[for],.nav-link,.social,.skill-tag,input,textarea,[data-cursor="hover"],[contenteditable]';
       var ZOOM_SEL  = '.gallery-slide,[data-lightbox],.featured-item--project img,[data-cursor="zoom"]';
-      var PULSE_SEL = 'a,button,[role="button"],.btn-primary-custom,.btn-secondary-custom,.btn-project,.btn-resume,[data-magnetic]';
+      var PULSE_SEL = 'a,button,[role="button"],.btn-primary-custom,.btn-secondary-custom,.btn-project,[data-magnetic]';
       var DRAG_SEL  = '.gallery-stage,[data-cursor="drag"]';
 
-      var hoverEl = null, pulse = false, zoom = false, drag = false, down = false;
       function sync() {
         var c = el.classList;
         c.toggle('is-hover', !!hoverEl);
@@ -142,64 +313,6 @@
       function release() { down = false; drag = false; sync(); }
       window.addEventListener('pointerup', release);
       window.addEventListener('pointercancel', release);
-
-      // ── RENDER (single rAF loop) ──
-      function lerp(a, b, k) { return a + (b - a) * k; }
-
-      var rx = p.x, ry = p.y;                        // rendered (eased) pointer pos
-      var tilt = 0, velScale = 1;
-      for (var j = 0; j < trails.length; j++) { trails[j].x = p.x; trails[j].y = p.y; }
-
-      function render() {
-        // Render position always tracks the real pointer (no magnetic bias);
-        // LERP smooths, snapping exactly to the pointer on click for precision.
-        var k = down ? 1 : cfg.lerp;
-        rx = lerp(rx, p.x, k);
-        ry = lerp(ry, p.y, k);
-
-        var sp = Math.hypot(p.vx, p.vy) * 16;        // ≈ px/frame at 60fps
-
-        // Tilt: lean into movement direction (triangle forward = down-right = 45°).
-        if (cfg.enable.tilt && sp > cfg.velTiltMin) {
-          var target = Math.atan2(p.vy, p.vx) * 180 / Math.PI - 45;
-          target = ((target + 180) % 360 + 360) % 360 - 180;
-          target = Math.max(-cfg.maxTilt, Math.min(cfg.maxTilt, target));
-          tilt = lerp(tilt, target, 0.18);
-        } else {
-          tilt = lerp(tilt, 0, 0.2);
-        }
-
-        // Velocity scale × state multipliers (zoom enlarges, down compresses).
-        var ts = 1 + Math.min(sp / cfg.velScaleRef, cfg.velScaleMax);
-        if (zoom) ts *= 1.12;
-        if (down) ts *= 0.86;
-        velScale = lerp(velScale, ts, 0.2);
-
-        // Root: translate (tip on pointer). Body: tilt + scale (pivot at tip).
-        el.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0)';
-        body.style.transform = 'rotate(' + tilt.toFixed(2) + 'deg) scale(' + velScale.toFixed(3) + ')';
-
-        // Trail: each clone lerps toward its predecessor, rendered as offset from pointer.
-        if (trails.length) {
-          var px = rx, py = ry, show = sp > cfg.trail.minSpeed;
-          for (var i = 0; i < trails.length; i++) {
-            var tr = trails[i];
-            tr.x = lerp(tr.x, px, cfg.trail.lerp[i]);
-            tr.y = lerp(tr.y, py, cfg.trail.lerp[i]);
-            tr.el.style.transform = 'translate3d(' + (tr.x - rx).toFixed(1) + 'px,' + (tr.y - ry).toFixed(1) + 'px,0)';
-            tr.el.style.opacity = show ? cfg.trail.opacity[i] : 0;
-            px = tr.x; py = tr.y;
-          }
-        }
-
-        if (p.seen && el.style.opacity !== '1') el.style.opacity = '1';
-        requestAnimationFrame(render);
-      }
-
-      el.style.opacity = p.seen ? '1' : '0';
-      function boot() { document.body.appendChild(el); render(); }
-      if (document.body) boot();
-      else document.addEventListener('DOMContentLoaded', boot, { once: true });
     })();
   </script>
 

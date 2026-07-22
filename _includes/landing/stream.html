@@ -1,0 +1,52 @@
+{% assign stream = page.stream %}
+{% assign labels = stream.labels %}
+{% assign proj_index = 0 %}
+  <!-- ============ Unified content stream (projects + articles) ============ -->
+  <section class="mag-section mag-stream" aria-labelledby="stream-heading">
+    <header class="mag-section-head" data-reveal>
+      <span class="mag-kicker mono">// {{ stream.kicker }}</span>
+      <h2 class="mag-heading" id="stream-heading">{{ stream.heading }}</h2>
+    </header>
+
+    <div class="stream">
+
+      {% comment %} One curated stream. Each entry: { type: project|article, slug }.
+            Resolved against the matching collection (url segment, case-insensitive),
+            then dispatched to a type-specific card. Add a new type by adding a
+            {% when %} branch + a _includes/stream/<type>-card.html. {% endcomment %}
+      {% for item in page.selected_works %}
+        {% assign slug = item.slug | downcase %}
+        {% assign doc = nil %}
+        {% if item.type == 'project' %}
+          {% for p in site.projects %}
+            {% assign ps = p.url | split: '/' | last | downcase %}
+            {% if ps == slug %}{% assign doc = p %}{% endif %}
+          {% endfor %}
+        {% elsif item.type == 'article' %}
+          {% for a in site.articles %}
+            {% assign asl = a.url | split: '/' | last | downcase %}
+            {% if asl == slug %}{% assign doc = a %}{% endif %}
+          {% endfor %}
+        {% endif %}
+
+        {% if doc %}
+          {% assign side = 'fi-side-left' %}
+          {% assign mod = proj_index | modulo: 2 %}
+          {% if mod == 1 %}{% assign side = 'fi-side-right' %}{% endif %}
+          {% case item.type %}
+            {% when 'project' %}
+              {% include stream/project-card.html project=doc index=forloop.index side=side labels=labels %}
+              {% assign proj_index = proj_index | plus: 1 %}
+            {% when 'article' %}
+              {% include stream/article-card.html article=doc index=forloop.index labels=labels %}
+          {% endcase %}
+        {% endif %}
+      {% endfor %}
+
+    </div>
+
+    <footer class="mag-section-foot stream-foot" data-reveal>
+      <a class="mag-all mono" href="/portfolio/">{{ labels.all_projects }} <i class="fas fa-arrow-right"></i></a>
+      <a class="mag-all mono" href="/articles/">{{ labels.all_articles }} <i class="fas fa-arrow-right"></i></a>
+    </footer>
+  </section>

@@ -12,7 +12,6 @@
   background: transparent;
   border-bottom: 1px solid transparent;
   transition: background $dur-base $ease-out-expo,
-              padding $dur-base $ease-out-expo,
               border-color $dur-base $ease-out-expo;
 
   [data-theme="dark"] & { background: rgba($bg-void, 0.0); }
@@ -188,10 +187,32 @@
   }
 }
 
-// On mobile, let nav links stack cleanly when the menu drops down
+// On mobile, frame the whole stacked menu with a single bracket pair
+// (mirrors the desktop per-link [ ] hover brackets, but at the container level
+// so one "[" ... "]" wraps the entire dropdown instead of each item).
 @media (max-width: 991.98px) {
   .navbar-themed .navbar-nav {
-    padding: 0.75rem 0;
-    .nav-link { padding: 0.6rem 0.25rem !important; }
+    position: relative;
+    padding: 1rem 1.25rem 1rem 1.4rem;
+    margin-top: 0.5rem;
+
+    &::before,
+    &::after {
+      font-family: $font-mono;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: $phosphor;
+      position: absolute;
+      opacity: 0.85;
+      [data-theme="light"] & { color: $print-phosphor; }
+    }
+    &::before { content: "["; left: 0.2rem;  top: 0.55rem; }
+    &::after  { content: "]"; right: 0.2rem; bottom: 0.55rem; }
+
+    // Suppress per-link hover brackets on mobile — the container frames all.
+    .nav-link {
+      padding: 0.6rem 0.25rem !important;
+      &::before, &::after { content: none; }
+    }
   }
 }

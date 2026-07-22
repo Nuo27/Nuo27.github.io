@@ -4,6 +4,10 @@ name: Reserve Now
 tools: [Swift, XCode, iOS, SQL]
 image: /assets/image/projects/reserve-now.png
 description: Native iOS restaurant reservation app (Swift) with dual customer and staff interfaces.
+category: iOS App
+status: "2022"
+external_links:
+  - { name: "Source", url: "https://github.com/Nuo27/reserve_now", icon: "github", prefix: "fab" }
 ---
 
 **Reserve Now** is a native iOS application developed for UTS iOS App Development. It provides a streamlined reservation platform with separate interfaces for customers — who can browse, book, modify, and cancel reservations — and staff — who manage and track all incoming bookings through a dedicated dashboard.

@@ -4,6 +4,11 @@ name: The Tragedy of Pondiberry Lodge
 tools: [C#, Unity]
 image: /assets/image/projects/pondiberry.png
 description: 3D exploration detective game (Unity/C#) — lead programmer, 5-person team, five themed levels.
+category: Game
+status: "2022–2023"
+external_links:
+  - { name: "Live Demo", url: "https://nuochen.itch.io/the-tragedy-of-pondiberry-lodge", icon: "external-link-alt" }
+  - { name: "Source",    url: "https://github.com/Nuo27/The-Tragedy-of-Pondiberry-lodge", icon: "github", prefix: "fab" }
 ---
 
 **The Tragedy of Pondiberry Lodge** is a 3D exploration detective game developed in Unity as the final project for UTS Game Design. Players explore a mysterious house, uncovering clues and solving environmental puzzles across five themed levels to uncover its secret and escape.

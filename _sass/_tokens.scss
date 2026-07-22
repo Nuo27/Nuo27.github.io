@@ -38,6 +38,15 @@
   --font-display: #{$font-display};
   --font-body:    #{$font-body};
   --font-mono:    #{$font-mono};
+
+  // --- Motion (theme-agnostic; exposed so inline <style> blocks share the system) ---
+  --dur-fast:      #{$dur-fast};
+  --dur-base:      #{$dur-base};
+  --dur-slow:      #{$dur-slow};
+  --dur-cine:      #{$dur-cine};
+  --ease-out-expo: #{$ease-out-expo};
+  --ease-out-back: #{$ease-out-back};
+  --ease-in-out:   #{$ease-in-out};
 }
 
 // --- Light theme (blueprint print substrate) overrides ---

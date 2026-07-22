@@ -118,12 +118,14 @@ footer {
   position: fixed;
   top: 0;
   left: 0;
-  width: 0%;
+  width: 100%;
   height: 2px;
   background: $phosphor;
   box-shadow: 0 0 10px rgba($phosphor, 0.6);
   z-index: 9999;
-  transition: width 0.1s linear;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.1s linear;
 
   [data-theme="light"] & {
     background: $print-phosphor;

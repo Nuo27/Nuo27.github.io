@@ -6,7 +6,11 @@
     <p class="projects-subtitle">Game development projects, experiments &amp; builds.</p>
   </header>
 
-  <div class="projects-grid">
+  {% if site.projects.size > 0 %}
+  {% include common/search.html placeholder="grep projects…" total=site.projects.size list_id="projects-grid" item_selector=".card-wrap" %}
+  {% endif %}
+
+  <div class="projects-grid" id="projects-grid">
 
     {% for project in site.projects %}
 

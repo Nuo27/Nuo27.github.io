@@ -255,3 +255,10 @@
     transform: scale(0.98);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel, .clock-hand-1, .clock-hand-2, #box-top, #umbrella, #cup,
+  #pillow, #stripe, #bike, #rucksack, .circle, .four, #ou {
+    animation: none !important;
+  }
+}

@@ -11,13 +11,18 @@
 
 <body class="h-100 d-flex flex-column">
 
-  <main class="flex-shrink-0 container mt-4">
+  <div class="container mt-4 flex-shrink-0">
     {% include navbar.html %}
+  </div>
+  <main id="app" class="flex-shrink-0 container">
     {{ content }}
   </main>
   {% include footer.html %}
 
   {% include scripts.html %}
+
+  <!-- Soft router (intercepts in-app navigation, keeps the document shell alive) -->
+  <script src="{{ "/assets/js/router.js" | relative_url }}"></script>
 
   <!-- Main JS (vanilla, no jQuery) -->
   <script src="{{ "/assets/js/main.js" | relative_url }}"></script>

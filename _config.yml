@@ -11,9 +11,22 @@ repository          : nuo27/nuo27.github.io
 author:
   name              : Nuo Chen
   image             : assets/image/bio-photo.png
-  email             : nuoch3n@gmail.com
-  github            : nuo27
-  linkedin          : nuochen27
+  location          : Sydney, Australia
+
+
+### Social Links (rendered by _includes/social.html) ###
+social:
+  - name            : Email
+    icon            : envelope
+    url             : "mailto:nuoch3n@gmail.com"
+  - name            : GitHub
+    icon            : github
+    prefix          : fab
+    url             : "https://github.com/nuo27"
+  - name            : LinkedIn
+    icon            : linkedin-in
+    prefix          : fab
+    url             : "https://www.linkedin.com/in/nuochen27"
 
 
 ### Collections ###

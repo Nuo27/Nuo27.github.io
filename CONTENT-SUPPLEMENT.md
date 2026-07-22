@@ -78,7 +78,7 @@ C++ 负责核心系统（伤害计算、网络复制、游戏模式逻辑），B
 
 ### 放在哪里
 
-`_includes/about/page.html` 第14行的 `<!-- TODO: Origin story -->` 处，在 intro 第3段之后追加一个新的 `<p>` 段。
+`pages/about.md` 的 `intro.paragraphs:` 列表（front matter）。在末尾新增一个 `- text:` 条目（Markdown 语法），并删掉现有的 `placeholder: true` 占位条目。渲染由 `_layouts/about.html` → `_includes/about/intro.html` 经 `markdownify` 处理。
 
 ### 回答这些问题
 
@@ -89,11 +89,14 @@ C++ 负责核心系统（伤害计算、网络复制、游戏模式逻辑），B
 
 ### 示例格式
 
-替换 `<p class="placeholder">[ Origin story: ... ]</p>` 为：
+替换 `pages/about.md` 中 `intro.paragraphs:` 末尾的占位条目为（Markdown 语法，会经 `markdownify` 渲染）：
 
-```html
-<p>我第一次接触游戏开发是在 ___。当时我 ___，突然意识到 ___。那之后我开始学 ___，
-并最终选择了 UTS 的 Game Development 专业。</p>
+```yaml
+  paragraphs:
+    # ...前面的段落...
+    - text: >-
+        我第一次接触游戏开发是在 ___。当时我 ___，突然意识到 ___。那之后我开始学 ___，
+        并最终选择了 UTS 的 Game Development 专业。
 ```
 
 ---
@@ -102,9 +105,7 @@ C++ 负责核心系统（伤害计算、网络复制、游戏模式逻辑），B
 
 ### 放在哪里
 
-`_includes/about/page.html` 中 `// 02 Currently` 区块（`// TODO: Fill in current activities` 注释处）。
-
-每个 `.now-item` 里的 `.now-value` 都是占位符，直接替换文字即可。
+`pages/about.md` 的 `currently.items:` 列表（front matter）。每个条目把 `value` 填入实际内容，并把 `placeholder: true` 改为 `false`（或删除该行）即可——`[ ]` 方括号只对占位条目自动添加。
 
 ### 回答这些问题（定期更新）
 
@@ -115,13 +116,14 @@ C++ 负责核心系统（伤害计算、网络复制、游戏模式逻辑），B
 
 ### 示例格式
 
-把 `<span class="now-value placeholder">[ e.g. UE5 Gameplay Ability System ]</span>` 替换为：
+把 `pages/about.md` 中 `currently.items:` 对应条目改为：
 
-```html
-<span class="now-value">UE5 Gameplay Ability System (GAS)</span>
+```yaml
+  items:
+    - { label: LEARNING, value: "UE5 Gameplay Ability System (GAS)" }
 ```
 
-注意：**同时删除 `.placeholder` class**，让样式恢复正常。
+删掉 `placeholder: true`，样式即恢复正常，`[ ]` 方括号也不会再自动添加。
 
 ---
 
@@ -230,7 +232,7 @@ C++ 负责核心系统（伤害计算、网络复制、游戏模式逻辑），B
 
 ### 放在哪里
 
-`_includes/about/page.html` 中 `// 07 Recommendations` 区块（`// TODO: Ask teammates...` 注释处）。
+`pages/about.md` 的 `testimonials.items:` 列表（front matter）。把 `quote` / `author` 填入实际内容，并把 `placeholder: true` 删除即可（`.placeholder` class 由 include 根据该字段自动添加）。
 
 ### 怎么获取
 
@@ -241,16 +243,15 @@ C++ 负责核心系统（伤害计算、网络复制、游戏模式逻辑），B
 
 ### 示例格式
 
-替换 `<blockquote class="testimonial placeholder">` 内的占位符，并删除 `.placeholder` class：
+把 `pages/about.md` 中 `testimonials.items:` 的占位条目改为：
 
-```html
-<blockquote class="testimonial">
-  <p>"Nuo 是我见过最可靠的团队领导。他不仅代码写得好，还能让整个团队的技术水平提升。"</p>
-  <cite>— 队友姓名，Pondiberry Lodge 团队成员</cite>
-</blockquote>
+```yaml
+  items:
+    - quote: "Nuo 是我见过最可靠的团队领导。他不仅代码写得好，还能让整个团队的技术水平提升。"
+      author: "队友姓名，Pondiberry Lodge 团队成员"
 ```
 
-每段推荐都是独立的 `<blockquote class="testimonial">…</blockquote>`，多段就复制粘贴。
+删掉 `placeholder: true` 即可。多段推荐就在列表里多加几个条目。
 
 ---
 

@@ -121,7 +121,7 @@ layout: default
     color: var(--cyan);
     text-decoration: none;
     border-bottom: 1px solid color-mix(in srgb, var(--cyan) 40%, transparent);
-    transition: border-color 0.2s ease, color 0.2s ease;
+    transition: border-color 0.2s var(--ease-out-expo, ease-out), color 0.2s var(--ease-out-expo, ease-out);
   }
   .article-body a:hover {
     color: var(--phosphor);
@@ -172,10 +172,11 @@ layout: default
     letter-spacing: 0.12em;
     text-transform: uppercase;
     text-decoration: none;
-    transition: gap 0.25s ease, color 0.2s ease;
+    transition: color 0.2s var(--ease-out-expo, ease-out);
   }
+  .back-link i { transition: transform 0.25s var(--ease-out-expo, ease-out); }
   .back-link:hover {
-    gap: 0.85rem;
     color: var(--cyan);
   }
+  .back-link:hover i { transform: translateX(-4px); }
 </style>

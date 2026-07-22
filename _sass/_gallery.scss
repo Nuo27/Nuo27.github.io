@@ -169,7 +169,7 @@
   border-radius: 6px;
   transform: scale(0.96);
   opacity: 0;
-  transition: transform 0.4s $ease-out-expo, opacity 0.3s ease;
+  transition: transform 0.4s $ease-out-expo, opacity 0.3s $ease-out-expo;
   pointer-events: none;
 }
 .lightbox.open .lightbox-img { transform: scale(1); opacity: 1; }
@@ -187,7 +187,7 @@
   align-items: center;
   justify-content: center;
   font-size: 0.95rem;
-  transition: background 0.2s ease, border-color 0.2s ease, transform $dur-base $ease-out-expo;
+  transition: background 0.2s $ease-out-expo, border-color 0.2s $ease-out-expo, transform $dur-base $ease-out-expo;
 }
 .lightbox-btn:hover {
   background: rgba(255, 255, 255, 0.14);

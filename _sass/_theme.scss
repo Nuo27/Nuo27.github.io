@@ -18,7 +18,7 @@
   @include themed(border-color, rgba($carbon, 0.35), rgba($phosphor, 0.45));
   @include themed(color, $carbon, $phosphor);
   @include themed(background, transparent, rgba($phosphor, 0.04));
-  transition: all $dur-fast $ease-out-expo;
+  transition: background $dur-fast $ease-out-expo, border-color $dur-fast $ease-out-expo, color $dur-fast $ease-out-expo;
 }
 #theme-toggler:hover:before {
   @include themed(background, rgba($carbon, 0.05), rgba($phosphor, 0.10));

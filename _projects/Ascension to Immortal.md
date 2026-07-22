@@ -4,6 +4,8 @@ name: Ascension to Immortal
 tools: [C#, Unity, Mirror]
 image: /assets/image/projects/Ascension-to-Immortal.png
 description: 2D LAN-based multiplayer card game (Unity/C#/Mirror) — solo developer, 3-month build.
+category: Game
+status: "2023"
 ---
 
 **Ascension to Immortal** is a 2D round-based multiplayer card game developed independently after graduation. Built on the **Mirror** networking framework for LAN multiplayer, players collect elements and strategically buy or hold cards to reach a winning score.

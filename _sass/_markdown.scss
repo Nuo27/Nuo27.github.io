@@ -54,14 +54,16 @@
       display: block;
       height: 0.15em;
       margin-top: -0.15em;
-      width: 0;
+      width: 100%;
       background: $cyan;
-      transition: width 0.35s;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s $ease-out-expo;
       [data-theme="light"] & { background: $print-cyan; }
     }
 
     &:hover::after {
-      width: 100%;
+      transform: scaleX(1);
     }
   }
 

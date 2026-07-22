@@ -1,0 +1,65 @@
+{% if page.hero %}
+  <!-- ============ Cover ============ -->
+  <header class="mag-cover landing-wrapper">
+
+    <span class="hero-glyph glyph-b" aria-hidden="true">[ NODE_01 // ONLINE ]</span>
+    <span class="hero-glyph glyph-c" aria-hidden="true">— SYS.OK</span>
+
+    <div class="hud-telemetry" aria-hidden="true">
+      <div class="hud-row hud-row--top">
+        <span class="hud-cell">// NUO.OS <span class="blink">_</span></span>
+        <span class="hud-cell">REV.2026.07</span>
+        <span class="hud-cell">LAT -33.87 / LON 151.21</span>
+      </div>
+    </div>
+
+    <div class="row align-items-center landing-row no-gutters">
+      <div class="col-lg-8 landing-content">
+
+        <p class="cover-eyebrow mono" data-reveal>
+          <span class="crosshair">+</span> {{ page.hero.eyebrow }}
+        </p>
+
+        <h1 class="cover-wordmark" data-glitch>
+          <span class="line"><span class="line-inner">{{ site.title }}</span></span>
+        </h1>
+
+        <p class="cover-deck" data-reveal>{{ site.description }}</p>
+
+        <div class="cover-tags" data-reveal>
+          {% include common/tag-chips.html tags=page.hero.skills %}
+        </div>
+
+        {% if page.hero.cta_primary or page.hero.cta_secondary %}
+        <div class="cover-cta" data-reveal>
+          {% if page.hero.cta_primary %}
+          <a href="{{ page.hero.cta_primary.url }}" class="btn btn-primary-custom" data-magnetic>
+            <span class="btn-bracket">&lt;</span> {{ page.hero.cta_primary.label }} <span class="btn-bracket">/&gt;</span>
+          </a>
+          {% endif %}
+          {% if page.hero.cta_secondary %}
+          <a href="{{ page.hero.cta_secondary.url }}" class="btn btn-secondary-custom" data-magnetic>
+            <span class="btn-prompt">&gt;</span> {{ page.hero.cta_secondary.label }}
+          </a>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="col-lg-4 text-center mt-5 mt-lg-0">
+        <div class="cover-portrait" data-reveal>
+          <div class="portrait-frame">
+            <img src="{{ site.author.image }}" alt="{{ site.author.name }}" class="portrait-image">
+            <div class="portrait-scan" aria-hidden="true"></div>
+            <span class="portrait-tag mono">SUBJECT // NUO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-cue" data-reveal aria-hidden="true">
+      <span class="mono scroll-cue-label">SCROLL</span>
+      <span class="scroll-cue-line"></span>
+    </div>
+  </header>
+{% endif %}

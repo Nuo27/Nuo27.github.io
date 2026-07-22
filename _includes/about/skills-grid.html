@@ -1,0 +1,12 @@
+{% if page.skills_detailed %}
+<section class="reveal mb-5">
+  <div class="row">
+    <div class="col-md-6 reveal reveal-left">
+      {% include about/skills.html title=page.skills_detailed.programming.title source=page.skills_detailed.programming.items %}
+    </div>
+    <div class="col-md-6 reveal reveal-right">
+      {% include about/skills.html title=page.skills_detailed.tools.title source=page.skills_detailed.tools.items %}
+    </div>
+  </div>
+</section>
+{% endif %}

@@ -4,6 +4,11 @@ name: Wistful
 tools: [C#, Unity]
 image: /assets/image/projects/wistful.png
 description: 3D exploration puzzle game (Unity/C#) — selected for the 2022 UTS Tech Festival.
+category: Game
+status: "2022"
+external_links:
+  - { name: "Live Demo", url: "https://k1ngslayer.itch.io/wistful-group-6", icon: "external-link-alt" }
+  - { name: "Source",    url: "https://github.com/SpazyPear/Wistful", icon: "github", prefix: "fab" }
 ---
 
 **Wistful** is a 3D low-poly exploration puzzle game set against the suffocating void of space. Players control a child astronaut navigating atmospheric sci-fi environments, solving environmental puzzles to progress through interconnected levels.

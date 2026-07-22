@@ -1,0 +1,7 @@
+{%- comment -%}
+  Render a list of tags as styled .tag-chip spans.
+  Params: tags -> array of strings
+{%- endcomment -%}
+{%- for tag in include.tags -%}
+  <span class="tag-chip">{{ tag }}</span>
+{%- endfor -%}

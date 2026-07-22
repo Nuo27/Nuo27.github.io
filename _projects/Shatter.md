@@ -4,6 +4,10 @@ name: Shatter
 tools: [UE5, C++, Blueprint]
 image: /assets/image/projects/shatter.png
 description: 1v1 multiplayer movement shooter (UE5/C++) — Epic Online Services, FMOD adaptive audio.
+category: Game
+status: "2022"
+external_links:
+  - { name: "Live Demo", url: "https://k1ngslayer.itch.io/shatter", icon: "external-link-alt" }
 ---
 
 **Shatter** is a high-octane 1v1 movement shooter developed in **Unreal Engine 5** for UTS Game Design Studio II. Players wield a coin in one hand and a revolver in the other — toss the coin, shoot it mid-air. Four hot-swappable abilities combined with a knockback multiplier system create fast-paced, physics-driven combat. First to five points wins.
