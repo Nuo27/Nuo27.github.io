@@ -73,6 +73,40 @@
 
     .cursor-vector { position: absolute; top: 0; left: 0; width: 40px; height: 40px; overflow: visible; display: block; isolation: isolate; }
 
+    /* ---- Invert ring (sibling of #cursor-root so its fill's
+           mix-blend-mode reaches the page, not just the cursor's own
+           stacking context). A mask carves a triangular ring: the outer
+           triangle scales with --cursor-outline-scale from its centroid
+           (locked to .cursor-outline), the inner hole stays fixed at the
+           .cursor-core boundary so the cut-out always aligns with the
+           tip. White fill + difference inverts page color in the ring
+           only; the inner triangle keeps the cursor's own styling. ---- */
+    .cursor-spot {
+      position: fixed; top: 0; left: 0;
+      width: 40px; height: 40px;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 10002;
+      overflow: visible;
+      transform-origin: 0 0;          /* rotate around apex like the cursor body */
+      transition: opacity 0.34s ease;
+      will-change: transform;
+    }
+    .cursor-spot-fill {
+      fill: #FFFFFF;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring-outer {
+      transform: scale(var(--cursor-outline-scale));
+      transform-box: fill-box; transform-origin: 33.333% 33.333%;
+      transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Hover: ring fades in. Expansion is driven by --cursor-outline-scale
+       — the same var the cursor's outline + aurora use — so the ring,
+       border, and aurora grow together from the centroid as one object. */
+    #cursor-root.is-hover ~ .cursor-spot { opacity: 1; }
+
     .cursor-aurora-outer-halo,
     .cursor-aurora-outer-core {
       fill: none; stroke: #4DFFB1; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round;
@@ -126,8 +160,8 @@
     }
 
     /* belt-and-suspenders: the JS gate also returns early on these */
-    @media (hover: none), (pointer: coarse) { #cursor-root { display: none !important; } }
-    @media (prefers-reduced-motion: reduce) { #cursor-root { display: none !important; } }
+    @media (hover: none), (pointer: coarse) { #cursor-root, .cursor-spot { display: none !important; } }
+    @media (prefers-reduced-motion: reduce) { #cursor-root, .cursor-spot { display: none !important; } }
   </style>
   <script>
     (function () {
@@ -239,8 +273,11 @@
         if (down) ts *= 0.86;
         velScale = lerp(velScale, ts, 0.2);
 
-        el.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0)';
-        body.style.transform = 'rotate(' + tilt.toFixed(2) + 'deg) scale(' + velScale.toFixed(3) + ')';
+        var tx = 'translate3d(' + rx + 'px,' + ry + 'px,0)';
+        var rot = 'rotate(' + tilt.toFixed(2) + 'deg) scale(' + velScale.toFixed(3) + ')';
+        el.style.transform = tx;
+        body.style.transform = rot;
+        spot.style.transform = tx + ' ' + rot;   // mirror body: translate + rotate + velScale → ring never drifts
 
         if (trails.length) {
           var px = rx, py = ry, show = sp > cfg.trail.minSpeed;
@@ -262,10 +299,47 @@
       //    The cursor stays visible continuously; in-app navigation
       //    via the soft router never destroys this controller.
       // ============================================================
-      function show() { el.style.opacity = '1'; }
-      function hide() { el.style.opacity = '0'; }
+      function show() { el.style.opacity = '1'; spot.style.opacity = ''; }
+      function hide() { el.style.opacity = '0'; spot.style.opacity = '0'; }
 
       document.documentElement.appendChild(el);
+
+      // Invert ring — masked triangular ring, sibling of #cursor-root so
+      // its fill's mix-blend-mode reaches the page. Outer triangle scales
+      // with --cursor-outline-scale from the centroid (locked to
+      // .cursor-outline); inner hole stays fixed at the .cursor-core
+      // boundary so the cut-out always aligns with the tip.
+      var spot = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      spot.setAttribute('class', 'cursor-spot');
+      spot.setAttribute('viewBox', '0 0 40 40');
+      (function () {
+        var NS = 'http://www.w3.org/2000/svg';
+        var defs = document.createElementNS(NS, 'defs');
+        var mask = document.createElementNS(NS, 'mask');
+        mask.setAttribute('id', 'cursor-ring-mask');
+        mask.setAttribute('maskUnits', 'userSpaceOnUse');
+        mask.setAttribute('x', '0'); mask.setAttribute('y', '0');
+        mask.setAttribute('width', '40'); mask.setAttribute('height', '40');
+        function mpoly(cls, points, fill) {
+          var n = document.createElementNS(NS, 'polygon');
+          if (cls) n.setAttribute('class', cls);
+          n.setAttribute('points', points);
+          n.setAttribute('fill', fill);
+          mask.appendChild(n);
+        }
+        mpoly('cursor-ring-outer', '0,0 24,0 0,24', '#FFFFFF');   // scales with outline
+        mpoly(null, '0,0 14,0 0,14', '#000000');                   // fixed hole = core boundary
+        defs.appendChild(mask);
+        spot.appendChild(defs);
+        var rect = document.createElementNS(NS, 'rect');
+        rect.setAttribute('class', 'cursor-spot-fill');
+        rect.setAttribute('x', '0'); rect.setAttribute('y', '0');
+        rect.setAttribute('width', '40'); rect.setAttribute('height', '40');
+        rect.setAttribute('mask', 'url(#cursor-ring-mask)');
+        spot.appendChild(rect);
+      })();
+      document.documentElement.appendChild(spot);
+
       requestAnimationFrame(render);
 
       window.addEventListener('mousemove', function (e) {

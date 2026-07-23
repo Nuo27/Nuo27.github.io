@@ -428,16 +428,19 @@
   border-radius: 6px;
   overflow: hidden;
   background: var(--bg-raised);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 6%, transparent);
   aspect-ratio: 16 / 10;
+  padding: 0.75rem;
   text-decoration: none !important;
   align-self: center;
   img {
     width: 100%; height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     filter: grayscale(0.18) contrast(1.04);
     transition: transform $dur-base $ease-out-expo, filter $dur-base $ease-out-expo;
   }
 }
+[data-theme="light"] .fi-media { background: rgba($carbon, 0.10); }
 .fi-overlay {
   position: absolute; inset: 0;
   background: radial-gradient(circle at 72% 28%, color-mix(in srgb, var(--cat) 24%, transparent), transparent 70%);
