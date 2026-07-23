@@ -13,36 +13,23 @@ intro:
   paragraphs:
     - text: >-
         I’m **Nuo Chen** — a gameplay programmer who works across both major engines:
-        **Unity (C#)** and **Unreal Engine 5 (C++)**. I specialize in multiplayer
-        networking, combat systems, and gameplay architecture, with shipped experience
-        ranging from 1v1 online shooters to LAN card games.
+        **Unity (C#)** and **Unreal Engine 5 (C++)**. I specialize in multiplayer networking, combat systems, and gameplay architecture, with shipped experience ranging from 1v1 online shooters to LAN card games. More recently, I’ve also been exploring AI engineering through image generation, large language models, and prompt engineering, applying these tools to accelerate development workflows and prototype gameplay ideas.
     - text: >-
-        I’ve operated at both ends of the scale — as lead programmer coordinating five-
-        and six-person teams (architecture, code integration, cross-level consistency),
-        and as a solo developer building entire games end-to-end. This range is
-        deliberate: I want to understand how games work at every layer, from the network
-        packet to the player experience.
+        I’ve operated at both ends of the scale — as lead programmer coordinating indie game dev teams (architecture, code integration, cross-level consistency), and as a solo developer building entire games end-to-end. This range is deliberate: I want to understand how games work at every layer, from little piece of code to the player experience, while embracing new technologies that can improve how games are designed and built.
     - text: >-
-        My Data Analytics minor shapes how I approach systems — I break down complex
-        mechanics methodically, whether that’s a game economy, a networking pipeline, or
-        a player behavior dataset. Outside of code, I study why great games _feel_ great
-        to play, pick up new languages (human and programming), and prototype my next
-        mechanic.
-    # Origin story placeholder — see CONTENT-SUPPLEMENT.md §2
+        My Data Analytics minor shapes how I approach systems — I break down complex mechanics methodically, whether that’s a game economy, a networking pipeline, a player behavior dataset, or an AI-assisted content workflow. I enjoy understanding not only how systems function, but also how they can be made more efficient, scalable, and enjoyable for both developers and players.
     - text: >-
-        Origin story: How did you get into game development? First game, first line of
-        code, the “aha” moment.
-      placeholder: true
+        Outside of code, I study why great games feel great to play, experiment with emerging AI technologies, pick up new languages (both human and programming), and prototype my next mechanic. I'm always looking for opportunities to combine traditional game development with modern AI tools to build richer experiences and smarter development pipelines.
 
 # ── 02 · Currently ──
 currently:
   eyebrow: "02"
   title: Currently
   items:
-    - { label: LEARNING, value: "e.g. UE5 Gameplay Ability System",  placeholder: true }
-    - { label: BUILDING, value: "current prototype or project",      placeholder: true }
-    - { label: PLAYING,  value: "game + what you're studying about it", placeholder: true }
-    - { label: READING,  value: "book / article / paper",            placeholder: true }
+    - { label: LEARNING, value: "AI Engineering" }
+    - { label: BUILDING, value: "An Indie Game in Unity" }
+    - { label: PLAYING,  value: "Forza Horizon 6" }
+    - { label: READING,  value: "book / article / paper" }
 
 # ── 03 · Skills ──
 skills:
@@ -68,13 +55,29 @@ skills_detailed:
     title: Tools & Technologies
     items: [Unity 3D, Unreal Engine 5, Git & GitHub, FMOD, iOS / Xcode, Mirror Networking]
 
+# ── 04 · Education ──
+education:
+  eyebrow: "04"
+  title: Education
+  items:
+    - qualification: "B.Sc. Game Development"
+      institution: "UTS, Sydney"
+      from: 2020
+      to: 2023
+      description: >-
+        Graduated with a Bachelor of Science majoring in Game Development, minor in
+        Data Analytics. Coursework included Game Design Studio I & II, iOS App
+        Development, and Data Structures. Shipped four game projects across Unity
+        (C#) and Unreal Engine 5 (C++). “Wistful” was selected for presentation at
+        the 2022 UTS Tech Festival.
+
 # ── 04 · Experience ──
 experience:
   eyebrow: "04"
-  title: Experience
+  title: Life
   items:
-    - title: "Lead Programmer — The Tragedy of Pondiberry Lodge"
-      from: 2022
+    - title: "B.Sc. Game Development in UTS"
+      from: 2020
       to: 2023
       description: >-
         Led programming for a 3D exploration detective game (Unity, C#) in a
@@ -82,22 +85,35 @@ experience:
         interaction framework, UI, and progression across five themed levels.
         Designed and built the tutorial and first level while managing team
         coordination and code integration.
-    - title: "Gameplay Programmer — Shatter (UE5 Multiplayer)"
-      from: 2022
-      to: 2022
-      description: >-
-        Built a 1v1 movement shooter in Unreal Engine 5 (C++ / Blueprints) for Game
-        Design Studio II. Implemented online multiplayer via Epic Online Services,
-        ability and knockback systems, and integrated adaptive FMOD audio in
-        collaboration with UTS music students.
-    - title: "Indie Game Developer — Solo & Collaborative Projects"
+
+    - title: "Contract Gameplay Programmer"
       from: 2023
+      to: 2025
+      description: >-
+        Worked as a freelance gameplay programmer across multiple commercial
+        projects using Unity and Unreal Engine. Built multiplayer gameplay
+        systems, networking features, combat mechanics, and gameplay tools while
+        collaborating with distributed teams and adapting to a variety of project
+        requirements and production pipelines.
+
+    - title: "Indie Game Developer"
+      from: 2025
+      to: 2026
+      description: >-
+        Focused on developing original game prototypes and technical experiments.
+        Explored advanced gameplay architecture, multiplayer systems, procedural
+        workflows, and AI-assisted development using image generation and prompt engineering to accelerate content creation
+        and iteration.
+
+    - title: "Studying for a Master's Degree"
+      from: 2026
       to: present
       description: >-
-        Independently developing original game titles post-graduation, including a
-        LAN-based multiplayer card game on the Mirror networking framework (3-month
-        solo build). Currently exploring systems-driven design, engine tooling, and
-        procedural generation across new prototypes.
+        Currently pursuing a Master's degree while continuing to develop
+        personal projects. Expanding my expertise in AI engineering, machine
+        learning, and modern software architecture, with a focus on integrating
+        intelligent tools and workflows into game development.
+
 
 # ── 05 · Education ──
 education:
@@ -127,23 +143,12 @@ languages:
     - { name: Japanese,  level: Basic }
     - { name: Korean,    level: Basic }
 
-# ── 07 · Recommendations ──
-testimonials:
-  eyebrow: "07"
-  title: Recommendations
-  items:
-    # See CONTENT-SUPPLEMENT.md §8
-    - quote: >-
-        Recommendation quote — ask a teammate from Pondiberry Lodge or Shatter, or a
-        UTS professor.
-      author: "Name, Role / Relationship"
-      placeholder: true
 
-# ── 08 · Contact ──
+# ── 07 · Contact ──
 contact:
-  eyebrow: "08"
+  eyebrow: "07"
   title: Contact
-  blurb: "Open to gameplay programming roles and collaboration on interesting projects."
+  blurb: "Open to gameplay programming/ AI / Coding roles and collaboration on interesting projects."
 ---
 
 <!-- Content-driven page. Body is intentionally empty; _layouts/about.html composes the sections. -->

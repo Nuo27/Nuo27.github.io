@@ -179,11 +179,77 @@
   letter-spacing: 0.06em;
   line-height: 1.4;
   color: var(--ink-mut);
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition:
+    transform $dur-fast $ease-out-back,
+    border-color $dur-fast $ease-out-expo,
+    color $dur-fast $ease-out-expo,
+    box-shadow $dur-fast $ease-out-expo,
+    background $dur-fast $ease-out-expo;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      115deg,
+      transparent 0%,
+      transparent 38%,
+      rgba($phosphor, 0.22) 50%,
+      transparent 62%,
+      transparent 100%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.9s $ease-out-expo;
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    border-color: var(--phosphor);
+    color: var(--phosphor);
+    background: rgba($phosphor-soft, 0.12);
+    box-shadow: 0 0 12px rgba($phosphor, 0.28);
+    &::before { transform: translateX(120%); }
+  }
+
   [data-theme="light"] & {
     background: rgba($carbon, 0.04);
     border-color: rgba($carbon, 0.18);
     color: rgba($carbon, 0.78);
+    &::before { background: linear-gradient(115deg, transparent 0%, transparent 38%, rgba($carbon, 0.18) 50%, transparent 62%, transparent 100%); }
+    &:hover {
+      border-color: $print-phosphor;
+      color: $print-phosphor;
+      background: rgba($carbon, 0.06);
+      box-shadow: 0 0 10px rgba($carbon, 0.14);
+    }
   }
+}
+
+// Distinct accent for featured tags (e.g. Student Work) — subtle pulse + dashed corner
+.tag-chip--accent {
+  border-color: rgba($cyan, 0.42);
+  color: var(--cyan);
+  background: rgba($cyan, 0.06);
+  animation: tag-pulse 3.6s ease-in-out infinite;
+  [data-theme="light"] & {
+    border-color: rgba($print-cyan, 0.5);
+    color: $print-cyan;
+    background: rgba($print-cyan, 0.06);
+  }
+}
+@keyframes tag-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba($cyan, 0.0); }
+  50%      { box-shadow: 0 0 14px 0 rgba($cyan, 0.22); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tag-chip,
+  .tag-chip--accent,
+  .tag-chip::before { transition: none !important; animation: none !important; }
+  .tag-chip:hover::before { transform: translateX(-120%); }
 }
 
 // ---- Card wrapper (positioning context, reserved for future overlays) ----

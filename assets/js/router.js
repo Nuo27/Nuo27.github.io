@@ -194,16 +194,42 @@
       doSwap(page.app);
       updateNavbar(pathname);
       if (window.__initPageFeatures) window.__initPageFeatures(page.app);
-      if (opts.pop) {
-        window.scrollTo(0, typeof opts.toScroll === 'number' ? opts.toScroll : 0);
-      } else {
-        window.scrollTo(0, 0);
+      // Sync the smooth-scroll wrapper to the new scroll position so the
+      // view-transition cross-fade doesn't ride on a sliding wrapper.
+      // Feature-checked — no-op if smooth-scroll.js isn't loaded.
+      var to = opts.pop ? (typeof opts.toScroll === 'number' ? opts.toScroll : 0) : 0;
+      window.scrollTo(0, to);
+      if (window.__smoothScroll) window.__smoothScroll.snapTo(to);
+      // DIAG: probe post-swap state so we can see if startViewTransition
+      // left scrollY off from what we asked for.
+      if (window.__scrollDebug) {
+        try {
+          console.log('[router] swap', {
+            url: url,
+            pop: !!opts.pop,
+            toScroll: to,
+            smoothEnabled: !!(window.__smoothScroll && window.__smoothScroll.isSmooth()),
+            scrollY: window.scrollY,
+            bodyH: document.body.style.height,
+            wrapperTransform: (document.getElementById('smooth-scroll') || {}).style && document.getElementById('smooth-scroll').style.transform
+          });
+          setTimeout(function () {
+            console.log('[router] swap+50ms', {
+              scrollY: window.scrollY,
+              bodyH: document.body.style.height,
+              docH: document.documentElement.scrollHeight
+            });
+          }, 50);
+        } catch (e) {}
       }
     };
 
     if (opts.skipTransition || typeof document.startViewTransition !== 'function') {
       swap();
     } else {
+      // DIAG: mark we're going through startViewTransition so the post-
+      // swap log captures the timing.
+      if (window.__scrollDebug) console.log('[router] startViewTransition →', url);
       document.startViewTransition(swap);
     }
   }

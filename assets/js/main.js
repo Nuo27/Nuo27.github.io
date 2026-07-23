@@ -64,35 +64,43 @@
     var progressBar = document.createElement('div');
     progressBar.className = 'scroll-progress';
     document.body.prepend(progressBar);
-    function update() {
+    function update(pos) {
       var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      var progress = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+      var progress = docHeight > 0 ? (pos / docHeight) * 100 : 0;
       progressBar.style.transform = 'scaleX(' + (progress / 100) + ')';
     }
-    window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update, { passive: true });
-    update();
+    // Driven by the smooth-scroll render position so the bar tracks what
+    // the user actually sees, not the raw native scrollY (which is ahead
+    // of the wrapper during the LERP catch-up).
+    window.addEventListener('resize', function () { update(window.__smoothScroll.getPosition()); }, { passive: true });
+    window.__smoothScroll.subscribe(function (s) { update(s.pos); });
   }
 
   function initBackToTop() {
     var btn = document.getElementById('backToTop');
     if (!btn) return;
-    window.addEventListener('scroll', function () {
-      btn.classList.toggle('visible', window.scrollY > 500);
-    }, { passive: true });
+    window.__smoothScroll.subscribe(function (s) {
+      btn.classList.toggle('visible', s.pos > 500);
+    });
     btn.addEventListener('click', function () {
-      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+      // When smooth-scroll is active, jump native scrollY to 0 instantly
+      // and let the wrapper LERP — avoids browser-easing on top of our
+      // own. In pass-through mode (touch / reduced-motion), keep the
+      // original behavior.
+      var smooth = window.__smoothScroll && window.__smoothScroll.isSmooth();
+      if (smooth) window.scrollTo(0, 0);
+      else window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
     });
   }
 
   function initNavbarScroll() {
     var navbar = document.querySelector('.navbar-themed');
     if (!navbar) return;
-    var onScroll = function () {
-      navbar.classList.toggle('scrolled', window.scrollY > 50);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+    // .navbar-themed lives on the persistent shell — never swapped by the
+    // router — so no isConnected guard needed.
+    window.__smoothScroll.subscribe(function (s) {
+      navbar.classList.toggle('scrolled', s.pos > 50);
+    });
   }
 
   // ============================================================
@@ -296,19 +304,20 @@
     var hero = scope.querySelector('.landing-wrapper');
     if (!hero) return;
     heroScrollBound = true;
-    var ticking = false;
-    function update() {
-      var y = window.scrollY, vh = window.innerHeight;
-      if (y >= vh) { ticking = false; return; }
+    var vh = window.innerHeight;
+    function update(y) {
+      // hero is a child of <main> (router-swapped). Bail once it's gone
+      // so we don't keep writing to a detached node across navigations.
+      if (!hero.isConnected) return;
+      if (y >= vh) return;
       var pp = Math.min(y / vh, 1);
       hero.style.opacity = String(1 - pp * 0.55);
       hero.style.transform = 'scale(' + (1 - pp * 0.03) + ') translate3d(0,' + (y * 0.16) + 'px,0)';
-      ticking = false;
     }
-    window.addEventListener('scroll', function () {
-      if (!ticking) { window.requestAnimationFrame(update); ticking = true; }
-    }, { passive: true });
-    update();
+    // Subscribe to the smoothed render position so the hero scales in
+    // lockstep with the wrapper transform instead of running ahead of it.
+    window.addEventListener('resize', function () { vh = window.innerHeight; update(window.__smoothScroll.getPosition()); }, { passive: true });
+    window.__smoothScroll.subscribe(function (s) { update(s.pos); });
   }
 
   function initHeroAurora(scope) {
@@ -505,10 +514,16 @@
     if (!el) return;
 
     window.scrollTo(0, 0);
-    // Wait for the View Transition / content layout to settle.
+    if (window.__smoothScroll) window.__smoothScroll.snapTo(0);
+
+    // When smooth-scroll is active, jump the native position instantly and
+    // let the wrapper LERP to the target — avoids the browser's own easing
+    // competing with ours. Otherwise fall back to the original native
+    // scrollIntoView({behavior:'smooth'}) (or instant on reduced-motion).
+    var smooth = !!(window.__smoothScroll && window.__smoothScroll.isSmooth());
     setTimeout(function () {
-      el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-    }, reduceMotion ? 0 : 500);
+      el.scrollIntoView({ behavior: smooth ? 'auto' : (reduceMotion ? 'auto' : 'smooth'), block: 'start' });
+    }, smooth ? 500 : (reduceMotion ? 0 : 500));
   }
 
   // ============================================================

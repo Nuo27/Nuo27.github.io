@@ -1,7 +1,14 @@
 {%- comment -%}
   Render a list of tags as styled .tag-chip spans.
   Params: tags -> array of strings
+  Optional: accent -> array of strings that get the .tag-chip--accent modifier
 {%- endcomment -%}
+{%- assign accent_list = include.accent | default: "Student Work" -%}
 {%- for tag in include.tags -%}
-  <span class="tag-chip">{{ tag }}</span>
+  {%- assign slug = tag | downcase | replace: ' ', '-' -%}
+  {%- assign is_accent = false -%}
+  {%- if accent_list contains tag or accent_list contains slug -%}
+    {%- assign is_accent = true -%}
+  {%- endif -%}
+  <span class="tag-chip{% if is_accent %} tag-chip--accent{% endif %}">{{ tag }}</span>
 {%- endfor -%}

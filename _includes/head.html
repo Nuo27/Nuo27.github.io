@@ -180,12 +180,20 @@
 
       // cfg — every effect tunable / independently toggleable
       var cfg = {
-        lerp: 0.45,             // render→pointer easing (higher = more precise)
+        rate: 27,               // per-second position smoothing: k = 1 - exp(-rate·dt); critically damped, zero overshoot, identical at any refresh rate
+        snap: 0.4,              // px dead-zone — gap below this locks render coords to the pointer, ending the asymptotic sub-pixel chase at rest
+        velZero: 0.1,           // px/frame@60fps below which filtered velocity clamps to 0
+        velRate: 9,             // per-second EMA on velocity (≈110ms τ) — heavy filter so the signal feeding every effect is stable
+        dirLock: 2.0,           // px/frame@60fps (~120px/s) — direction vector refreshes only above this; frozen below so atan2 never reads a near-zero vector
+        effLow: 1.0,            // px/frame@60fps (~60px/s) — effect blend is 0 below (calm + precise)
+        effHigh: 3.0,           // px/frame@60fps (~180px/s) — effect blend is 1 above (fully expressive); smoothstep between effLow/effHigh
+        effRate: 12,            // per-second EMA on the effect blend itself — fade is gradual, no abrupt on/off around the band
         maxTilt: 12,            // deg — how far the triangle leans into movement
         velScaleMax: 0.14,      // speed-based enlargement ceiling
-        velScaleRef: 24,        // px/frame at which enlargement saturates
-        velTiltMin: 0.6,        // px/frame below which tilt decays to 0
-        trail: { minSpeed: 0.6, lerp: [0.5, 0.4, 0.32, 0.25], opacity: [0.22, 0.13, 0.07, 0.03] },
+        velScaleRef: 24,        // px/frame@60fps at which enlargement saturates
+        tiltSnap: 0.05,         // deg — at true rest, snap tilt to exactly 0 (stable transform string)
+        scaleSnap: 0.002,       // at true rest, snap velScale to rest (stable transform string)
+        trail: { lerp: [0.5, 0.4, 0.32, 0.25], opacity: [0.22, 0.13, 0.07, 0.03] },
         enable: { trail: true, tilt: true }
       };
 
@@ -197,7 +205,7 @@
       //    navigation handoff — state survives because the runtime
       //    survives.
       // ============================================================
-      var p = { x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0, t: 0 };
+      var p = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
       var seenMove = false;
 
       // ============================================================
@@ -242,6 +250,7 @@
       el.appendChild(body);
 
       function lerp(a, b, k) { return a + (b - a) * k; }
+      function smoothstep(e0, e1, x) { var t = Math.max(0, Math.min(1, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); }
 
       // Interaction flags — written by the delegated listeners in §5,
       // read by render(). Declared here so render's first rAF tick (which
@@ -250,29 +259,74 @@
 
       // Render coords start at viewport centre; the cursor is invisible
       // (opacity:0) until the first mousemove, so this never paints.
+      // Velocity (fvx/fvy) is derived from the smoothed render deltas
+      // below, not from raw mousemove /dt, so tilt/scale/trail all read
+      // a value that already inherits the position smoothing — a single
+      // noisy mousemove can't jerk them.
       var rx = p.x, ry = p.y, tilt = 0, velScale = 1;
+      var prevRx = rx, prevRy = ry, fvx = 0, fvy = 0, lastFrame = performance.now();
+      var dir = { x: 1, y: 0 }, effectAmt = 0;   // frozen movement direction (unit vec) + continuous [0,1] effect blend
 
       function render() {
-        var k = down ? 1 : cfg.lerp;
-        rx = lerp(rx, p.x, k);
-        ry = lerp(ry, p.y, k);
+        var now = performance.now();
+        var dt = Math.max(1, now - lastFrame); lastFrame = now;   // dt in ms (used for px/ms velocity below)
+        var dts = dt / 1000;                                       // seconds — for the per-second exponential smoothers
+        var k = down ? 1 : 1 - Math.exp(-cfg.rate * dts);   // framerate-independent critically-damped smoothing, zero overshoot
 
-        var sp = Math.hypot(p.vx, p.vy) * 16;        // ≈ px/frame at 60fps
+        // Dead-zone snap: once the gap is sub-perceptual, lock to pointer
+        // instead of asymptotically chasing a sub-pixel difference that
+        // never resolves — the original source of the low-speed tremor.
+        var dx = p.x - rx, dy = p.y - ry;
+        if (dx * dx + dy * dy < cfg.snap * cfg.snap) { rx = p.x; ry = p.y; }
+        else { rx += dx * k; ry += dy * k; }
 
-        if (cfg.enable.tilt && sp > cfg.velTiltMin) {
-          var target = Math.atan2(p.vy, p.vx) * 180 / Math.PI - 45;
-          target = ((target + 180) % 360 + 360) % 360 - 180;
-          target = Math.max(-cfg.maxTilt, Math.min(cfg.maxTilt, target));
-          tilt = lerp(tilt, target, 0.18);
-        } else {
-          tilt = lerp(tilt, 0, 0.2);
+        // Filtered velocity: rx is already position-smoothed, then a framerate-independent
+        // EMA on top (velRate) → one stable signal drives direction, tilt, scale, and trail.
+        var ivx = (rx - prevRx) / dt, ivy = (ry - prevRy) / dt;
+        prevRx = rx; prevRy = ry;
+        var vk = 1 - Math.exp(-cfg.velRate * dts);
+        fvx = lerp(fvx, ivx, vk); fvy = lerp(fvy, ivy, vk);
+        var sp = Math.hypot(fvx, fvy) * 16;        // ≈ px/frame@60fps
+        if (sp < cfg.velZero) { fvx = 0; fvy = 0; sp = 0; }
+
+        // Frozen direction: refresh only above dirLock so atan2 never reads a near-zero
+        // vector. Below it the previous heading is retained → tilt stays stable at low
+        // speed and resumes instantly in the right direction when movement picks up.
+        if (sp >= cfg.dirLock) {
+          var dm = Math.hypot(fvx, fvy);
+          if (dm > 1e-6) { dir.x = fvx / dm; dir.y = fvy / dm; }
         }
 
-        var ts = 1 + Math.min(sp / cfg.velScaleRef, cfg.velScaleMax);
-        if (zoom) ts *= 1.12;
-        if (down) ts *= 0.86;
-        velScale = lerp(velScale, ts, 0.2);
+        // Continuous effect blend: smoothstep across [effLow, effHigh] then EMA-smoothed.
+        // No hard gate anywhere → effects fade in/out imperceptibly; hovering in the band
+        // settles effectAmt to an intermediate value instead of flickering 0↔1.
+        effectAmt = lerp(effectAmt, smoothstep(cfg.effLow, cfg.effHigh, sp), 1 - Math.exp(-cfg.effRate * dts));
 
+        // Tilt leans into the frozen direction; magnitude scales with effectAmt so it
+        // fades to 0 at low speed. Stable target → monotonic ease, never oscillation.
+        var tiltTarget = 0;
+        if (cfg.enable.tilt) {
+          var ang = Math.atan2(dir.y, dir.x) * 180 / Math.PI - 45;
+          ang = ((ang + 180) % 360 + 360) % 360 - 180;
+          tiltTarget = Math.max(-cfg.maxTilt, Math.min(cfg.maxTilt, ang)) * effectAmt;
+        }
+        tilt = lerp(tilt, tiltTarget, 0.18);
+        if (Math.abs(tilt) < cfg.tiltSnap) tilt = 0;             // sub-perceptual → snap to 0, stable string
+
+        // velScale: state multiplier × (1 + speed-enlargement × effectAmt). Fades cleanly to
+        // the state's rest scale at low speed (no tilt/scale wobble), no double-application
+        // of zoom/down (the multiplier lives in stateMul, applied once).
+        var stateMul = down ? 0.86 : (zoom ? 1.12 : 1);
+        var speedScale = Math.min(sp / cfg.velScaleRef, cfg.velScaleMax);
+        var ts = stateMul * (1 + speedScale * effectAmt);
+        velScale = lerp(velScale, ts, 0.2);
+        if (Math.abs(velScale - stateMul) < cfg.scaleSnap) velScale = stateMul;
+
+        // Translate stays sub-pixel (raw float) for buttery motion at every speed; at
+        // rest the dead-zone snap drives rx/ry to integer p.x/p.y so the string is
+        // byte-stable anyway. rot is quantized (2dp/3dp) and, once effectAmt fades
+        // below 0.01, the snaps above force it to the exact rest string → the body
+        // layer stops re-transforming and the cursor is perfectly still.
         var tx = 'translate3d(' + rx + 'px,' + ry + 'px,0)';
         var rot = 'rotate(' + tilt.toFixed(2) + 'deg) scale(' + velScale.toFixed(3) + ')';
         el.style.transform = tx;
@@ -280,13 +334,13 @@
         spot.style.transform = tx + ' ' + rot;   // mirror body: translate + rotate + velScale → ring never drifts
 
         if (trails.length) {
-          var px = rx, py = ry, show = sp > cfg.trail.minSpeed;
+          var px = rx, py = ry;
           for (var i = 0; i < trails.length; i++) {
             var tr = trails[i];
             tr.x = lerp(tr.x, px, cfg.trail.lerp[i]);
             tr.y = lerp(tr.y, py, cfg.trail.lerp[i]);
             tr.el.style.transform = 'translate3d(' + (tr.x - rx).toFixed(1) + 'px,' + (tr.y - ry).toFixed(1) + 'px,0)';
-            tr.el.style.opacity = show ? cfg.trail.opacity[i] : 0;
+            tr.el.style.opacity = cfg.trail.opacity[i] * effectAmt;
             px = tr.x; py = tr.y;
           }
         }
@@ -343,10 +397,9 @@
       requestAnimationFrame(render);
 
       window.addEventListener('mousemove', function (e) {
-        var now = performance.now(), dt = Math.max(1, now - (p.t || now));
-        p.vx = (e.clientX - p.x) / dt;
-        p.vy = (e.clientY - p.y) / dt;
-        p.x = e.clientX; p.y = e.clientY; p.t = now;
+        // Velocity is render-derived (see fvx/fvy in render()), so this
+        // handler only records position — no /dt noise enters the system.
+        p.x = e.clientX; p.y = e.clientY;
         seenMove = true;
         show();
       }, { passive: true });

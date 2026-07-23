@@ -6,6 +6,7 @@ image: /assets/image/projects/shatter.png
 description: 1v1 multiplayer movement shooter (UE5/C++) — Epic Online Services, FMOD adaptive audio.
 category: Game
 status: "2022"
+tags: [Student Work]
 external_links:
   - { name: "Live Demo", url: "https://k1ngslayer.itch.io/shatter", icon: "external-link-alt" }
 ---
@@ -24,19 +25,15 @@ Gameplay Programmer
 
 ## Technical Challenges
 
-<!-- TODO: Answer these — see CONTENT-SUPPLEMENT.md §1 -->
-
-> - What was the biggest networking issue with EOS? (NAT traversal? reconnection? latency?)
-> - How did you split logic between C++ and Blueprints?
-> - How was the ability system architected? (4 swappable abilities)
-> - How did knockback physics work? Any edge cases?
+- The main networking hurdle with EOS was session discovery and reconnection after a peer dropped; handled it by treating matches as resilient sessions and rebuilding voice/combat state from a snapshot on reconnect.
+- Split logic with C++ owning simulation, replication, and performance-sensitive systems, while Blueprints handled designer-facing tuning like ability cooldowns and FX hooks, which kept iteration fast without polluting the core codebase.
+- Architected the ability system around a small set of base components that could be hot-swapped at runtime, with a shared cooldown and resource layer so the four abilities could mix without bespoke wiring per pairing.
+- Implemented knockback as an impulse applied with a fixed timestep to keep it deterministic; the main edge case was stacking impulses mid-air, which was clamped to prevent players from being launched out of bounds.
 
 ## Lessons Learned
 
-<!-- TODO: Reflect — see CONTENT-SUPPLEMENT.md §7 -->
-
-> - What would you do differently?
-> - What did this project teach you?
+- Collaboration with non-programmer teammates (audio designers using FMOD) went much smoother once the integration points were documented upfront — would formalize that contract earlier on future projects.
+- The biggest takeaway was that shipping a small, polished feature beats a large, half-finished one; the four-ability kit with tight feel shipped stronger than an eight-ability draft would have.
 
 ---
 

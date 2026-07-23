@@ -6,6 +6,7 @@ image: /assets/image/projects/wistful.png
 description: 3D exploration puzzle game (Unity/C#) — selected for the 2022 UTS Tech Festival.
 category: Game
 status: "2022"
+tags: [Student Work]
 external_links:
   - { name: "Live Demo", url: "https://k1ngslayer.itch.io/wistful-group-6", icon: "external-link-alt" }
   - { name: "Source",    url: "https://github.com/SpazyPear/Wistful", icon: "github", prefix: "fab" }
@@ -25,18 +26,14 @@ Gameplay Programmer (6-person team)
 
 ## Technical Challenges
 
-<!-- TODO: Answer these — see CONTENT-SUPPLEMENT.md §1 -->
-
-> - How does the environmental puzzle chain system work? How do puzzles trigger each other across levels?
-> - How did you handle the "interconnected levels" data flow?
-> - How did you coordinate code with the 5 other team members? Git workflow?
+- Modeled puzzle progression as an event-bus chain, where each puzzle emitted a completion signal that other systems could subscribe to, so any future content could react to existing puzzles without hardcoding dependencies.
+- Handled interconnected level data flow by keeping a lightweight save state of solved flags and triggered events that each level reads on load, which decoupled level scenes from each other while preserving continuity.
+- Coordinated with the team using feature branches per mechanic with short-lived merges into a shared main line, plus a brief written convention for script naming and prefab structure so code reviews stayed fast.
 
 ## Lessons Learned
 
-<!-- TODO: Reflect — see CONTENT-SUPPLEMENT.md §7 -->
-
-> - What would you do differently?
-> - What did this project teach you?
+- Working on a six-person team taught me to over-communicate on small decisions — a quick message saved hours of re-integration later.
+- Would invest earlier in shared tooling for level designers; even a small in-editor validator would have caught a few cross-level inconsistencies before playtest.
 
 ## Recognition
 

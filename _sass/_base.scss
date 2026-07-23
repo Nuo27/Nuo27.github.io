@@ -163,3 +163,44 @@ h1, h2, h3, h4, h5, h6 {
     }
   }
 }
+
+// ==========================================================
+// Smooth-scroll wrapper
+// ==========================================================
+// Always a flex column matching body's h-100.d-flex.flex-column, so
+// footer.mt-auto pins to the bottom of the viewport whether the
+// smooth-scroll module is on or off. When assets/js/smooth-scroll.js
+// activates (fine pointer + motion allowed), it adds html.smooth-scroll
+// and the wrapper leaves flow to become the transform target.
+#smooth-scroll {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+html.smooth-scroll {
+  // Our LERP replaces the browser's scroll-behavior easing. Without
+  // this, anchor jumps / scrollTo({behavior:'smooth'}) would
+  // double-smooth (browser animates scrollY on top of our wrapper LERP).
+  scroll-behavior: auto;
+
+  // body has no flow content once the wrapper is fixed (every overlay
+  // is position:fixed and contributes 0 to flow height). The JS sets
+  // body.height to rebuild the document scroll length. overflow-x stays
+  // hidden from the body rule above.
+  body { height: auto; }
+
+  #smooth-scroll {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+}
+
+// Anything that prefers reduced motion, or a touch device, never gets
+// html.smooth-scroll added — the wrapper stays in flow, body keeps its
+// native scroll-behavior: smooth, and the page works exactly as before.
+

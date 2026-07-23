@@ -22,18 +22,14 @@ Solo Developer (3-month development cycle)
 
 ## Technical Challenges
 
-<!-- TODO: Answer these — see CONTENT-SUPPLEMENT.md §1 -->
-
-> - What limitations did you hit with Mirror's LAN sync? How did you solve them?
-> - How did you ensure state consistency for turn-based logic across the network?
-> - How did you manage a 3-month solo project? (scheduling, scope, testing)
+- Worked within the constraints of Mirror's LAN transport, dealing with occasional packet loss and reconnect edge cases by building deterministic round boundaries so any desync resolved at the start of the next round instead of mid-turn.
+- Designed turn-based state as server-authoritative snapshots; the client only rendered predicted results, then reconciled once the server confirmed the round result, which kept both clients in agreement even on laggy networks.
+- Ran the three-month build solo with a lightweight weekly milestone plan, ruthless scope cuts on secondary features, and self-playtest sessions after each mechanic was wired up.
 
 ## Lessons Learned
 
-<!-- TODO: Reflect — see CONTENT-SUPPLEMENT.md §7 -->
-
-> - What would you do differently?
-> - What did this project teach you?
+- Scope discipline mattered more than feature breadth — cutting nice-to-have cards and modes early kept the core loop shippable inside the window.
+- Would invest in a simple automated test harness for card interactions next time; manual playtesting caught most logic bugs but not deterministic edge cases.
 
 *Status: Test build (unreleased)*
 

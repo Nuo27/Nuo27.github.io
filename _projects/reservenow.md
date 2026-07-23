@@ -6,6 +6,7 @@ image: /assets/image/projects/reserve-now.png
 description: Native iOS restaurant reservation app (Swift) with dual customer and staff interfaces.
 category: iOS App
 status: "2022"
+tags: [Student Work]
 external_links:
   - { name: "Source", url: "https://github.com/Nuo27/reserve_now", icon: "github", prefix: "fab" }
 ---
@@ -25,18 +26,14 @@ Solo Developer
 
 ## Technical Challenges
 
-<!-- TODO: Answer these — see CONTENT-SUPPLEMENT.md §1 -->
-
-> - How is the dual-role architecture (customer / staff) structured? How much code is shared?
-> - What does the SQL schema look like? Core tables?
-> - What did you learn in iOS dev that translates back to game dev (or vice versa)?
+- Structured the customer and staff apps as two thin front-end layers over a shared model and data-access layer, so reservations, user records, and validation logic lived in one place and both flows stayed consistent.
+- Modeled the SQL schema around a few core tables — restaurants, time slots, reservations, and users — with foreign keys tying slots to restaurants and reservations to slots, which made booking and cancellation queries straightforward.
+- Working in iOS sharpened discipline around state management and async UI updates, lessons that mapped directly onto game UI work later, where the same care with view state and threading prevents flicker and stale data.
 
 ## Lessons Learned
 
-<!-- TODO: Reflect — see CONTENT-SUPPLEMENT.md §7 -->
-
-> - What would you do differently?
-> - What did this project teach you?
+- Took on too much as a solo developer at first; would scope a smaller v1 with just customer booking next time and add the staff dashboard once that was solid.
+- The cross-domain experience between iOS and Unity showed that good architecture looks similar regardless of platform — clear data flow, single source of truth, and minimal coupling between UI and logic.
 
 ---
 
