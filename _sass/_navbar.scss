@@ -58,6 +58,31 @@
   &:hover::after { width: 100%; }
 }
 
+// Title brackets — the homepage's "current page" marker. Mirrors the nav-link
+// [ ] brackets so every route has an indicator: section pages light their nav
+// link, the homepage lights the brand. Brackets live on the <b> (the brand's
+// own ::before/::after are the ▶ prompt + underline), hidden until active.
+.navbar-brand b {
+  position: relative;
+  transition: color $dur-fast $ease-out-expo;
+
+  &::before, &::after {
+    color: $phosphor;
+    opacity: 0;
+    position: absolute;
+    transition: opacity $dur-fast $ease-out-expo, transform $dur-fast $ease-out-expo;
+    [data-theme="light"] & { color: $print-phosphor; }
+  }
+  &::before { content: "["; left: -0.5rem;  transform: translateX(-4px); }
+  &::after  { content: "]"; right: -0.5rem; transform: translateX(4px); }
+}
+
+.navbar-brand.active b {
+  color: $phosphor;
+  [data-theme="light"] & { color: $print-phosphor; }
+  &::before, &::after { opacity: 1; transform: translateX(0); }
+}
+
 // Nav links — mono, framed brackets on hover
 .navbar-nav .nav-link {
   font-family: $font-mono;

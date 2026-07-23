@@ -400,6 +400,14 @@
         // Velocity is render-derived (see fvx/fvy in render()), so this
         // handler only records position — no /dt noise enters the system.
         p.x = e.clientX; p.y = e.clientY;
+        if (!seenMove) {
+          // First move after load: snap render coords (+ trails) to the
+          // pointer so the cursor's first visible frame is exactly at the
+          // pointer, instead of lerping in from the viewport centre it was
+          // seeded at. prevRx/prevRx also snapped → no velocity burst.
+          rx = p.x; ry = p.y; prevRx = rx; prevRy = ry;
+          for (var i = 0; i < trails.length; i++) { trails[i].x = rx; trails[i].y = ry; }
+        }
         seenMove = true;
         show();
       }, { passive: true });

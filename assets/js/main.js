@@ -238,6 +238,96 @@
   // PER-NAVIGATION INITIALIZERS — run on every <main> swap
   // ============================================================
 
+  // ============================================================
+  // Project-page hero kicker typewriter + title word split.
+  // Idempotent across PJAX swaps via data markers and isConnected
+  // checks on every tick. Reduced motion bypasses all wrapping.
+  // ============================================================
+  function splitHeroTitle(title) {
+    if (!title || title.dataset.split === '1' || reduceMotion) return;
+    if (title.querySelector('.hero-w')) { title.dataset.split = '1'; return; }
+    var src = title.textContent;
+    if (!src) return;
+    title.textContent = '';
+    var wordIdx = 0;
+    src.split(/(\s+)/).forEach(function (part) {
+      if (!part) return;
+      if (/^\s+$/.test(part)) {
+        title.appendChild(document.createTextNode(part));
+        return;
+      }
+      var wrap = document.createElement('span');
+      wrap.className = 'hero-w';
+      var inner = document.createElement('span');
+      inner.className = 'hero-w-i';
+      inner.style.setProperty('--word-i', String(wordIdx++));
+      inner.textContent = part;
+      wrap.appendChild(inner);
+      title.appendChild(wrap);
+    });
+    title.classList.add('is-ready');
+    title.dataset.split = '1';
+  }
+
+  function typeHeroKicker(kicker) {
+    if (!kicker || kicker.dataset.typed === 'done') return;
+    if (kicker.dataset.typed === '1') return; // already running
+    if (reduceMotion) {
+      kicker.dataset.typed = 'done';
+      return;
+    }
+    var textEl = kicker.querySelector('.kicker-text');
+    if (!textEl || textEl.dataset.typer === '1') return;
+    textEl.dataset.typer = '1';
+    var full = textEl.textContent;
+    textEl.textContent = '';
+
+    var typer = document.createElement('span');
+    typer.className = 'typer';
+    var caret = document.createElement('span');
+    caret.className = 'typer-caret';
+    caret.setAttribute('aria-hidden', 'true');
+    caret.textContent = '_';
+
+    kicker.appendChild(typer);
+    kicker.appendChild(caret);
+
+    var i = 0;
+    function tick() {
+      if (!kicker.isConnected || !textEl.isConnected) return;
+      if (i >= full.length) {
+        kicker.dataset.typed = 'done';
+        caret.classList.add('is-done');
+        return;
+      }
+      typer.appendChild(document.createTextNode(full.charAt(i++)));
+      kicker._typerTimer = setTimeout(tick, 28);
+    }
+    kicker.dataset.typed = '1';
+    kicker._typerTimer = setTimeout(tick, 28);
+  }
+
+  function initProjectHero(scope) {
+    if (!scope.querySelector || !scope.querySelector('.project-detail')) return;
+    var kicker = scope.querySelector('.hero-kicker');
+    if (kicker) typeHeroKicker(kicker);
+    scope.querySelectorAll('.hero-title').forEach(splitHeroTitle);
+  }
+
+  // Adds data-reveal to .project-body > * with a staggered delay.
+  // Reuses the site-wide reveal observer; no new IntersectionObserver.
+  function initProjectBodyReveal(scope) {
+    var body = scope.querySelector && scope.querySelector('.project-body');
+    if (!body) return;
+    var kids = Array.prototype.slice.call(body.children);
+    kids.forEach(function (el, i) {
+      if (el.dataset.revealReady === '1') return;
+      el.dataset.revealReady = '1';
+      el.setAttribute('data-reveal', '');
+      el.style.setProperty('--reveal-delay', ((i % 6) * 60) + 'ms');
+    });
+  }
+
   function initScrollReveal(scope) {
     var targets = scope.querySelectorAll('.reveal, .reveal-left, .reveal-right, [data-reveal]');
     if (!targets.length) return;
@@ -544,6 +634,8 @@
 
     // Per navigation
     initHeroAurora(scope);
+    initProjectHero(scope);
+    initProjectBodyReveal(scope);
     initScrollReveal(scope);
     initMagneticButtons(scope);
     initGlitch(scope);

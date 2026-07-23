@@ -138,6 +138,11 @@
       } catch (e) {}
       a.classList.toggle('active', match);
     }
+    // Brand links to '/', so it doubles as the homepage's current-page
+    // indicator. Exact match only — the prefix-match above would light the
+    // brand on every route.
+    var brand = document.querySelector('#site-navbar .navbar-brand');
+    if (brand) brand.classList.toggle('active', pathname === '/');
   }
 
   function cleanupOldScope(oldScope) {
