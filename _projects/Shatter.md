@@ -25,10 +25,10 @@ Gameplay Programmer
 
 ## Technical Challenges
 
-- The main networking hurdle with EOS was session discovery and reconnection after a peer dropped; handled it by treating matches as resilient sessions and rebuilding voice/combat state from a snapshot on reconnect.
-- Split logic with C++ owning simulation, replication, and performance-sensitive systems, while Blueprints handled designer-facing tuning like ability cooldowns and FX hooks, which kept iteration fast without polluting the core codebase.
-- Architected the ability system around a small set of base components that could be hot-swapped at runtime, with a shared cooldown and resource layer so the four abilities could mix without bespoke wiring per pairing.
-- Implemented knockback as an impulse applied with a fixed timestep to keep it deterministic; the main edge case was stacking impulses mid-air, which was clamped to prevent players from being launched out of bounds.
+- **EOS P2P networking with resilient sessions.** Built on Epic Online Services (OnlineSubsystem EOS) as a 1v1 listen-server topology. The hard part was session discovery and recovering from a dropped peer — I treated each match as a resilient session and rebuilt voice + combat state from a snapshot on reconnect, so a brief disconnect didn't end the round.
+- **C++ / Blueprint split for speed without sprawl.** Simulation, replication (`UPROPERTY(Replicated)` + `OnRep_` callbacks), and performance-critical paths lived in C++; designer-facing tuning — ability cooldowns, FX hooks, feel — stayed in Blueprints, so iteration stayed fast for designers without the core simulation leaking into asset graphs.
+- **Hot-swappable ability components over a shared resource layer.** The four abilities were a small set of base component classes that could be swapped at runtime, all funnelling through one shared cooldown + resource manager, so abilities could mix without bespoke wiring per pairing.
+- **Deterministic knockback via fixed-timestep impulses.** Knockback was applied as a physics impulse on a fixed timestep so both clients agreed on trajectory; the edge case was stacked mid-air impulses, which I clamped so players couldn't be launched out of bounds — keeping the knockback multiplier system fair.
 
 ## Lessons Learned
 

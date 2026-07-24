@@ -15,6 +15,8 @@ intro:
         I’m **Nuo Chen** — a gameplay programmer who works across both major engines:
         **Unity (C#)** and **Unreal Engine 5 (C++)**. I specialize in multiplayer networking, combat systems, and gameplay architecture, with shipped experience ranging from 1v1 online shooters to LAN card games. More recently, I’ve also been exploring AI engineering through image generation, large language models, and prompt engineering, applying these tools to accelerate development workflows and prototype gameplay ideas.
     - text: >-
+        Beyond games, I design and ship full-stack web platforms end-to-end — most recently **ForzaDrift**, a production Next.js / PostgreSQL leaderboard service with custom authentication, anti-abuse systems (rate limiting, dual CAPTCHA), and Cloudflare deployment.
+    - text: >-
         I’ve operated at both ends of the scale — as lead programmer coordinating indie game dev teams (architecture, code integration, cross-level consistency), and as a solo developer building entire games end-to-end. This range is deliberate: I want to understand how games work at every layer, from little piece of code to the player experience, while embracing new technologies that can improve how games are designed and built.
     - text: >-
         My Data Analytics minor shapes how I approach systems — I break down complex mechanics methodically, whether that’s a game economy, a networking pipeline, a player behavior dataset, or an AI-assisted content workflow. I enjoy understanding not only how systems function, but also how they can be made more efficient, scalable, and enjoyable for both developers and players.
@@ -43,6 +45,12 @@ skills:
     - Game Systems Architecture
     - UI/HUD Implementation
     - FMOD Audio Integration
+    - Full-Stack Web Development (Next.js / React)
+    - TypeScript
+    - Authentication & Session Security (NextAuth, JWT)
+    - Web Security & Anti-Abuse (Rate Limiting, CAPTCHA, CSP)
+    - PostgreSQL & Prisma ORM
+    - Docker & Cloudflare Tunnel Deployment
     - Version Control (Git)
     - iOS Development (Swift)
     - Data Analytics (Python, SQL)
@@ -50,10 +58,13 @@ skills:
 skills_detailed:
   programming:
     title: Programming Languages
-    items: [C#, C++, Python, Java, Swift, SQL]
+    items: [C#, C++, TypeScript, Python, Java, Swift, SQL]
   tools:
     title: Tools & Technologies
     items: [Unity 3D, Unreal Engine 5, Git & GitHub, FMOD, iOS / Xcode, Mirror Networking]
+  web:
+    title: Web & Backend
+    items: [Next.js / React, TypeScript, PostgreSQL + Prisma, NextAuth / JWT, Docker + Cloudflare Tunnel, REST / Server Actions]
 
 # ── 04 · Education ──
 education:

@@ -2,13 +2,15 @@
   Stream card — project. Params: project, index (stream position), side (fi-side-left/right), labels.
 {%- endcomment -%}
 {%- assign p = include.project -%}
-<article class="featured-item featured-item--project {{ include.side }} reveal"
-         data-item-type="project">
+<article class="featured-item featured-item--project {{ include.side }} reveal{% if include.pool %} rw-item{% endif %}"
+         data-item-type="project"{% if include.pool %} hidden{% endif %}>
+  {%- if p.image -%}
   <a class="fi-media" href="{{ p.url | relative_url }}" aria-label="{{ p.name }}">
     <img src="{{ p.image }}" alt="{{ p.name }}" loading="lazy" />
     <span class="fi-overlay" aria-hidden="true"></span>
     <span class="fi-view mono" aria-hidden="true">VIEW <i class="fas fa-arrow-right"></i></span>
   </a>
+  {%- endif -%}
   <div class="fi-body">
     <div class="fi-meta">
       <span class="fi-index mono">{{ include.index | prepend: '00' | slice: -2, 2 }}</span>

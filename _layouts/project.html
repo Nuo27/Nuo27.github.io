@@ -2,7 +2,15 @@
 layout: default
 ---
 
-{%- assign all_local = site.projects -%}
+{%- comment -%} Order: status (year) desc, then name asc — matches the portfolio grid. {%- endcomment -%}
+{%- assign pn_groups = site.projects | group_by: "status" | sort: "name" | reverse -%}
+{%- assign all_local = "" | split: "" -%}
+{%- for g in pn_groups -%}
+  {%- assign g_items = g.items | sort: "name" -%}
+  {%- for p in g_items -%}
+    {%- assign all_local = all_local | push: p -%}
+  {%- endfor -%}
+{%- endfor -%}
 {%- assign cur_idx = nil -%}
 {%- for p in all_local -%}
   {%- if p.url == page.url -%}
@@ -38,7 +46,7 @@ layout: default
       <p class="hero-meta" data-reveal>{{ page.status | default: 'SELECTED WORK' | upcase }}</p>
       <p class="hero-kicker">
         <span class="kicker-mark" aria-hidden="true"></span>
-        <span class="kicker-text">// PROJECT</span>
+        <span class="kicker-text">// PROJECT{%- if page.category %} · {{ page.category | upcase }}{%- endif -%}</span>
       </p>
       <h1 class="hero-title" data-reveal>{{ page.name }}</h1>
       {%- if page.subtitle -%}
@@ -57,7 +65,7 @@ layout: default
       <p class="hero-meta" data-reveal>{{ page.status | default: 'SELECTED WORK' | upcase }}</p>
       <p class="hero-kicker">
         <span class="kicker-mark" aria-hidden="true"></span>
-        <span class="kicker-text">// PROJECT</span>
+        <span class="kicker-text">// PROJECT{%- if page.category %} · {{ page.category | upcase }}{%- endif -%}</span>
       </p>
       <h1 class="hero-title" data-reveal>{{ page.name }}</h1>
       {%- if page.subtitle -%}
@@ -112,17 +120,29 @@ layout: default
 
     {% if prev_proj %}
     <a class="pn-card pn-prev reveal-left" href="{{ prev_proj.url | relative_url }}">
-      <span class="pn-kicker mono">// PREVIOUS</span>
-      <span class="pn-title">{{ prev_proj.name }}</span>
-      <img class="pn-thumb" src="{{ prev_proj.image }}" alt="" loading="lazy" />
+      <img class="pn-cover" src="{{ prev_proj.image }}" alt="" loading="lazy" />
+      <span class="pn-veil" aria-hidden="true"></span>
+      <span class="pn-rail" aria-hidden="true"></span>
+      <i class="pn-arrow fas fa-arrow-left" aria-hidden="true"></i>
+      <span class="pn-text">
+        <span class="pn-kicker mono">// PREVIOUS{%- if prev_proj.category %} · {{ prev_proj.category | upcase }}{%- endif %}</span>
+        <span class="pn-title">{{ prev_proj.name }}</span>
+        {%- if prev_proj.status %}<span class="pn-meta mono">{{ prev_proj.status }}</span>{%- endif %}
+      </span>
     </a>
     {% endif %}
 
     {% if next_proj %}
     <a class="pn-card pn-next reveal-right" href="{{ next_proj.url | relative_url }}">
-      <span class="pn-kicker mono">// NEXT</span>
-      <span class="pn-title">{{ next_proj.name }}</span>
-      <img class="pn-thumb" src="{{ next_proj.image }}" alt="" loading="lazy" />
+      <img class="pn-cover" src="{{ next_proj.image }}" alt="" loading="lazy" />
+      <span class="pn-veil" aria-hidden="true"></span>
+      <span class="pn-rail" aria-hidden="true"></span>
+      <i class="pn-arrow fas fa-arrow-right" aria-hidden="true"></i>
+      <span class="pn-text">
+        <span class="pn-kicker mono">// NEXT{%- if next_proj.category %} · {{ next_proj.category | upcase }}{%- endif %}</span>
+        <span class="pn-title">{{ next_proj.name }}</span>
+        {%- if next_proj.status %}<span class="pn-meta mono">{{ next_proj.status }}</span>{%- endif %}
+      </span>
     </a>
     {% endif %}
   </section>
@@ -486,10 +506,15 @@ layout: default
       animation: none !important;
       opacity: 0 !important;
     }
-    .pn-card { transition: none !important; }
+    .pn-card,
+    .pn-card .pn-rail,
+    .pn-card .pn-arrow,
+    .pn-card .pn-cover,
+    .pn-card .pn-title::after { transition: none !important; }
     .pn-card:hover,
     .pn-card:active { transform: none !important; }
-    .pn-card:hover .pn-thumb { transform: none !important; }
+    .pn-card:hover .pn-cover,
+    .pn-card:hover .pn-arrow { transform: none !important; }
   }
 
   /* ---- Deck (description + meta) ---- */
@@ -611,58 +636,157 @@ layout: default
 
   .pn-card {
     position: relative;
-    display: grid;
-    grid-template-columns: 1fr 88px;
+    display: flex;
     align-items: center;
-    gap: 1.25rem;
-    padding: 1.1rem 1.25rem;
-    border-radius: 6px;
-    border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-    background: var(--bg-surface);
+    gap: 0.9rem;
+    min-height: 116px;
+    padding: 1.15rem 1.35rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
     color: var(--ink);
     text-decoration: none;
     overflow: hidden;
-    transition: transform var(--dur-base) var(--ease-out-expo), border-color var(--dur-fast) var(--ease-out-expo);
-    [data-theme="light"] & { background: var(--paper-raised); color: var(--carbon); }
-    @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        transform: translateY(-3px);
-        border-color: var(--phosphor-soft);
-        .pn-thumb { transform: scale(1.06); }
-      }
-    }
-    @media (prefers-reduced-motion: no-preference) {
-      &:active {
-        transform: translateY(0) scale(0.98);
-        transition: transform 0.12s var(--ease-out-expo);
-      }
-    }
+    transition:
+      transform var(--dur-base) var(--ease-out-expo),
+      border-color var(--dur-base) var(--ease-out-expo),
+      box-shadow var(--dur-base) var(--ease-out-expo);
   }
-  .pn-next { grid-template-columns: 88px 1fr; text-align: right; }
-  .pn-next .pn-kicker, .pn-next .pn-title { order: 2; }
-  .pn-next .pn-thumb { order: 1; }
+  .pn-next { flex-direction: row-reverse; text-align: right; }
 
+  /* Kill any inherited link underline (UA a:hover etc.) — only the title ::after underlines on hover */
+  .pn-card, .pn-card:hover, .pn-card:focus-visible,
+  .pn-card span, .pn-card i { text-decoration: none; border-bottom: none; }
+
+  /* Full-bleed cover image */
+  .pn-cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    filter: grayscale(0.25) contrast(1.05) brightness(0.92);
+    transition: transform var(--dur-base) var(--ease-out-expo),
+                filter var(--dur-base) var(--ease-out-expo);
+  }
+
+  /* Veil — surface-tinted gradient keeps text legible over the image */
+  .pn-veil {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg,
+      color-mix(in srgb, var(--bg-surface) 92%, transparent) 0%,
+      color-mix(in srgb, var(--bg-surface) 60%, transparent) 48%,
+      color-mix(in srgb, var(--bg-surface) 10%, transparent) 100%);
+  }
+  .pn-next .pn-veil {
+    background: linear-gradient(270deg,
+      color-mix(in srgb, var(--bg-surface) 92%, transparent) 0%,
+      color-mix(in srgb, var(--bg-surface) 60%, transparent) 48%,
+      color-mix(in srgb, var(--bg-surface) 10%, transparent) 100%);
+  }
+
+  /* Direction rail — phosphor accent on the leading edge; glows on hover */
+  .pn-rail {
+    position: absolute;
+    top: 16px;
+    bottom: 16px;
+    left: 0;
+    width: 2px;
+    border-radius: 2px;
+    z-index: 2;
+    background: color-mix(in srgb, var(--phosphor) 45%, transparent);
+    transition: background var(--dur-base) var(--ease-out-expo),
+                box-shadow var(--dur-base) var(--ease-out-expo);
+  }
+  .pn-next .pn-rail { left: auto; right: 0; }
+
+  /* Direction arrow; slides on hover */
+  .pn-arrow {
+    position: relative;
+    z-index: 2;
+    font-size: 0.85rem;
+    color: var(--ink);
+    opacity: 0.7;
+    transition: transform var(--dur-base) var(--ease-out-expo),
+                color var(--dur-fast) var(--ease-out-expo),
+                opacity var(--dur-fast) var(--ease-out-expo);
+  }
+
+  /* Text stack */
+  .pn-text {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+  .pn-next .pn-text { align-items: flex-end; }
   .pn-kicker {
-    display: block;
-    font-size: 0.6rem;
-    color: var(--phosphor);
+    font-size: 0.58rem;
     letter-spacing: 0.2em;
-    margin-bottom: 0.35rem;
+    color: var(--phosphor);
   }
   .pn-title {
-    display: block;
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
     font-family: var(--font-serif);
-    font-size: 1.2rem;
+    font-size: clamp(1.1rem, 1.6vw, 1.3rem);
     font-weight: 500;
     letter-spacing: -0.015em;
     line-height: 1.2;
+    color: var(--ink);
+    transition: color var(--dur-base) var(--ease-out-expo);
   }
-  .pn-thumb {
-    width: 88px;
-    height: 64px;
-    object-fit: cover;
-    border-radius: 4px;
+  /* Underline — title only, grows on hover */
+  .pn-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left center;
     transition: transform var(--dur-base) var(--ease-out-expo);
+  }
+  .pn-next .pn-title::after { transform-origin: right center; }
+  .pn-meta {
+    font-size: 0.56rem;
+    letter-spacing: 0.16em;
+    color: var(--ink-mut);
+  }
+
+  /* Hover — lift, phosphor border, glow, cover zoom, rail lights, arrow slides, title underline */
+  @media (hover: hover) and (pointer: fine) {
+    .pn-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--phosphor-soft);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+      [data-theme="light"] & { box-shadow: 0 18px 32px rgba(10, 11, 15, 0.16); }
+      .pn-cover { transform: scale(1.06); filter: grayscale(0) contrast(1.08) brightness(1); }
+      .pn-rail {
+        background: var(--phosphor);
+        box-shadow: 0 0 12px color-mix(in srgb, var(--phosphor) 60%, transparent);
+      }
+      .pn-arrow { color: var(--phosphor); opacity: 1; }
+      .pn-title { color: var(--phosphor); }
+      .pn-title::after { transform: scaleX(1); }
+    }
+    .pn-prev:hover .pn-arrow { transform: translateX(-4px); }
+    .pn-next:hover .pn-arrow { transform: translateX(4px); }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pn-card:active {
+      transform: translateY(0) scale(0.985);
+      transition: transform 0.12s var(--ease-out-expo);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

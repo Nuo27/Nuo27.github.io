@@ -26,9 +26,10 @@ Gameplay Programmer (6-person team)
 
 ## Technical Challenges
 
-- Modeled puzzle progression as an event-bus chain, where each puzzle emitted a completion signal that other systems could subscribe to, so any future content could react to existing puzzles without hardcoding dependencies.
-- Handled interconnected level data flow by keeping a lightweight save state of solved flags and triggered events that each level reads on load, which decoupled level scenes from each other while preserving continuity.
-- Coordinated with the team using feature branches per mechanic with short-lived merges into a shared main line, plus a brief written convention for script naming and prefab structure so code reviews stayed fast.
+- **Hand-rolled the first-person controller.** Movement ran on a `Rigidbody` with mouse-look that clamped pitch to ±90° (`Mathf.Clamp`) so the camera couldn't flip, a `canMove` gate for cutscenes and puzzles, and a respawn check — no third-party character asset, just direct input to physics.
+- **Puzzle interactables through inheritance and Unity UI Toolkit.** A base `VaultDoor` held the shared trigger and animation logic, and `PasswordedVaultDoor` subclassed it to pop a `UIDocument`-based password panel (`TextField`) on `OnTriggerEnter` — so a new puzzle was a subclass, not a rewrite.
+- **Decoupled puzzle progression.** Each puzzle emitted a completion signal that other systems could subscribe to, so new content could react to solved puzzles without hardcoding cross-dependencies between scenes.
+- **Cross-scene save state.** A lightweight store of solved-flags and triggered events was read on each level's load, keeping level scenes independent while preserving puzzle continuity between them.
 
 ## Lessons Learned
 

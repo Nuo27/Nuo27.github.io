@@ -27,10 +27,10 @@ Team Leader & Lead Programmer (5-person team)
 
 ## Technical Challenges
 
-- Designed the interaction framework around simple component triggers that designers could drop into a scene and configure via inspector fields, so non-programmers could wire up new interactables without touching code.
-- Built progression as a linear unlock list tied to completion flags per level, with the next level gated by the previous one's final event, which kept save state minimal and predictable across the five levels.
-- The integration guide covered Unity workflow basics, naming conventions for scripts and prefabs, where to place new assets, and a checklist for testing a level in isolation before handing it off for integration.
-- The hardest cross-level bug turned out to be a stale reference between scenes where an asset ID changed; resolved it by routing inter-level communication through a small save-state manager keyed on stable IDs.
+- **A polymorphic interaction framework so designers never touched code.** Every interactable — doors, drawers, keys — derived from a base `Thing` class with a virtual `OnEDown()`, and the player's E-key input dispatched polymorphically to whichever `Thing` was in range. A designer added a new interactable by subclassing `Thing` and dropping it into a scene, with no core code changes.
+- **Build-index-driven level progression.** `LevelManager` tracked each level's completion as a static flag and resolved the active level through `SceneManager.GetActiveScene().buildIndex`, gating the next level on the previous one's objective — a minimal, predictable unlock model across all five levels.
+- **Context-sensitive prompts via trigger zones.** `PromptManager` surfaced the right TextMeshPro action hint on `OnTriggerEnter`/`Exit` for whatever `Thing` the player was facing, so the interaction target was always unambiguous.
+- **Stable-ID save state to survive scene reloads.** The hardest cross-level bug was a stale Unity reference after an asset's instance ID changed between scenes; I routed inter-level state through a small manager keyed on stable string IDs instead of object references.
 
 ## Lessons Learned
 

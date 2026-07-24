@@ -1,46 +1,34 @@
 {% assign stream = page.stream %}
 {% assign labels = stream.labels %}
-{% assign proj_index = 0 %}
-  <!-- ============ Unified content stream (projects + articles) ============ -->
+{% assign rw = page.random_work %}
+<style>
+  /* Hide random-work candidates until JS reveals the picked subset */
+  .stream .rw-item[hidden] { display: none !important; }
+</style>
+  <!-- ============ Random content stream ============ -->
   <section class="mag-section mag-stream" aria-labelledby="stream-heading">
     <header class="mag-section-head" data-reveal>
       <span class="mag-kicker mono">// {{ stream.kicker }}</span>
       <h2 class="mag-heading" id="stream-heading">{{ stream.heading }}</h2>
     </header>
 
-    <div class="stream">
+    <div class="stream" data-random-work data-count="{{ rw.count | default: 3 }}">
 
-      {% comment %} One curated stream. Each entry: { type: project|article, slug }.
-            Resolved against the matching collection (url segment, case-insensitive),
-            then dispatched to a type-specific card. Add a new type by adding a
-            {% when %} branch + a _includes/stream/<type>-card.html. {% endcomment %}
-      {% for item in page.selected_works %}
-        {% assign slug = item.slug | downcase %}
-        {% assign doc = nil %}
-        {% if item.type == 'project' %}
-          {% for p in site.projects %}
-            {% assign ps = p.url | split: '/' | last | downcase %}
-            {% if ps == slug %}{% assign doc = p %}{% endif %}
-          {% endfor %}
-        {% elsif item.type == 'article' %}
-          {% for a in site.articles %}
-            {% assign asl = a.url | split: '/' | last | downcase %}
-            {% if asl == slug %}{% assign doc = a %}{% endif %}
-          {% endfor %}
-        {% endif %}
-
-        {% if doc %}
-          {% assign side = 'fi-side-left' %}
-          {% assign mod = proj_index | modulo: 2 %}
-          {% if mod == 1 %}{% assign side = 'fi-side-right' %}{% endif %}
-          {% case item.type %}
-            {% when 'project' %}
-              {% include stream/project-card.html project=doc index=forloop.index side=side labels=labels %}
-              {% assign proj_index = proj_index | plus: 1 %}
-            {% when 'article' %}
-              {% include stream/article-card.html article=doc index=forloop.index labels=labels %}
-          {% endcase %}
-        {% endif %}
+      {% comment %} Render every item from the configured types as a hidden
+            candidate (.rw-item). JS (initRandomWork) reveals `count` of them
+            at random per page load and re-fixes their index + side.
+            Add a type: add a {% when %} branch + _includes/stream/<type>-card.html. {% endcomment %}
+      {% for t in rw.types %}
+        {% case t %}
+          {% when 'project' %}
+            {% for p in site.projects %}
+              {% include stream/project-card.html project=p index=forloop.index side="fi-side-left" labels=labels pool=true %}
+            {% endfor %}
+          {% when 'article' %}
+            {% for a in site.articles %}
+              {% include stream/article-card.html article=a index=forloop.index labels=labels pool=true %}
+            {% endfor %}
+        {% endcase %}
       {% endfor %}
 
     </div>

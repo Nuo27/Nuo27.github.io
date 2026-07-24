@@ -10,19 +10,47 @@
   {% include common/search.html placeholder="grep projects…" total=site.projects.size list_id="projects-grid" item_selector=".card-wrap" %}
   {% endif %}
 
+  {% comment %} Distinct categories → filter chips (only if more than one exists) {% endcomment %}
+  {% assign project_cats = "" | split: "" %}
+  {% for p in site.projects %}
+    {% if p.category %}{% assign project_cats = project_cats | push: p.category %}{% endif %}
+  {% endfor %}
+  {% assign project_cats = project_cats | uniq | sort %}
+
+  {% if project_cats.size > 1 %}
+  <nav class="cat-filter reveal" data-category-filter
+       data-filter-list="#projects-grid"
+       data-filter-item=".card-wrap"
+       aria-label="Filter projects by category">
+    <span class="cat-filter__label mono">// FILTER</span>
+    <div class="cat-filter__chips">
+      <button class="cat-chip is-active mono" type="button" data-cat="all">ALL</button>
+      {% for c in project_cats %}
+        <button class="cat-chip mono" type="button" data-cat="{{ c | slugify }}">{{ c | upcase }}</button>
+      {% endfor %}
+    </div>
+  </nav>
+  {% endif %}
+
   <div class="projects-grid" id="projects-grid">
 
-    {% for project in site.projects %}
+    {% assign pn_groups = site.projects | group_by: "status" | sort: "name" | reverse %}
+    {% assign card_index = 0 %}
+    {% for g in pn_groups %}
+    {% assign pn_items = g.items | sort: "name" %}
+    {% for project in pn_items %}
+      {% assign card_index = card_index | plus: 1 %}
 
       {%- assign project_img   = project.image -%}
       {%- assign project_name  = project.name -%}
       {%- assign project_desc  = project.description -%}
       {%- assign project_tools = project.tools -%}
+      {%- assign project_cat   = project.category -%}
       {%- assign project_url   = project.url | relative_url -%}
-      {%- assign card_index    = forloop.index -%}
 
       {% include projects/project-card.html %}
 
+    {% endfor %}
     {% endfor %}
 
   </div>

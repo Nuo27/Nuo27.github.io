@@ -22,9 +22,9 @@ Solo Developer (3-month development cycle)
 
 ## Technical Challenges
 
-- Worked within the constraints of Mirror's LAN transport, dealing with occasional packet loss and reconnect edge cases by building deterministic round boundaries so any desync resolved at the start of the next round instead of mid-turn.
-- Designed turn-based state as server-authoritative snapshots; the client only rendered predicted results, then reconciled once the server confirmed the round result, which kept both clients in agreement even on laggy networks.
-- Ran the three-month build solo with a lightweight weekly milestone plan, ruthless scope cuts on secondary features, and self-playtest sessions after each mechanic was wired up.
+- **Mirror LAN transport with round-boundary desync recovery.** Ran on Mirror's LAN transport over a listen server; to absorb packet loss and reconnect edge cases I made every round a deterministic boundary — any drifted state reset to the server's snapshot at the start of the next round rather than mid-turn, so a laggy frame never corrupted an in-progress play.
+- **Server-authoritative turn state with client prediction.** The server owned the canonical game state; clients rendered a predicted result locally and reconciled once the server's `[ClientRpc]` confirmed the round outcome, keeping both clients in agreement even on laggy networks.
+- **Card logic as pure, deterministic rules.** Element collection, scoring, and turn validation were modelled as pure functions of the shared state, and draws used a seed agreed at round start — so the same inputs produced the same outcome on both peers, which is what made round-boundary reconciliation cheap.
 
 ## Lessons Learned
 

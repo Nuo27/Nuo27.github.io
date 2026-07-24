@@ -8,19 +8,16 @@ hero:
   cta_primary:   { label: "View Projects", url: "/portfolio/" }
   cta_secondary: { label: "About Me",      url: "/about/" }
 
-# Unified "Selected work" stream. Each entry references a collection doc by type + slug
-# (slugs match _projects/ / _articles/ filenames, case-insensitive). Order = display order.
-selected_works:
-  - { type: project, slug: Shatter }
-  - { type: article, slug: unity-vs-unreal }
-  - { type: project, slug: thetragedyofpondiberrylodge }
-  - { type: project, slug: wistful }
-  - { type: article, slug: leading-a-game-team }
-  - { type: article, slug: design-philosophy }
+# Random work stream — picks `count` items at random (per page load) from the
+# listed `types`. To add a new type: add it here, add a {% when %} branch in
+# _includes/landing/stream.html, and add _includes/stream/<type>-card.html.
+random_work:
+  types: [project, article]
+  count: 3
 
 stream:
-  kicker: "SELECTED_WORK"
-  heading: "Selected work"
+  kicker: "RANDOM_WORK"
+  heading: "Random work"
   labels:
     read_project: "Read case"
     read_article: "Read article"

@@ -256,3 +256,76 @@
 .card-wrap {
   position: relative;
 }
+
+// ==========================================================
+// Category filter bar (portfolio)
+// ==========================================================
+.cat-filter {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  margin: 1.5rem 0 2.5rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+.cat-filter__label {
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--phosphor);
+  [data-theme="light"] & { color: $print-phosphor; }
+}
+.cat-filter__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.cat-chip {
+  font-family: $font-mono;
+  appearance: none;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  color: var(--ink-mut);
+  padding: 0.3rem 0.7rem;
+  border-radius: $radius-xs;
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: color $dur-fast $ease-out-expo,
+              border-color $dur-fast $ease-out-expo,
+              background $dur-fast $ease-out-expo,
+              transform $dur-fast $ease-out-back;
+  &:hover {
+    color: var(--phosphor);
+    border-color: var(--phosphor-soft);
+    transform: translateY(-1px);
+  }
+  &.is-active {
+    color: var(--bg-void);
+    background: var(--phosphor);
+    border-color: var(--phosphor);
+    [data-theme="light"] & {
+      color: $paper;
+      background: $print-phosphor;
+      border-color: $print-phosphor;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cat-chip { transition: none !important; transform: none !important; }
+}
+
+// ---- Card kicker row (index + category) ----
+.card-kicker {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.card-cat {
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  color: var(--ink-mut);
+  [data-theme="light"] & { color: $carbon-mut; }
+}

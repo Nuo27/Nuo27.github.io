@@ -347,6 +347,36 @@
     targets.forEach(function (el) { observer.observe(el); });
   }
 
+  // Random work stream — reveal `count` random candidates per pool, per load.
+  // Candidates are server-rendered hidden (.rw-item[hidden]); we unhide a
+  // random subset, fix their index numbering, and re-apply side alternation.
+  // Runs before initScrollReveal so the unhidden items get observed for reveal.
+  function initRandomWork(scope) {
+    scope.querySelectorAll('[data-random-work]').forEach(function (container) {
+      var pool = Array.prototype.slice.call(container.querySelectorAll('.rw-item'));
+      if (pool.length <= 1) {
+        pool.forEach(function (el) { el.removeAttribute('hidden'); });
+        return;
+      }
+      var count = parseInt(container.getAttribute('data-count'), 10) || 3;
+      if (count > pool.length) count = pool.length;
+      // Fisher–Yates shuffle
+      for (var i = pool.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+      }
+      pool.slice(0, count).forEach(function (el, i) {
+        el.removeAttribute('hidden');
+        if (el.classList.contains('featured-item--project')) {
+          el.classList.remove('fi-side-left', 'fi-side-right');
+          el.classList.add(i % 2 === 0 ? 'fi-side-left' : 'fi-side-right');
+        }
+        var idx = el.querySelector('.fi-index');
+        if (idx) idx.textContent = String(i + 1).padStart(2, '0');
+      });
+    });
+  }
+
   function initMagneticButtons(scope) {
     if (reduceMotion || isTouch) return;
     scope.querySelectorAll('.btn-primary-custom, .btn-secondary-custom, .btn-project, [data-magnetic]').forEach(function (btn) {
@@ -558,13 +588,16 @@
       }
       function run() {
         var q = input.value.toLowerCase().trim();
+        var cat = listEl.dataset.activeCat || 'all';
         var visible = 0;
         items.forEach(function (el) {
-          var match = q === '' || el.textContent.toLowerCase().indexOf(q) !== -1;
+          var textMatch = q === '' || el.textContent.toLowerCase().indexOf(q) !== -1;
+          var catMatch = cat === 'all' || el.getAttribute('data-category') === cat;
+          var match = textMatch && catMatch;
           el.style.display = match ? '' : 'none';
           if (match) visible++;
         });
-        if (q === '') {
+        if (q === '' && cat === 'all') {
           if (countEl) countEl.textContent = total + ' entries';
           listEl.style.display = '';
           if (empty) empty.style.display = 'none';
@@ -591,6 +624,37 @@
     }
 
     scopes.forEach(setup);
+  }
+
+  // Category filter chips. Sets listEl.dataset.activeCat, then re-runs the
+  // terminal search (now category-aware) when one exists; falls back to a
+  // standalone hide/show otherwise.
+  function initCategoryFilter(scope) {
+    scope.querySelectorAll('[data-category-filter]').forEach(function (nav) {
+      var listSel = nav.getAttribute('data-filter-list');
+      var itemSel = nav.getAttribute('data-filter-item') || '.card-wrap';
+      var listEl = listSel && document.querySelector(listSel);
+      if (!listEl) return;
+      var chips = Array.prototype.slice.call(nav.querySelectorAll('[data-cat]'));
+      var searchInput = document.querySelector('[data-terminal-search][data-search-list="' + listSel + '"] .search-input');
+
+      chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          if (chip.classList.contains('is-active')) return;
+          chips.forEach(function (c) { c.classList.remove('is-active'); });
+          chip.classList.add('is-active');
+          listEl.dataset.activeCat = chip.getAttribute('data-cat');
+          if (searchInput) {
+            searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+          } else {
+            var active = listEl.dataset.activeCat;
+            Array.prototype.slice.call(listEl.querySelectorAll(itemSel)).forEach(function (el) {
+              el.style.display = (active === 'all' || el.getAttribute('data-category') === active) ? '' : 'none';
+            });
+          }
+        });
+      });
+    });
   }
 
   // Reads the guided-scroll target set by the previous page's
@@ -636,6 +700,7 @@
     initHeroAurora(scope);
     initProjectHero(scope);
     initProjectBodyReveal(scope);
+    initRandomWork(scope);
     initScrollReveal(scope);
     initMagneticButtons(scope);
     initGlitch(scope);
@@ -645,6 +710,7 @@
     augmentMarkdownImages(scope);
     initCardParallax(scope);
     initTerminalSearch(scope);
+    initCategoryFilter(scope);
     initGuidedScroll();
   }
 

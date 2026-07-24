@@ -1,4 +1,4 @@
-<div class="card-wrap reveal" style="transition-delay: {{ forloop.index0 | modulo: 3 | times: 80 }}ms;">
+<div class="card-wrap reveal" data-category="{{ project_cat | slugify }}" style="transition-delay: {{ forloop.index0 | modulo: 3 | times: 80 }}ms;">
 
   <a class="project card" href="{{ project_url }}" aria-label="{{ project_name }}">
 
@@ -10,7 +10,12 @@
     {%- endif -%}
 
     <div class="card-body">
-      <span class="card-index mono">{{ card_index | default: '00' | prepend: '00' | slice: -2, 2 }}</span>
+      <div class="card-kicker">
+        <span class="card-index mono">{{ card_index | default: '00' | prepend: '00' | slice: -2, 2 }}</span>
+        {%- if project_cat -%}
+        <span class="card-cat mono">// {{ project_cat | upcase }}</span>
+        {%- endif -%}
+      </div>
       <h3 class="card-title">{{ project_name }}</h3>
       <p class="card-desc">{{ project_desc }}</p>
       {%- if project_tools and project_tools.size > 0 -%}

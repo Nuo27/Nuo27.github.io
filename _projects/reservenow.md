@@ -26,9 +26,10 @@ Solo Developer
 
 ## Technical Challenges
 
-- Structured the customer and staff apps as two thin front-end layers over a shared model and data-access layer, so reservations, user records, and validation logic lived in one place and both flows stayed consistent.
-- Modeled the SQL schema around a few core tables — restaurants, time slots, reservations, and users — with foreign keys tying slots to restaurants and reservations to slots, which made booking and cancellation queries straightforward.
-- Working in iOS sharpened discipline around state management and async UI updates, lessons that mapped directly onto game UI work later, where the same care with view state and threading prevents flicker and stale data.
+- **Talked to MySQL directly from iOS via OHMySQL.** Rather than stand up a backend API for a three-week assignment, I wrapped the OHMySQL Objective-C library (through CocoaPods) in a Swift `Database` class managing the `MySQLStoreCoordinator` and `MySQLQueryContext`, executing INSERT/SELECT requests and decoding the returned row dictionaries. The tradeoff was latency — the free db4free host sat in Austria, ~260–300ms per call — so I kept a backup-database config swappable in the same class.
+- **Typed model with manual row decoding.** `Customer` held its fields private behind getters/setters, and DB result rows (`[String: Any]`) were decoded into typed objects via conditional casts (`row["partysize"] as? Int`), so the rest of the app worked against real types rather than raw dictionaries.
+- **MVC layering that survived a mid-project pivot.** Customer and staff screens were thin controllers over a shared `Database` + `Customer` model; when I rewrote local-only booking logic into live database calls in iteration 3, the controllers barely changed — only the data layer did.
+- **Validation and business rules at the edges.** Null and format checks ran before any insert, and party size auto-adjusted to remaining availability but hard-capped at 10, so a booking could never exceed a slot's capacity.
 
 ## Lessons Learned
 
