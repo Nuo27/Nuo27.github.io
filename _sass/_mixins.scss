@@ -2,6 +2,26 @@
 // Mixins — shared utilities (must be imported after variables)
 // ==========================================================
 
+@use "variables" as *;
+
+// ==========================================================
+// Border trace — the typed runtime property that powers the
+// card-hover trace animation. Declared as a typed angle so the
+// Web Animations API can interpolate --trace-spread 0deg → 180deg
+// across the conic-gradient stops. Without @property the stops
+// would snap rather than trace.
+// ==========================================================
+@property --trace-spread {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --trace-entry {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
 // Theme-aware property switch. Light value first, dark value second.
 @mixin themed($property, $light-value, $dark-value) {
   [data-theme="light"] & {
@@ -9,5 +29,176 @@
   }
   [data-theme="dark"] & {
     #{$property}: $dark-value;
+  }
+}
+
+// Editorial swipe underline — the site's ONE underline system.
+// Shared by card titles (.card-title-link) and markdown body links
+// (.markdown-body a). Reveals on hover via a scaleX ::after; never
+// uses text-decoration (Bootstrap's reboot forces text-decoration:
+// underline onto every a:hover, which would duplicate this swipe).
+@mixin editorial-underline {
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
+  transition: color 0.4s $ease-out-expo;
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 100%; height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s $ease-out-expo;
+  }
+  &:hover::after { transform: scaleX(1); }
+}
+
+// ---- Chip substrate — the site's ONE tag/skill chip base. ----
+// Shared by .tag-chip (project cards / detail / hero), .skill-tag
+// (about skills), and .skills-list li (about core competencies).
+// Mono, hairline border, faint phosphor-soft wash that turns neutral
+// on the paper substrate. Hover lift + phosphor recolour + soft glow.
+@mixin chip($pad: 0.3rem 0.65rem, $size: 0.68rem) {
+  font-family: $font-mono;
+  display: inline-block;
+  padding: $pad;
+  border-radius: $radius-xs;
+  font-size: $size;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  color: var(--ink-mut);
+  background: rgba($phosphor-soft, 0.07);
+  border: 1px solid rgba($phosphor-soft, 0.24);
+  transition:
+    transform $dur-fast $ease-out-back,
+    border-color $dur-fast $ease-out-expo,
+    color $dur-fast $ease-out-expo,
+    box-shadow $dur-fast $ease-out-expo,
+    background $dur-fast $ease-out-expo;
+  [data-theme="light"] & {
+    background: rgba($carbon, 0.04);
+    border-color: rgba($carbon, 0.18);
+    color: rgba($carbon, 0.80);
+  }
+}
+
+// Chip hover — lift to phosphor. Consumers add bespoke flourishes
+// (the .tag-chip sweep, the .skills-list "//" prefix) on top.
+@mixin chip-hover {
+  &:hover {
+    transform: translateY(-1px);
+    border-color: var(--phosphor);
+    color: var(--phosphor);
+    background: rgba($phosphor-soft, 0.12);
+    box-shadow: 0 0 12px rgba($phosphor, 0.28);
+    [data-theme="light"] & {
+      border-color: $print-phosphor;
+      color: $print-phosphor;
+      background: rgba($carbon, 0.06);
+      box-shadow: 0 0 10px rgba($carbon, 0.14);
+    }
+  }
+}
+
+// ---- Border lightup — the site's ONE premium hover accent system. ----
+// Every interactive in the system lights up the same way: the border
+// smoothly traces to phosphor-soft, an outer phosphor bloom fades in,
+// and a 1px inset top highlight makes the edge appear to ignite from
+// above. Compose with each consumer's lift shadow via the $lift-shadow
+// parameter (omit for chip-style interactives that don't lift).
+//
+// Usage inside an &:hover block:
+//   transform: translateY(-6px);
+//   border-color: var(--phosphor-soft);
+//   @include border-lightup(0 22px 50px rgba(0,0,0,0.4));
+//
+// Pair with the transition list:
+//   transition: transform $dur-base $ease-out-expo,
+//               border-color $dur-lightup $ease-out-expo,
+//               box-shadow $dur-lightup $ease-out-expo;
+@mixin border-lightup($lift-shadow: null, $bloom: 24px, $bloom-alpha: 22%, $top: 35%) {
+  @if $lift-shadow {
+    box-shadow:
+      #{$lift-shadow},
+      0 0 #{$bloom} color-mix(in srgb, var(--phosphor) #{$bloom-alpha}, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--phosphor) #{$top}, transparent);
+  } @else {
+    box-shadow:
+      0 0 #{$bloom} color-mix(in srgb, var(--phosphor) #{$bloom-alpha}, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--phosphor) #{$top}, transparent);
+  }
+}
+
+// ==========================================================
+// Border trace overlay — paints a phosphor "light traveling
+// around the border" starting at the cursor's entry angle.
+// Driven by JS:
+//   · JS sets --trace-entry (deg) on the card on hover-enter
+//     (the radial angle from card center to the cursor).
+//   · JS animates --trace-spread 0deg → 180deg via Web Animations API
+//     so a single phosphor segment grows from entry-angle in both
+//     directions around the perimeter.
+//   · On hover-leave the overlay fades out (opacity) and the
+//     underlying phosphor-soft + bloom hover state takes over.
+//
+// Mask construction:
+//
+//   The conic-gradient is a polar-coord paint that fills the whole
+//   pseudo box (inset:0). It must be confined to the 1px border ring
+//   or it would visually span the interior too. Two black mask layers
+//   are composited with mask-composite:exclude (XOR):
+//
+//     layer 1 = black, clipped to padding-box
+//     layer 2 = black, clipped to border-box  (default clip)
+//
+//   XOR of {padding-box, border-box} = the 1px strip between them
+//   = the border ring itself. The mask makes the conic-gradient
+//   invisible everywhere else, so the card's image, title, body,
+//   and tags inside the padding-box are never overpainted.
+//
+// Apply inside the card's selector; requires `position: relative`
+// on the host and a border-radius for the inherited outline.
+// ==========================================================
+@mixin border-trace {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 2;
+    background: conic-gradient(from var(--trace-entry, 0deg),
+      var(--phosphor) 0deg, var(--phosphor) var(--trace-spread, 0deg),
+      transparent var(--trace-spread, 0deg),
+      transparent calc(360deg - var(--trace-spread, 0deg)),
+      var(--phosphor) calc(360deg - var(--trace-spread, 0deg)),
+      var(--phosphor) 360deg);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+
+    // Render the conic only on the 1px border ring. Two identical
+    // black layers, one clipped to padding-box and one to border-box,
+    // composited with exclude (XOR) — yields exactly border-box minus
+    // padding-box, which is the outline strip. The card interior
+    // (padding-box and content-box) is fully opaque-masked-out, so the
+    // card's image, title, body and tag chips underneath remain
+    // untouched throughout the animation.
+    -webkit-mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+    -webkit-mask-clip:  padding-box, border-box;
+    -webkit-mask-composite: xor;
+    mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+    mask-clip:  padding-box, border-box;
+    mask-composite: exclude;
+  }
+  &:hover::before,
+  &.is-traced::before {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::before { display: none; }
   }
 }

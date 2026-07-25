@@ -34,34 +34,10 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-
-  // Prompt glyph
-  &::before {
-    content: "▶";
-    color: $phosphor;
-    font-size: 0.7em;
-    [data-theme="light"] & { color: $print-phosphor; }
-  }
-
-  // Underline sweep replaced with phosphor baseline
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: -3px; left: 0;
-    width: 0; height: 2px;
-    background: $phosphor;
-    box-shadow: 0 0 8px rgba($phosphor, 0.6);
-    transition: width $dur-base $ease-out-expo;
-    [data-theme="light"] & { background: $print-phosphor; box-shadow: none; }
-  }
-  &:hover::after { width: 100%; }
 }
 
-// Title brackets — the homepage's "current page" marker. Mirrors the nav-link
-// [ ] brackets so every route has an indicator: section pages light their nav
-// link, the homepage lights the brand. Brackets live on the <b> (the brand's
-// own ::before/::after are the ▶ prompt + underline), hidden until active.
+// Title brackets on the <b> — same fade+slide reveal as the .nav-link brackets,
+// triggered on hover and when active (homepage = current route).
 .navbar-brand b {
   position: relative;
   transition: color $dur-fast $ease-out-expo;
@@ -73,14 +49,17 @@
     transition: opacity $dur-fast $ease-out-expo, transform $dur-fast $ease-out-expo;
     [data-theme="light"] & { color: $print-phosphor; }
   }
-  &::before { content: "["; left: -0.5rem;  transform: translateX(-4px); }
-  &::after  { content: "]"; right: -0.5rem; transform: translateX(4px); }
+  &::before { content: "[\00a0"; left: -0.5rem;  transform: translateX(-4px); }
+  &::after  { content: "\00a0]"; right: -0.5rem; transform: translateX(4px); }
 }
 
+.navbar-brand:hover b,
+.navbar-brand.active b {
+  &::before, &::after { opacity: 1; transform: translateX(0); }
+}
 .navbar-brand.active b {
   color: $phosphor;
   [data-theme="light"] & { color: $print-phosphor; }
-  &::before, &::after { opacity: 1; transform: translateX(0); }
 }
 
 // Nav links — mono, framed brackets on hover
@@ -141,7 +120,10 @@
   .nav-right { margin-left: 1.25rem; }
 }
 
-// Theme toggle — persistent VOID/SOLID chip (always visible, all viewports)
+// Theme toggle — persistent VOID/SOLID chip (always visible, all viewports).
+// Same border-lightup language as the cards and the social icons: phosphor
+// edge traces in over $dur-lightup, with a 1px inset top highlight to
+// match the rest of the interactive system.
 #theme-toggler {
   cursor: pointer;
   display: inline-flex;
@@ -157,11 +139,11 @@
   border-radius: $radius-xs;
   color: $phosphor;
   position: relative;
-  transition: background $dur-fast $ease-out-expo,
-              border-color $dur-fast $ease-out-expo,
-              transform $dur-fast $ease-out-expo,
-              box-shadow $dur-fast $ease-out-expo,
-              color $dur-fast $ease-out-expo;
+  transition: transform    $dur-base    $ease-out-expo,
+              border-color $dur-lightup $ease-out-expo,
+              background   $dur-lightup $ease-out-expo,
+              color        $dur-lightup $ease-out-expo,
+              box-shadow   $dur-lightup $ease-out-expo;
 
   // VOID in dark mode, SOLID in light mode
   &::before {
@@ -176,17 +158,17 @@
   }
 
   &:hover {
-    background: rgba($phosphor, 0.16);
-    border-color: $phosphor;
-    color: #fff;
+    background: color-mix(in srgb, var(--phosphor) 16%, transparent);
+    border-color: var(--phosphor);
+    color: var(--ink);
     transform: translateY(-1px);
-    box-shadow: 0 0 16px rgba($phosphor, 0.25);
+    @include border-lightup($bloom: 16px, $bloom-alpha: 26%, $top: 38%);
 
     [data-theme="light"] & {
-      background: rgba($carbon, 0.06);
-      border-color: $carbon;
-      color: $carbon;
-      box-shadow: none;
+      background: color-mix(in srgb, var(--ink) 6%, transparent);
+      border-color: var(--carbon);
+      color: var(--carbon);
+      @include border-lightup($bloom: 12px, $bloom-alpha: 24%, $top: 35%);
     }
   }
 

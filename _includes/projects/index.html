@@ -1,7 +1,7 @@
 <section class="projects-section">
 
   <header class="projects-header" data-reveal>
-    <span class="mag-kicker mono">// SELECTED_WORK</span>
+    <span class="mag-kicker mono no-select">// SELECTED_WORK</span>
     <h1 class="mag-heading">Portfolio<span class="title-prompt">_</span></h1>
     <p class="projects-subtitle">Game development projects, experiments &amp; builds.</p>
   </header>
@@ -117,7 +117,7 @@
        data-filter-list="#projects-grid"
        data-filter-item=".card-wrap"
        aria-label="Filter projects by category">
-    <span class="cat-filter__label mono">// {{ filter_label | upcase }}</span>
+    <span class="cat-filter__label mono no-select">// {{ filter_label | upcase }}</span>
     {% if project_cats.size > 1 %}
     <div class="cat-filter__chips">
       <button class="cat-chip is-active mono" type="button" data-cat="all">ALL</button>
@@ -126,7 +126,7 @@
       {% endfor %}
     </div>
     {% endif %}
-    {% if has_togglers %}<div class="visibility-toggles"><span class="cat-filter__label mono">// {{ show_label | upcase }}</span>{{ togglers_html }}</div>{% endif %}
+    {% if has_togglers %}<div class="visibility-toggles"><span class="cat-filter__label mono no-select">// {{ show_label | upcase }}</span>{{ togglers_html }}</div>{% endif %}
   </nav>
   {% endif %}
 

@@ -31,7 +31,9 @@
   small .fa-map-marker-alt { color: $cyan; [data-theme="light"] & { color: $print-cyan; } }
 }
 
-// Social icons — terminal chip style
+// Social icons — terminal chip style (contact / footer / inline use).
+// Same border-lightup language as the cards: phosphor border traces in
+// smoothly, a phosphor bloom + inset top highlight ignite on hover.
 .social {
   text-decoration: none !important;
   display: inline-flex;
@@ -42,10 +44,11 @@
   border-radius: $radius-xs !important;
   border: 1px solid rgba($ink, 0.14);
   background: $bg-surface;
-  transition: transform $dur-base $ease-out-back,
-              border-color $dur-base $ease-out-expo,
-              background $dur-base $ease-out-expo,
-              color $dur-base $ease-out-expo;
+  transition: transform    $dur-base    $ease-out-back,
+              border-color $dur-lightup $ease-out-expo,
+              background   $dur-lightup $ease-out-expo,
+              color        $dur-lightup $ease-out-expo,
+              box-shadow   $dur-lightup $ease-out-expo;
 
   [data-theme="light"] & {
     border-color: rgba($carbon, 0.18);
@@ -54,14 +57,13 @@
 
   &:hover {
     transform: translateY(-3px);
-    border-color: $phosphor !important;
-    background: rgba($phosphor, 0.10) !important;
-    color: #fff !important;
-    box-shadow: 0 6px 18px rgba($phosphor, 0.18);
+    border-color: var(--phosphor) !important;
+    background: color-mix(in srgb, var(--phosphor) 10%, transparent) !important;
+    color: var(--ink) !important;
+    @include border-lightup($bloom: 18px, $bloom-alpha: 24%, $top: 38%);
     [data-theme="light"] & {
-      border-color: $print-phosphor !important;
       color: $print-phosphor !important;
-      box-shadow: 0 6px 14px rgba($carbon, 0.10);
+      @include border-lightup($bloom: 14px, $bloom-alpha: 22%, $top: 35%);
     }
   }
 }
@@ -103,7 +105,7 @@
 
   &:hover {
     background: $phosphor;
-    color: #fff;
+    color: $bg-void;
     border-color: $phosphor;
     transform: translateY(-3px);
     box-shadow: 0 8px 24px rgba($phosphor, 0.35);

@@ -41,11 +41,26 @@ h1, h2, h3, h4, h5, h6 {
   text-transform: uppercase;
 }
 
-// Terminal cursor blink — shared site-wide (landing HUD, section titles, articles cursor).
-// Inline <style> blocks reference this same keyframe; one reduced-motion guard covers all.
+// Prevent long-press / drag-selection on decorative labels
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+// Terminal cursor blink — the site's ONE blink system.
+// .blink (landing HUD), .title-prompt (page/section titles), and
+// .cursor-blink (article empty-state) all share this single rule +
+// keyframe; inline <style> blocks and other partials reference the
+// same name. One reduced-motion guard below covers all three.
 @keyframes blink {
   0%, 50% { opacity: 1; }
   51%, 100% { opacity: 0; }
+}
+.blink,
+.title-prompt,
+.cursor-blink {
+  color: var(--phosphor);
+  animation: blink 1.1s steps(1) infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .blink, .title-prompt, .cursor-blink { animation: none !important; }

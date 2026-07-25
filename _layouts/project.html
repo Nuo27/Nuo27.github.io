@@ -43,10 +43,10 @@ layout: default
       <div class="hero-light"></div>
     </div>
     <div class="hero-content">
-      <p class="hero-meta" data-reveal>{{ page.status | default: 'SELECTED WORK' | upcase }}</p>
+      <p class="hero-meta no-select" data-reveal>{{ page.status | default: 'SELECTED WORK' | upcase }}</p>
       <p class="hero-kicker">
         <span class="kicker-mark" aria-hidden="true"></span>
-        <span class="kicker-text">// PROJECT{%- if page.category %} · {{ page.category | upcase }}{%- endif -%}</span>
+        <span class="kicker-text no-select">// PROJECT{%- if page.category %} · {{ page.category | upcase }}{%- endif -%}</span>
       </p>
       <h1 class="hero-title" data-reveal>{{ page.name }}</h1>
       {%- if page.subtitle -%}
@@ -62,10 +62,10 @@ layout: default
       <div class="hero-light"></div>
     </div>
     <div class="hero-content">
-      <p class="hero-meta" data-reveal>{{ page.status | default: 'SELECTED WORK' | upcase }}</p>
+      <p class="hero-meta no-select" data-reveal>{{ page.status | default: 'SELECTED WORK' | upcase }}</p>
       <p class="hero-kicker">
         <span class="kicker-mark" aria-hidden="true"></span>
-        <span class="kicker-text">// PROJECT{%- if page.category %} · {{ page.category | upcase }}{%- endif -%}</span>
+        <span class="kicker-text no-select">// PROJECT{%- if page.category %} · {{ page.category | upcase }}{%- endif -%}</span>
       </p>
       <h1 class="hero-title" data-reveal>{{ page.name }}</h1>
       {%- if page.subtitle -%}
@@ -84,7 +84,7 @@ layout: default
       <div class="deck-meta" data-reveal>
         {% if page.tags and page.tags.size > 0 %}
         <div class="deck-tags">
-          <span class="deck-label mono">TAGS</span>
+          <span class="deck-label mono no-select">TAGS</span>
           <div class="deck-tags-row" data-reveal>
             {% include common/tag-chips.html tags=page.tags accent="Student Work" link_base="/portfolio/?tag=" %}
           </div>
@@ -117,9 +117,9 @@ layout: default
       <span class="pn-rail" aria-hidden="true"></span>
       <i class="pn-arrow fas fa-arrow-left" aria-hidden="true"></i>
       <span class="pn-text">
-        <span class="pn-kicker mono">// PREVIOUS{%- if prev_proj.category %} · {{ prev_proj.category | upcase }}{%- endif %}</span>
+        <span class="pn-kicker mono no-select">// PREVIOUS{%- if prev_proj.category %} · {{ prev_proj.category | upcase }}{%- endif %}</span>
         <span class="pn-title">{{ prev_proj.name }}</span>
-        {%- if prev_proj.status %}<span class="pn-meta mono">{{ prev_proj.status }}</span>{%- endif %}
+        {%- if prev_proj.status %}<span class="pn-meta mono no-select">{{ prev_proj.status }}</span>{%- endif %}
       </span>
     </a>
     {% endif %}
@@ -131,9 +131,9 @@ layout: default
       <span class="pn-rail" aria-hidden="true"></span>
       <i class="pn-arrow fas fa-arrow-right" aria-hidden="true"></i>
       <span class="pn-text">
-        <span class="pn-kicker mono">// NEXT{%- if next_proj.category %} · {{ next_proj.category | upcase }}{%- endif %}</span>
+        <span class="pn-kicker mono no-select">// NEXT{%- if next_proj.category %} · {{ next_proj.category | upcase }}{%- endif %}</span>
         <span class="pn-title">{{ next_proj.name }}</span>
-        {%- if next_proj.status %}<span class="pn-meta mono">{{ next_proj.status }}</span>{%- endif %}
+        {%- if next_proj.status %}<span class="pn-meta mono no-select">{{ next_proj.status }}</span>{%- endif %}
       </span>
     </a>
     {% endif %}
@@ -393,12 +393,6 @@ layout: default
     transform: translateY(0);
   }
 
-  /* ---- Deck reveal (shared observer) ---- */
-  .deck-body[data-reveal],
-  .deck-meta[data-reveal] { transition-delay: var(--reveal-delay, 0ms); }
-  .deck-body[data-reveal] { --reveal-delay: 0ms; }
-  .deck-meta[data-reveal] { --reveal-delay: 100ms; }
-
   /* ---- Body reading column reveal ---- */
   .project-body [data-reveal] {
     transition-duration: 500ms;
@@ -483,10 +477,7 @@ layout: default
     .hero-image-wrap,
     .hero-title::before,
     .hero-content [data-reveal],
-    .hero-title .hero-w-i,
-    .deck-body[data-reveal],
-    .deck-meta[data-reveal],
-    .project-body [data-reveal] {
+    .hero-title .hero-w-i {
       animation: none !important;
       transition: none !important;
       transform: none !important;
@@ -509,50 +500,12 @@ layout: default
     .pn-card:hover .pn-arrow { transform: none !important; }
   }
 
-  /* ---- Deck (description + meta) ---- */
+  /* ---- Deck wrapper padding (grid + meta + tags are shared in _sass/_detail.scss) ---- */
   .project-deck { padding: 3rem 0 2.5rem; }
-  .deck-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    align-items: start;
-    border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-    padding-top: 2.5rem;
-  }
-  @media (min-width: 768px) {
-    .deck-grid { grid-template-columns: 1.4fr 1fr; gap: 4rem; }
-  }
-  .deck-lead {
-    font-family: var(--font-serif);
-    font-size: clamp(1.15rem, 1.8vw, 1.5rem);
-    font-weight: 400;
-    line-height: 1.5;
-    color: var(--ink);
-    margin: 0;
-    max-width: 40ch;
-    font-feature-settings: "liga", "kern";
-  }
-  .deck-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  .deck-label {
-    display: block;
-    font-size: 0.6rem;
-    color: var(--phosphor);
-    letter-spacing: 0.22em;
-    margin-bottom: 0.6rem;
-  }
-  .deck-tags-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .deck-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 
-  /* ---- Body reading column ---- */
+  /* ---- Body reading column (prose lives in _sass/_markdown.scss;
+     only the serif H2 override is project-specific) ---- */
   .project-body-section { padding: 1rem 0 3rem; }
-  .project-body {
-    max-width: 760px;
-    margin: 0 auto;
-  }
   .project-body h2 {
     font-family: var(--font-serif);
     font-size: clamp(1.6rem, 2.6vw, 2rem);
@@ -561,37 +514,6 @@ layout: default
     margin-top: 3rem;
     margin-bottom: 1.1rem;
     color: var(--ink);
-  }
-  .project-body h3 {
-    font-family: var(--font-display);
-    font-size: 1.2rem;
-    margin-top: 2rem;
-    margin-bottom: 0.8rem;
-    color: var(--ink);
-  }
-  .project-body p { line-height: 1.78; margin-bottom: 1.25rem; }
-  .project-body a { color: var(--cyan); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--cyan) 40%, transparent); }
-  .project-body a:hover { color: var(--phosphor); border-bottom-color: var(--phosphor); }
-  .project-body ul, .project-body ol { margin-bottom: 1.2rem; padding-left: 1.5rem; }
-  .project-body li { margin-bottom: 0.5rem; line-height: 1.72; }
-  .project-body img {
-    max-width: 100%;
-    border-radius: 6px;
-    margin: 2rem 0;
-    border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
-  }
-  .project-body blockquote {
-    border-left: 2px solid var(--phosphor-soft);
-    padding: 0.5rem 1.25rem;
-    margin: 1.5rem 0;
-    font-style: italic;
-    color: var(--ink-mut);
-    background: color-mix(in srgb, var(--phosphor-soft) 5%, transparent);
-  }
-  .project-body hr {
-    border: none;
-    border-top: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
-    margin: 3rem 0;
   }
 
   /* ---- Prev / Next + back ---- */
@@ -610,18 +532,7 @@ layout: default
         "prev next";
     }
   }
-  .back-link {
-    grid-area: back;
-    font-size: 0.74rem;
-    color: var(--ink);
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    [data-theme="light"] & { color: var(--carbon); }
-    i { transition: transform var(--dur-base) var(--ease-out-expo); }
-    &:hover { color: var(--phosphor); i { transform: translateX(-4px); } }
-  }
+  .back-link { grid-area: back; }   /* visual in _sass/_detail.scss */
   .pn-prev { grid-area: prev; }
   .pn-next { grid-area: next; }
 

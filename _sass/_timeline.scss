@@ -1,8 +1,13 @@
 // ==========================================================
-// Timeline — alternating experience log with central line
+// Timeline — alternating experience log with central line.
+// Token-driven colours; only the lift shadow stays theme-aware
+// (shadows are genuinely asymmetric — dark needs a stronger
+// cast than the paper substrate), matching .project.card /
+// .featured-item elsewhere.
 // ==========================================================
 
 @use "variables" as *;
+@use "mixins" as *;
 
 .timeline-body {
   position: relative;
@@ -16,11 +21,8 @@
   left: 50%;
   top: 0; bottom: 0;
   width: 1px;
-  background: linear-gradient(to bottom, $phosphor-soft, rgba($phosphor-soft, 0.12));
+  background: linear-gradient(to bottom, var(--phosphor-soft), color-mix(in srgb, var(--phosphor-soft) 12%, transparent));
   transform: translateX(-50%);
-}
-[data-theme="light"] .timeline-body::before {
-  background: linear-gradient(to bottom, $print-phosphor-soft, rgba($print-phosphor-soft, 0.15));
 }
 
 .timeline-item {
@@ -38,53 +40,44 @@
   position: absolute;
   top: 1.1rem;
   width: 12px; height: 12px;
-  background: $bg-void;
-  border: 2px solid $phosphor;
+  background: var(--bg-void);
+  border: 2px solid var(--phosphor);
   transform: rotate(45deg);
-  box-shadow: 0 0 8px rgba($phosphor, 0.5);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--phosphor) 50%, transparent);
   z-index: 2;
 }
 .side-left  .timeline-marker { right: -6px; }
 .side-right .timeline-marker { left: -6px; }
-[data-theme="light"] .timeline-marker {
-  background: $paper;
-  border-color: $print-phosphor;
-  box-shadow: none;
-}
 
-// content card
+// content card — shares the border-lightup language with .project.card /
+// .featured-item: border traces to a brighter phosphor on hover while a
+// softer bloom + inset top highlight ignite on the same $dur-lightup.
 .timeline-content {
   display: inline-block;
   text-align: left;
-  background: $bg-surface;
-  border: 1px solid rgba($phosphor-soft, 0.22);
+  background: var(--bg-surface);
+  border: 1px solid color-mix(in srgb, var(--phosphor-soft) 22%, transparent);
   padding: 0.9rem 1.05rem;
   border-radius: $radius-xs;
   max-width: 100%;
-  transition: border-color $dur-base $ease-out-expo, transform $dur-base $ease-out-expo, box-shadow $dur-base $ease-out-expo;
-}
-.timeline-content:hover {
-  border-color: rgba($phosphor, 0.45);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
-}
-[data-theme="light"] .timeline-content {
-  background: $paper-raised;
-  border-color: rgba($carbon, 0.16);
-}
-[data-theme="light"] .timeline-content:hover {
-  border-color: rgba($carbon, 0.38);
-  box-shadow: 0 8px 18px rgba(10, 11, 15, 0.10);
+  transition: transform    $dur-base    $ease-out-expo,
+              border-color $dur-lightup $ease-out-expo,
+              box-shadow   $dur-lightup $ease-out-expo;
+  &:hover {
+    border-color: color-mix(in srgb, var(--phosphor) 60%, transparent);
+    transform: translateY(-2px);
+    @include border-lightup(0 8px 22px rgba(0, 0, 0, 0.4), 16px, 22%, 35%);
+    [data-theme="light"] & { @include border-lightup(0 8px 18px rgba(10, 11, 15, 0.10), 14px, 20%, 32%); }
+  }
 }
 
 .timeline-index {
   display: block;
   font-size: 0.58rem;
-  color: $cyan;
+  color: var(--cyan);
   letter-spacing: 0.18em;
   margin-bottom: 0.25rem;
 }
-[data-theme="light"] .timeline-index { color: $print-cyan; }
 
 .timeline-title {
   font-family: $font-display;
@@ -98,20 +91,18 @@
 .timeline-date {
   font-family: $font-mono;
   font-size: 0.62rem;
-  color: $phosphor;
+  color: var(--phosphor);
   font-weight: 500;
   letter-spacing: 0.1em;
   margin-bottom: 0.5rem;
 }
-[data-theme="light"] .timeline-date { color: $print-phosphor; }
 
 .timeline-description {
   font-size: 0.88rem;
   line-height: 1.6;
-  color: $ink-mut;
+  color: var(--ink-mut);
   margin: 0;
 }
-[data-theme="light"] .timeline-description { color: $carbon-mut; }
 
 // Mobile — collapse to a single column with the line on the left
 @media (max-width: 768px) {

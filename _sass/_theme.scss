@@ -86,19 +86,6 @@
       color: $bg-void;
     }
   }
-
-  .markdown-body {
-    color: rgba($ink, 0.88);
-    h1, h2, h3, h4, h5, h6 {
-      color: $ink;
-      border-bottom-color: rgba($phosphor, 0.18);
-    }
-    a { color: $cyan; }
-    blockquote {
-      border-left: 2px solid $phosphor;
-      color: $ink-mut;
-    }
-  }
 }
 
 // ==========================================================

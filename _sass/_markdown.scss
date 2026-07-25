@@ -1,31 +1,73 @@
+// ==========================================================
+// Markdown body — the single source for rendered prose.
+// Applied to .markdown-body (article + project detail pages).
+// Fully token-driven so both themes resolve without overrides;
+// _theme.scss no longer re-declares these.
+// ==========================================================
+
 @use "variables" as *;
+@use "mixins" as *;
 
 .markdown-body {
-  h1,
-  h2 {
-    margin-top: 32px;
+  color: var(--ink);
+
+  // ---- Headings: editorial display, never the global uppercase shell ----
+  h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    text-transform: none;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-top: 2.25rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
   }
+  h1 { margin-top: 32px; }
+  h2 { font-size: 1.5rem; }
+  h3 { font-size: 1.2rem; margin-top: 2rem; }
+  h4 { font-size: 1rem; }
 
   p {
-    line-height: 1.75;
-    margin-bottom: 1.15rem;
-  }
-
-  li {
-    line-height: 1.7;
-    margin-bottom: 0.4rem;
+    line-height: 1.78;
+    margin-bottom: 1.2rem;
   }
 
   hr {
-    background: $secondary;
-    [data-theme="light"] & { background: $carbon-mut; }
+    border: none;
+    height: 1px;
+    margin: 3rem 0;
+    background: color-mix(in srgb, var(--phosphor-soft) 40%, transparent);
+  }
+
+  // ---- Links: cyan base + the site's ONE editorial underline swipe ----
+  a:not(.btn):not([class^="carousel-"]):not([class^="list-"]):not(.no-underline):not(.tag-chip) {
+    @include editorial-underline;
+    color: var(--cyan);
+    &:hover { color: var(--phosphor); }
+  }
+
+  // ---- Lists ----
+  ul, ol { margin-bottom: 1.2rem; padding-left: 1.5rem; }
+  li {
+    line-height: 1.72;
+    margin-bottom: 0.5rem;
+  }
+
+  blockquote {
+    border-left: 2px solid var(--phosphor-soft);
+    padding: 0.5rem 1.25rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: var(--ink-mut);
+    background: color-mix(in srgb, var(--phosphor-soft) 5%, transparent);
   }
 
   img:not(.emoji) {
     display: block;
     max-width: 100%;
     height: auto;
-    margin: 1rem auto;
+    border-radius: var(--radius-xs);
+    margin: 1.5rem 0;
+    border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
   }
 
   .video {
@@ -37,43 +79,6 @@
       position: absolute;
       height: 100%;
       width: 100%;
-    }
-  }
-
-  a:not(.btn):not([class^="carousel-"]):not([class^="list-"]):not(.no-underline) {
-    display: inline-block;
-    text-decoration: none;
-
-    &:hover {
-      color: $phosphor;
-      [data-theme="light"] & { color: $print-phosphor-deep; }
-    }
-
-    &::after {
-      content: "";
-      display: block;
-      height: 0.15em;
-      margin-top: -0.15em;
-      width: 100%;
-      background: $cyan;
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.3s $ease-out-expo;
-      [data-theme="light"] & { background: $print-cyan; }
-    }
-
-    &:hover::after {
-      transform: scaleX(1);
-    }
-  }
-
-  blockquote {
-    border-left: 2px solid $phosphor;
-    color: $ink-mut;
-    padding: 0 1em;
-    [data-theme="light"] & {
-      border-left-color: $print-phosphor;
-      color: $carbon-mut;
     }
   }
 
@@ -93,13 +98,9 @@
     margin: 1rem 0;
 
     td {
-      border: 1px solid rgba($ink, 0.15);
+      border: 1px solid color-mix(in srgb, var(--ink) 15%, transparent);
       padding: 8px 16px;
-      color: $ink;
-      [data-theme="light"] & {
-        border-color: rgba($carbon, 0.20);
-        color: $carbon;
-      }
+      color: var(--ink);
     }
 
     th {
@@ -108,19 +109,13 @@
       padding-bottom: 12px;
       font-weight: 700;
       text-align: left;
-      background-color: rgba($phosphor, 0.12);
-      color: $phosphor;
-      border-color: rgba($phosphor, 0.30);
-      [data-theme="light"] & {
-        background-color: rgba($carbon, 0.06);
-        color: $carbon;
-        border-color: rgba($carbon, 0.20);
-      }
+      background-color: color-mix(in srgb, var(--phosphor) 12%, transparent);
+      color: var(--phosphor);
+      border-color: color-mix(in srgb, var(--phosphor) 30%, transparent);
     }
 
     tr:nth-child(even) {
-      background-color: rgba($ink, 0.04);
-      [data-theme="light"] & { background-color: rgba($carbon, 0.04); }
+      background-color: color-mix(in srgb, var(--ink) 4%, transparent);
     }
   }
 }

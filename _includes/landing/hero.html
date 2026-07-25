@@ -2,13 +2,13 @@
   <!-- ============ Cover ============ -->
   <header class="mag-cover landing-wrapper">
 
-    <span class="hero-glyph glyph-b" aria-hidden="true">[ NODE_01 // ONLINE ]</span>
-    <span class="hero-glyph glyph-c" aria-hidden="true">- SYS.OK</span>
+    <span class="hero-glyph glyph-b no-select" aria-hidden="true">[ NODE_01 // ONLINE ]</span>
+    <span class="hero-glyph glyph-c no-select" aria-hidden="true">- SYS.OK</span>
 
     <div class="row align-items-center landing-row no-gutters">
       <div class="col-lg-8 landing-content">
 
-        <p class="cover-eyebrow mono" data-reveal>
+        <p class="cover-eyebrow mono no-select" data-reveal>
           <span class="crosshair">+</span> {{ page.hero.eyebrow }}
         </p>
 
@@ -26,12 +26,12 @@
         <div class="cover-cta" data-reveal>
           {% if page.hero.cta_primary %}
           <a href="{{ page.hero.cta_primary.url }}" class="btn btn-primary-custom" data-magnetic>
-            <span class="btn-bracket">&lt;</span> {{ page.hero.cta_primary.label }} <span class="btn-bracket">/&gt;</span>
+            <span class="btn-bracket no-select">&lt;</span> {{ page.hero.cta_primary.label }} <span class="btn-bracket no-select">/&gt;</span>
           </a>
           {% endif %}
           {% if page.hero.cta_secondary %}
           <a href="{{ page.hero.cta_secondary.url }}" class="btn btn-secondary-custom" data-magnetic>
-            <span class="btn-prompt">&gt;</span> {{ page.hero.cta_secondary.label }}
+            <span class="btn-prompt no-select">&gt;</span> {{ page.hero.cta_secondary.label }}
           </a>
           {% endif %}
         </div>
@@ -43,7 +43,7 @@
           <div class="portrait-frame">
             <img src="{{ site.author.image }}" alt="{{ site.author.name }}" class="portrait-image">
             <div class="portrait-scan" aria-hidden="true"></div>
-            <span class="portrait-tag mono">SUBJECT // NUO</span>
+            <span class="portrait-tag mono no-select">SUBJECT // NUO</span>
           </div>
         </div>
       </div>

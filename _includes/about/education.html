@@ -5,10 +5,10 @@
   <div class="education-list">
     {% for e in s.items %}
       <div class="education-item reveal" style="transition-delay: {{ forloop.index0 | times: 120 }}ms;">
-        <span class="education-index mono">// {{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
+        <span class="education-index mono no-select">// {{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
         <div class="education-content">
           <h3 class="education-qualification">{{ e.qualification }}</h3>
-          <p class="education-institution mono">{{ e.institution }} · {{ e.from }} - {{ e.to }}</p>
+          <p class="education-institution mono no-select">{{ e.institution }} · {{ e.from }} - {{ e.to }}</p>
           {% if e.description %}<p class="education-description">{{ e.description }}</p>{% endif %}
         </div>
       </div>

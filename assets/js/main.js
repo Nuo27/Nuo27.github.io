@@ -39,6 +39,216 @@
   }
 
   // ============================================================
+  // VIEWPORT-POSITION HOVER
+  //
+  // The hovered element is whatever is currently under the cursor in
+  // the viewport. There is exactly ONE source of truth: a continuous
+  // rAF loop that runs elementsFromPoint every frame, against the
+  // cursor's last-known viewport coords (updated by mousemove).
+  //
+  // Why this shape — not event listeners on scroll / pointermove /
+  // wheel / smooth-scroll.subscribe:
+  //
+  //   · smooth-scroll translates the wrapper via CSS transform. The
+  //     document does NOT actually scroll (window.scrollY never
+  //     changes), so a 'scroll' listener on window never fires
+  //     during the user's own scrolling input. Subscribing to
+  //     smooth-scroll's tick also has gaps: it only ticks while
+  //     smooth=true AND the loop is awake AND the diff is above
+  //     threshold. Any of those fail-closed conditions would freeze
+  //     hover.
+  //   · Native pointer / scroll / focus events tell us when the
+  //     INPUT happened, not what's under the cursor right now.
+  //     That's the wrong question.
+  //
+  // elementsFromPoint, on the other hand, asks exactly the right
+  // question ("what's at viewport (x,y) at this moment?") and it
+  // forces a synchronous layout that reflects the post-transform
+  // visual position — so smooth-scroll's translate3d, BFCache
+  // restore, router swaps, focus-induced scrolls, and the rest are
+  // all handled correctly without us having to subscribe to any of
+  // them. One loop, one hit-test, one state.
+  //
+  // Steady-state cost: one elementsFromPoint per frame (~0.02 ms
+  // for a normal page). The diff against the previous result skips
+  // state propagation on idle frames.
+  // ============================================================
+
+  var HOVER_SEL = 'a,button,label[for],.nav-link,.social,.skill-tag,input,textarea,[data-cursor="hover"],[contenteditable]';
+  var ZOOM_SEL  = '.gallery-slide,[data-lightbox],.featured-item--project img,[data-cursor="zoom"]';
+  var PULSE_SEL = 'a,button,[role="button"],.btn-primary-custom,.btn-secondary-custom,.btn-project,[data-magnetic]';
+  var DRAG_SEL  = '.gallery-stage,[data-cursor="drag"]';
+
+  var hoverState = {
+    cursorX: -1,
+    cursorY: -1,
+    hover: null,
+    zoom: null,
+    pulse: null,
+    down: false,
+    prevHover: null,
+  };
+
+  // Exposed for diagnostics — window.__hoverState in DevTools.
+  window.__hoverState = hoverState;
+
+  function resolveHover(x, y) {
+    var hover = null, zoom = null, pulse = null;
+    if (x < 0 || y < 0 || typeof document.elementsFromPoint !== 'function') {
+      return { hover: hover, zoom: zoom, pulse: pulse };
+    }
+    var stack;
+    try {
+      stack = document.elementsFromPoint(x, y);
+    } catch (e) {
+      return { hover: hover, zoom: zoom, pulse: pulse };
+    }
+    // Walk from the topmost element down. The cursor overlay
+    // (position:fixed, z-index 10003, pointer-events:none) sits at
+    // the top of the stack at this exact point, but it has no
+    // HOVER/ZOOM/PULSE ancestor — closest() returns null and we
+    // skip it. The real interactive is the next element down.
+    for (var i = 0; i < stack.length; i++) {
+      var el = stack[i];
+      if (!el || el === document.documentElement || el === document.body) break;
+      if (typeof el.closest !== 'function') continue;
+      if (!hover) { var h = el.closest(HOVER_SEL); if (h) hover = h; }
+      if (!zoom)  { var z = el.closest(ZOOM_SEL);  if (z) zoom  = z; }
+      if (!pulse) { var p = el.closest(PULSE_SEL); if (p) pulse = p; }
+      if (hover && zoom && pulse) break;
+    }
+    return { hover: hover, zoom: zoom, pulse: pulse };
+  }
+
+  // ---- Border-trace helpers -------------------------------------
+  // The trace pseudo-element is owned by CSS (_mixins.scss ::before).
+  // JS only sets the entry angle and animates --trace-spread from
+  // 0deg → 180deg via the Web Animations API; CSS handles the paint,
+  // which is masked to the 1px border ring (no card content overpaint).
+  function cancelTrace(card) {
+    if (!card) return;
+    if (card.__traceAnim) {
+      try { card.__traceAnim.cancel(); } catch (e) {}
+      card.__traceAnim = null;
+    }
+    // Restore defaults; pseudo's opacity transition handles the fade-out.
+    card.style.removeProperty('--trace-spread');
+    card.style.removeProperty('--trace-entry');
+  }
+
+  function fireTrace(card, angleDeg) {
+    if (!card) return;
+    card.style.setProperty('--trace-entry', angleDeg + 'deg');
+    card.style.setProperty('--trace-spread', '0deg');
+    // Sync reflow: paint the 0deg state before the WAAPI animation
+    // interpolates, so the spread grows from a real pinpoint instead
+    // of interpolating from 'unset'.
+    void card.offsetWidth;
+    var anim;
+    try {
+      anim = card.animate(
+        [
+          { '--trace-spread': '0deg' },
+          { '--trace-spread': '180deg' }
+        ],
+        { duration: 850, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+      );
+    } catch (e) {
+      card.style.setProperty('--trace-spread', '180deg');
+      return;
+    }
+    card.__traceAnim = anim;
+    anim.onfinish = function () { card.__traceAnim = null; };
+  }
+
+  function computeEntryAngle(card, x, y) {
+    var r = card.getBoundingClientRect();
+    var cx = r.left + r.width / 2;
+    var cy = r.top + r.height / 2;
+    var ang = Math.atan2(y - cy, x - cx) * 180 / Math.PI;
+    if (ang < 0) ang += 360;
+    return ang;
+  }
+
+  function applyHoverState() {
+    var s = hoverState;
+    var drag = !!(s.down && s.hover && typeof s.hover.matches === 'function' && s.hover.matches(DRAG_SEL));
+
+    // Drive the inline cursor (see _includes/head.html §5).
+    if (window.__cursor && typeof window.__cursor.setStates === 'function') {
+      window.__cursor.setStates({
+        hover: !!s.hover,
+        zoom:  !!s.zoom,
+        pulse: !!s.pulse,
+        drag:  drag,
+        down:  s.down,
+      });
+    }
+
+    // Border trace — fire on card hover-enter, cancel on leave.
+    var newCard = (s.hover && typeof s.hover.closest === 'function')
+      ? s.hover.closest('.project.card, .featured-item')
+      : null;
+    var prevCard = (s.prevHover && typeof s.prevHover.closest === 'function')
+      ? s.prevHover.closest('.project.card, .featured-item')
+      : null;
+
+    if (newCard !== prevCard) {
+      cancelTrace(prevCard);
+      if (newCard) {
+        fireTrace(newCard, computeEntryAngle(newCard, s.cursorX, s.cursorY));
+      }
+    }
+    s.prevHover = s.hover;
+  }
+
+  // ---- THE single source of truth: one continuous rAF loop ----
+  // Every frame: ask elementsFromPoint what's at (cursorX, cursorY),
+  // diff against the previous result, propagate on change. The
+  // browser's hit-test automatically reflects every transform /
+  // scroll / route swap / animation; we don't subscribe to any of
+  // them.
+  (function hoverLoop() {
+    requestAnimationFrame(hoverLoop);
+    if (document.hidden) return;
+    var cx = hoverState.cursorX, cy = hoverState.cursorY;
+    if (cx < 0 || cy < 0) return;
+    var r = resolveHover(cx, cy);
+    if (r.hover === hoverState.hover &&
+        r.zoom  === hoverState.zoom  &&
+        r.pulse === hoverState.pulse) return;
+    hoverState.hover = r.hover;
+    hoverState.zoom  = r.zoom;
+    hoverState.pulse = r.pulse;
+    applyHoverState();
+  })();
+
+  // Track cursor position. The loop above already keeps hover
+  // state current from these coords; no scroll/smooth-scroll
+  // subscribers needed.
+  window.addEventListener('mousemove', function (e) {
+    hoverState.cursorX = e.clientX;
+    hoverState.cursorY = e.clientY;
+  }, { passive: true });
+  window.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'mouse') {
+      hoverState.cursorX = e.clientX;
+      hoverState.cursorY = e.clientY;
+    }
+  }, { passive: true });
+
+  // Pointer-down / up flip the cursor's transient `is-down` state.
+  function pressStart() { hoverState.down = true; applyHoverState(); }
+  function pressEnd()   {
+    if (!hoverState.down) return;
+    hoverState.down = false;
+    applyHoverState();
+  }
+  window.addEventListener('pointerdown', pressStart);
+  window.addEventListener('pointerup', pressEnd);
+  window.addEventListener('pointercancel', pressEnd);
+
+  // ============================================================
   // RUN-ONCE INITIALIZERS — bind to the persistent shell
   // ============================================================
 
@@ -314,10 +524,10 @@
     scope.querySelectorAll('.hero-title').forEach(splitHeroTitle);
   }
 
-  // Adds data-reveal to .project-body > * with a staggered delay.
+  // Adds data-reveal to .project-body / .article-body > * with a staggered delay.
   // Reuses the site-wide reveal observer; no new IntersectionObserver.
   function initProjectBodyReveal(scope) {
-    var body = scope.querySelector && scope.querySelector('.project-body');
+    var body = scope.querySelector && scope.querySelector('.project-body, .article-body');
     if (!body) return;
     var kids = Array.prototype.slice.call(body.children);
     kids.forEach(function (el, i) {

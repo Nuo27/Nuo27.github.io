@@ -11,9 +11,9 @@
 
     <div class="card-body">
       <div class="card-kicker">
-        <span class="card-index mono">{{ card_index | default: '00' | prepend: '00' | slice: -2, 2 }}</span>
+        <span class="card-index mono no-select">{{ card_index | default: '00' | prepend: '00' | slice: -2, 2 }}</span>
         {%- if project_cat -%}
-        <span class="card-cat mono">// {{ project_cat | upcase }}</span>
+        <span class="card-cat mono no-select">// {{ project_cat | upcase }}</span>
         {%- endif -%}
       </div>
       <h3 class="card-title">{{ project_name }}</h3>

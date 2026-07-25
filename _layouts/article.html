@@ -12,17 +12,31 @@ layout: default
       </div>
 
       <header class="article-header">
-        <span class="article-eyebrow mono">// ARTICLE</span>
+        <span class="article-eyebrow mono no-select">// ARTICLE</span>
         <h1 class="article-title">{{ page.title }}</h1>
-        {% if page.description %}
-        <p class="article-lead">{{ page.description }}</p>
-        {% endif %}
-        {% if page.tags.size > 0 %}
-        <div class="article-tags">
-          {% include common/tag-chips.html tags=page.tags link_base="/articles/?tag=" %}
-        </div>
-        {% endif %}
       </header>
+
+      {% if page.description or page.tags.size > 0 %}
+      <section class="article-deck">
+        <div class="deck-grid">
+          {% if page.description %}
+          <div class="deck-body" data-reveal>
+            <p class="deck-lead">{{ page.description }}</p>
+          </div>
+          {% endif %}
+          {% if page.tags.size > 0 %}
+          <div class="deck-meta" data-reveal>
+            <div class="deck-tags">
+              <span class="deck-label mono no-select">TAGS</span>
+              <div class="deck-tags-row">
+                {% include common/tag-chips.html tags=page.tags link_base="/articles/?tag=" %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </section>
+      {% endif %}
 
       <div class="markdown-body article-body">
         {{ content }}
@@ -40,131 +54,43 @@ layout: default
 </div>
 
 <style>
+  /* Article-detail page. Shared deck + back-link + reading-column
+     typography live in _sass/_detail.scss and _sass/_markdown.scss;
+     only the article-specific chrome remains here. */
+
   .article-detail { padding-bottom: 4rem; }
 
   .article-back-row { padding: 1rem 0; }
 
+  /* ---- Header ---- */
   .article-header {
-    margin: 1rem 0 2.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid color-mix(in srgb, var(--phosphor-soft) 26%, transparent);
+    margin: 1rem 0 0;
+    padding-bottom: 1.75rem;
   }
-
   .article-eyebrow {
     display: block;
     font-size: 0.65rem;
     color: var(--cyan);
     letter-spacing: 0.2em;
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.7rem;
   }
-
   .article-title {
     font-family: var(--font-display);
     font-size: clamp(1.9rem, 5.2vw, 2.9rem);
     font-weight: 700;
-    margin: 0 0 0.75rem;
+    margin: 0;
     color: var(--ink);
     letter-spacing: -0.032em;
     line-height: 1.1;
   }
 
-  .article-lead {
-    font-size: 1.05rem;
-    line-height: 1.65;
-    color: var(--ink-mut);
-    margin: 0 0 1rem;
-    max-width: 640px;
-  }
+  /* ---- Deck wrapper padding (grid + meta are shared) ---- */
+  .article-deck { padding: 3rem 0 2.5rem; }
 
-  .article-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  .article-body {
-    max-width: 760px;
-    margin: 0 auto;
-  }
-
-  .article-body h2,
-  .article-body h3,
-  .article-body h4 {
-    font-family: var(--font-display);
-    margin-top: 2.25rem;
-    margin-bottom: 1rem;
-    letter-spacing: -0.025em;
-    color: var(--ink);
-  }
-
-  .article-body h2 { font-size: 1.5rem; }
-  .article-body h3 { font-size: 1.2rem; }
-
-  .article-body p {
-    line-height: 1.8;
-    margin-bottom: 1.2rem;
-  }
-
-  .article-body a {
-    color: var(--cyan);
-    text-decoration: none;
-    border-bottom: 1px solid color-mix(in srgb, var(--cyan) 40%, transparent);
-    transition: border-color 0.2s var(--ease-out-expo, ease-out), color 0.2s var(--ease-out-expo, ease-out);
-  }
-  .article-body a:hover {
-    color: var(--phosphor);
-    border-bottom-color: var(--phosphor);
-  }
-
-  .article-body ul,
-  .article-body ol {
-    margin-bottom: 1.2rem;
-    padding-left: 1.5rem;
-  }
-
-  .article-body li {
-    margin-bottom: 0.5rem;
-    line-height: 1.7;
-  }
-
-  .article-body blockquote {
-    border-left: 2px solid var(--phosphor-soft);
-    padding: 0.5rem 1.25rem;
-    margin: 1.5rem 0;
-    font-style: italic;
-    color: var(--ink-mut);
-    background: color-mix(in srgb, var(--phosphor-soft) 5%, transparent);
-  }
-
-  .article-body img {
-    max-width: 100%;
-    border-radius: var(--radius-xs);
-    margin: 1.5rem 0;
-    border: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
-  }
-
+  /* ---- Footer back-link row ---- */
   .article-footer-section {
     padding: 2rem 0;
     border-top: 1px solid color-mix(in srgb, var(--phosphor-soft) 24%, transparent);
     margin-top: 3rem;
   }
-
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-mono);
-    color: var(--phosphor);
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: color 0.2s var(--ease-out-expo, ease-out);
-  }
-  .back-link i { transition: transform 0.25s var(--ease-out-expo, ease-out); }
-  .back-link:hover {
-    color: var(--cyan);
-  }
-  .back-link:hover i { transform: translateX(-4px); }
 </style>

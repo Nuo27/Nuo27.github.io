@@ -4,6 +4,7 @@
 // ==========================================================
 
 @use "variables" as *;
+@use "mixins" as *;
 
 // ---- Cover wrapper (reused from old hero) ----
 .landing-wrapper {
@@ -336,6 +337,9 @@
 }
 
 // ---- The card chassis (shared by projects + articles) ----
+// --cat drives the *category* accents (kicker label, overlay tint, VIEW chip)
+// so articles stay cyan-distinct; the *interactive* chassis — border, glow —
+// lights up to phosphor for both. Same border lightup language as .project.card.
 .featured-item {
   position: relative;
   display: grid;
@@ -345,21 +349,27 @@
   border-radius: 8px;
   background: var(--bg-surface);
   text-decoration: none;
-  // category accent (drives border / title / cta color on hover)
   --cat: var(--phosphor);
-  transition: transform $dur-base $ease-out-expo,
-              border-color $dur-base $ease-out-expo,
-              box-shadow $dur-base $ease-out-expo;
+  --card-accent: var(--cat);
+  transition: transform   $dur-base    $ease-out-expo,
+              border-color $dur-lightup $ease-out-expo,
+              box-shadow   $dur-lightup $ease-out-expo;
+
+  // Premium entrance: a phosphor light traces from the cursor's entry
+  // angle around the perimeter on hover-enter (~0.85s), then dissolves
+  // into the steady-state phosphor-soft + bloom. Drives the same
+  // --trace-spread / --trace-entry properties that .project.card uses,
+  // so JS only has to look at the resolved hover target.
+  @include border-trace;
   [data-theme="light"] & { background: var(--paper-raised); border-color: rgba($carbon, 0.14); }
 
   &:hover {
     transform: translateY(-6px);
-    border-color: var(--cat);
-    box-shadow: 0 24px 56px rgba(0, 0, 0, 0.4);
-    [data-theme="light"] & { box-shadow: 0 24px 50px rgba($carbon, 0.16); }
-    .fi-title a { color: var(--cat); &::after { transform: scaleX(1); } }
-    .fi-link { color: var(--cat); i { transform: translateX(4px); } }
-    .fi-index { color: var(--cat); transform: scale(1.06); }
+    border-color: var(--phosphor-soft);
+    @include border-lightup(0 24px 56px rgba(0, 0, 0, 0.4));
+    [data-theme="light"] & {
+      @include border-lightup(0 24px 50px rgba($carbon, 0.16));
+    }
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -455,7 +465,6 @@
   color: var(--ink-faint);
   letter-spacing: 0.2em;
   transition: transform 0.4s $ease-out-expo, color 0.4s $ease-out-expo;
-  [data-theme="light"] & { color: var(--carbon-faint); }
 }
 
 // ---- Category label (color-only cue) ----
@@ -478,24 +487,6 @@
   margin: 0;
   text-transform: none;
   color: var(--ink);
-  [data-theme="light"] & { color: var(--carbon); }
-  a {
-    color: inherit;
-    text-decoration: none;
-    display: inline-block;
-    position: relative;
-    transition: color 0.4s $ease-out-expo;
-    &::after {
-      content: "";
-      position: absolute;
-      left: 0; bottom: 0;
-      width: 100%; height: 1px;
-      background: currentColor;
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.3s $ease-out-expo;
-    }
-  }
 }
 
 .fi-desc {
@@ -504,7 +495,6 @@
   color: var(--ink-mut);
   margin: 0;
   max-width: 52ch;
-  [data-theme="light"] & { color: var(--carbon-mut); }
 }
 .fi-tools, .fi-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .fi-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.2rem; }
@@ -543,7 +533,7 @@
   padding-top: 0.4rem;
   transition: color 0.4s $ease-out-expo;
   i { transition: transform 0.4s $ease-out-expo; }
-  [data-theme="light"] & { color: var(--carbon-mut); }
+  &:hover { color: var(--cat); i { transform: translateX(4px); } }
 }
 
 // ---- Stream footer ----
@@ -556,7 +546,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .featured-item, .fi-media img, .fi-overlay, .fi-view,
-  .fi-title a, .fi-link, .fi-link i, .fi-index {
+  .fi-link, .fi-link i, .fi-index {
     transition-duration: 0.01ms !important;
   }
 }

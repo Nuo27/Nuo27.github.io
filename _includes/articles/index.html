@@ -1,9 +1,9 @@
 <div class="articles-wrapper">
   <header class="articles-header">
-    <span class="section-eyebrow mono">// LOG_ENTRIES</span>
+    <span class="section-eyebrow mono no-select">// LOG_ENTRIES</span>
     <h1 class="articles-title">Articles<span class="title-prompt">_</span></h1>
     <p class="articles-subtitle">Notes, writeups &amp; technical deep-dives.</p>
-    <div class="articles-meta mono">
+    <div class="articles-meta mono no-select">
       <span><span class="dot"></span> {ARTICLES}</span>
       <span class="meta-sep">/</span>
       <span>STATUS: OPEN</span>
@@ -15,9 +15,9 @@
   <div class="articles-list" id="articles-list">
     {% for article in site.articles %}
       <article class="article-entry reveal" style="transition-delay: {{ forloop.index0 | modulo: 3 | times: 80 }}ms;">
-        <span class="article-entry-index mono">{{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
+        <span class="article-entry-index mono no-select">{{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
         <div class="article-entry-body">
-          <h2 class="article-entry-title"><a class="article-entry-link" href="{{ article.url | relative_url }}">{{ article.title }}</a></h2>
+          <h2 class="article-entry-title"><a class="article-entry-link card-title-link" href="{{ article.url | relative_url }}">{{ article.title }}</a></h2>
           {% if article.description %}
           <p class="article-entry-desc">{{ article.description }}</p>
           {% endif %}
@@ -27,7 +27,7 @@
           </div>
           {% endif %}
         </div>
-        <span class="article-entry-arrow"><i class="fas fa-arrow-right"></i></span>
+        <a class="article-entry-arrow" href="{{ article.url | relative_url }}" aria-label="Open {{ article.title }}"><i class="fas fa-arrow-right"></i></a>
       </article>
     {% endfor %}
   </div>
@@ -48,13 +48,8 @@
     padding: 1.75rem 0;
   }
 
-  .section-eyebrow {
-    display: block;
-    font-size: 0.65rem;
-    color: var(--cyan);
-    letter-spacing: 0.2em;
-    margin-bottom: 0.4rem;
-  }
+  /* .section-eyebrow + .title-prompt are shared site-wide
+     (_sass/_about.scss + _sass/_base.scss) — not re-declared here. */
 
   .articles-title {
     font-family: var(--font-display);
@@ -64,7 +59,6 @@
     margin: 0 0 0.5rem;
     line-height: 1;
   }
-  .title-prompt { color: var(--phosphor); animation: blink 1.1s steps(1) infinite; }
 
   .articles-subtitle {
     font-size: 1rem;
@@ -105,6 +99,7 @@
     padding: 1.4rem 0.5rem;
     border-bottom: 1px solid color-mix(in srgb, var(--phosphor-soft) 14%, transparent);
     text-decoration: none;
+    --card-accent: var(--phosphor);
   }
 
   .article-entry:last-child { border-bottom: none; }
@@ -133,37 +128,9 @@
     color: var(--ink);
     letter-spacing: -0.012em;
     line-height: 1.3;
-    display: inline-block;
-    transition: color 0.2s var(--ease-out-expo, ease-out);
   }
-  /* Title is the real link; its ::after stretches to cover the whole row so
-     the entry stays one big click target while the tag chips below stay
-     independently clickable. */
-  .article-entry-link {
-    color: inherit;
-    text-decoration: none;
-    background-image: linear-gradient(var(--phosphor), var(--phosphor));
-    background-size: 0% 1px;
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    transition: background-size 0.3s var(--ease-out-expo, ease-out);
-  }
-  .article-entry-link::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-  }
-  .article-entry:hover .article-entry-title {
-    color: var(--phosphor);
-  }
-  .article-entry:hover .article-entry-link {
-    background-size: 100% 1px;
-  }
-
-  .article-entry-desc {
-    text-decoration: none;
-  }
+  /* Title interaction (recolour + underline swipe) is shared via the
+     .card-title-link class — fires on direct hover, never on row hover. */
 
   .article-entry-desc {
     font-size: 0.88rem;
@@ -178,34 +145,18 @@
     gap: 0.3rem;
   }
 
-  /* Tag chips ride above the stretched title link so each stays clickable. */
-  .article-entry-tags .tag-chip { position: relative; z-index: 2; }
-
   .article-entry-arrow {
     display: inline-flex;
     align-items: center;
     padding: 0.3rem 0 2px;
     font-size: 0.85rem;
     color: color-mix(in srgb, var(--phosphor) 45%, transparent);
-    position: relative;
-    transition: color 0.25s var(--ease-out-expo, ease-out), transform 0.25s var(--ease-out-expo, ease-out);
+    text-decoration: none;
+    transition: color 0.3s var(--ease-out-expo, ease-out), transform 0.3s var(--ease-out-expo, ease-out);
   }
-  .article-entry-arrow::after {
-    content: "";
-    position: absolute;
-    left: 0; bottom: 0;
-    width: 100%; height: 1px;
-    background: var(--phosphor);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s var(--ease-out-expo, ease-out);
-  }
-  .article-entry:hover .article-entry-arrow {
+  .article-entry-arrow:hover {
     color: var(--phosphor);
     transform: translateX(4px);
-  }
-  .article-entry:hover .article-entry-arrow::after {
-    transform: scaleX(1);
   }
 
   .articles-empty {
@@ -217,7 +168,7 @@
     font-size: 0.8rem;
     color: var(--ink-faint);
   }
-  .cursor-blink { animation: blink 1.1s steps(1) infinite; }
+  /* .cursor-blink is the site-wide blink utility (_sass/_base.scss). */
 
   @media (max-width: 576px) {
     .article-entry {

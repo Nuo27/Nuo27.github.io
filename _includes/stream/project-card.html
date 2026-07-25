@@ -8,15 +8,15 @@
   <a class="fi-media" href="{{ p.url | relative_url }}" aria-label="{{ p.name }}">
     <img src="{{ p.image }}" alt="{{ p.name }}" loading="lazy" />
     <span class="fi-overlay" aria-hidden="true"></span>
-    <span class="fi-view mono" aria-hidden="true">VIEW <i class="fas fa-arrow-right"></i></span>
+    <span class="fi-view mono no-select" aria-hidden="true">VIEW <i class="fas fa-arrow-right"></i></span>
   </a>
   {%- endif -%}
   <div class="fi-body">
     <div class="fi-meta">
-      <span class="fi-index mono">{{ include.index | prepend: '00' | slice: -2, 2 }}</span>
-      <span class="fi-category fi-category--project mono">// PROJECT{% if p.status %} · {{ p.status }}{% endif %}</span>
+      <span class="fi-index mono no-select">{{ include.index | prepend: '00' | slice: -2, 2 }}</span>
+      <span class="fi-category fi-category--project mono no-select">// PROJECT{% if p.status %} · {{ p.status }}{% endif %}</span>
     </div>
-    <h3 class="fi-title"><a href="{{ p.url | relative_url }}">{{ p.name }}</a></h3>
+    <h3 class="fi-title"><a class="card-title-link" href="{{ p.url | relative_url }}">{{ p.name }}</a></h3>
     <p class="fi-desc">{{ p.description }}</p>
     {%- if p.tags and p.tags.size > 0 -%}
     <div class="fi-tags">

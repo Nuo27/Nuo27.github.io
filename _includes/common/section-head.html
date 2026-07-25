@@ -9,6 +9,6 @@
 {%- endcomment -%}
 {%- assign heading_tag = include.heading_tag | default: 'h2' -%}
 <div class="section-head">
-  <span class="section-eyebrow mono">// {{ include.eyebrow }}</span>
+  <span class="section-eyebrow mono no-select">// {{ include.eyebrow }}</span>
   <{{ heading_tag }} class="section-title">{{ include.title }}{% if include.prompt %}<span class="title-prompt">_</span>{% endif %}</{{ heading_tag }}>
 </div>
