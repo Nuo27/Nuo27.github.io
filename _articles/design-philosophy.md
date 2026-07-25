@@ -1,11 +1,11 @@
 ---
 name: design-philosophy
 title: "What I Believe About Game Design"
-description: "[ TODO — 1 sentence summary of your design philosophy. ]"
+description: "[ TODO - 1 sentence summary of your design philosophy. ]"
 tags: [Design, GameDev]
 ---
 
-<!-- TODO: Write your design philosophy — see CONTENT-SUPPLEMENT.md §5 -->
+<!-- TODO: Write your design philosophy - see CONTENT-SUPPLEMENT.md §5 -->
 
 ## The Opening
 
@@ -13,11 +13,11 @@ tags: [Design, GameDev]
 
 ## What I Care About Most
 
-> *[ Among feel, narrative, system depth, aesthetics — what do you weight highest? Why? ]*
+> *[ Among feel, narrative, system depth, aesthetics - what do you weight highest? Why? ]*
 
 ## My Working Principles
 
-> *[ 2–3 principles you hold to when building. Examples: "every mechanic must communicate its state", "fail fast, prototype ugly", "design for the player's second hour, not their first". ]*
+> *[ 2-3 principles you hold to when building. Examples: "every mechanic must communicate its state", "fail fast, prototype ugly", "design for the player's second hour, not their first". ]*
 
 ## The Game That Shaped Me
 

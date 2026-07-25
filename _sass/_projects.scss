@@ -166,6 +166,30 @@
   padding-top: 0.4rem;
 }
 
+// ---- Card tags row (student-work accent etc.) ----
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding-top: 0.1rem;
+}
+// Tag chips ride above the stretched link so each is independently clickable.
+.card-tags .tag-chip { position: relative; z-index: 2; }
+// Whole-card click target (the title anchor stretches via ::after to cover
+// the card; tag chips above stay separate links).
+.card-stretched-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+// Link variant of .tag-chip (cards + detail) — behaves like the span but
+// is a real anchor.
+.tag-chip--link {
+  text-decoration: none;
+  cursor: pointer;
+}
+
 // ---- Tag chip (shared: project cards, project detail, hero skills, article cards) ----
 .tag-chip {
   font-family: $font-mono;
@@ -328,4 +352,140 @@
   letter-spacing: 0.18em;
   color: var(--ink-mut);
   [data-theme="light"] & { color: $carbon-mut; }
+}
+
+// ==========================================================
+// Visibility system — hidden-by-default & half-hidden cards
+// ==========================================================
+// Cards flagged data-visibility="hidden" (e.g. student work) stay collapsed
+// until JS adds .unhidden (driven by the per-key togglers above the grid).
+.card-wrap[data-visibility="hidden"]:not(.unhidden) {
+  display: none;
+}
+
+// Half-hidden: present but de-emphasized.
+.card-wrap[data-visibility="dimmed"] .project.card {
+  opacity: 0.62;
+  filter: saturate(0.7);
+  transition: transform $dur-base $ease-out-expo,
+              border-color $dur-base $ease-out-expo,
+              box-shadow $dur-base $ease-out-expo,
+              opacity $dur-base $ease-out-expo,
+              filter $dur-base $ease-out-expo;
+}
+.card-wrap[data-visibility="dimmed"]:hover .project.card {
+  opacity: 0.9;
+  filter: saturate(1);
+}
+
+// ---- Tag-toggle chips — inclusive reveal filters (one per hidden key),
+// right-aligned on the filter row. Cyan variant distinguishes them from the
+// exclusive green category chips; they share the .cat-chip base + animations.
+.visibility-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+  justify-content: flex-end;
+}
+.visibility-toggles .cat-filter__label {
+  color: var(--cyan);
+  [data-theme="light"] & { color: $print-cyan; }
+}
+.cat-chip--toggle {
+  border-color: color-mix(in srgb, var(--cyan) 28%, transparent);
+  color: var(--cyan);
+  [data-theme="light"] & {
+    border-color: rgba($print-cyan, 0.42);
+    color: $print-cyan;
+  }
+  &:hover {
+    color: var(--cyan);
+    border-color: var(--cyan);
+  }
+  &.is-active {
+    color: var(--bg-void);
+    background: var(--cyan);
+    border-color: var(--cyan);
+    [data-theme="light"] & {
+      color: $paper;
+      background: $print-cyan;
+      border-color: $print-cyan;
+    }
+  }
+}
+.cat-chip__count {
+  margin-left: 0.4rem;
+  opacity: 0.55;
+  font-size: 0.9em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-wrap[data-visibility="dimmed"] .project.card { transition: none !important; }
+}
+
+// ==========================================================
+// Premium activation — filter chips (categories & tag toggles)
+// ==========================================================
+.cat-chip {
+  position: relative;
+  overflow: hidden;
+}
+.cat-chip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transform: translateX(-130%);
+  background: linear-gradient(115deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.32) 50%,
+    transparent 62%);
+}
+// Shine sweep plays once the moment a chip becomes active.
+.cat-chip.is-active::after {
+  animation: chip-shine 0.7s cubic-bezier(.16, 1, .3, 1);
+}
+// Overshoot pop on activation.
+.cat-chip.is-active {
+  animation: chip-pop 0.34s cubic-bezier(.2, .9, .3, 1.5);
+}
+// Outro — mirrors the intro as .is-active is removed: a reverse-direction
+// shine sweep + a small release dip.
+.cat-chip.is-outro::after {
+  animation: chip-shine-rev 0.6s cubic-bezier(.16, 1, .3, 1);
+}
+.cat-chip.is-outro {
+  animation: chip-out 0.34s cubic-bezier(.2, .9, .3, 1);
+}
+@keyframes chip-shine { to { transform: translateX(130%); } }
+@keyframes chip-shine-rev { from { transform: translateX(130%); } to { transform: translateX(-130%); } }
+@keyframes chip-pop {
+  0%   { transform: scale(0.92); }
+  55%  { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+@keyframes chip-out {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(0.93); }
+  100% { transform: scale(1); }
+}
+
+// ==========================================================
+// Card re-entrance — staggered rise when a filter/toggle is applied.
+// Transform + blur only (no opacity) so the scroll-reveal observer stays
+// the single owner of card opacity.
+// ==========================================================
+@keyframes card-in {
+  0%   { transform: translateY(22px) scale(0.95); filter: blur(7px); }
+  100% { transform: none; filter: blur(0); }
+}
+.card-in {
+  animation: card-in 0.52s var(--ease-out-expo, cubic-bezier(.16, 1, .3, 1)) both;
+  animation-delay: var(--card-in-delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-in { animation: none !important; }
+  .cat-chip.is-active, .cat-chip.is-outro,
+  .cat-chip.is-active::after, .cat-chip.is-outro::after { animation: none !important; }
 }

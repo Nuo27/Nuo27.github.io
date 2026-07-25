@@ -2,7 +2,7 @@
 layout: default
 ---
 
-{%- comment -%} Order: status (year) desc, then name asc — matches the portfolio grid. {%- endcomment -%}
+{%- comment -%} Order: status (year) desc, then name asc - matches the portfolio grid. {%- endcomment -%}
 {%- assign pn_groups = site.projects | group_by: "status" | sort: "name" | reverse -%}
 {%- assign all_local = "" | split: "" -%}
 {%- for g in pn_groups -%}
@@ -86,15 +86,7 @@ layout: default
         <div class="deck-tags">
           <span class="deck-label mono">TAGS</span>
           <div class="deck-tags-row" data-reveal>
-            {% include common/tag-chips.html tags=page.tags accent="Student Work" %}
-          </div>
-        </div>
-        {% endif %}
-        {% if page.tools and page.tools.size > 0 %}
-        <div class="deck-tools">
-          <span class="deck-label mono">STACK</span>
-          <div class="deck-tools-row">
-            {% for tool in page.tools %}<span class="tag-chip">{{ tool }}</span>{% endfor %}
+            {% include common/tag-chips.html tags=page.tags accent="Student Work" link_base="/portfolio/?tag=" %}
           </div>
         </div>
         {% endif %}
@@ -253,7 +245,7 @@ layout: default
     padding-block: clamp(72px, 14vh, 140px) clamp(56px, 10vh, 96px);
     max-width: 720px;
   }
-  /* Frosted panel moved to .hero-title::before below — kept tight to the title only. */
+  /* Frosted panel moved to .hero-title::before below - kept tight to the title only. */
   @property --panel-strength {
     syntax: '<percentage>';
     initial-value: 0%;
@@ -552,7 +544,6 @@ layout: default
     letter-spacing: 0.22em;
     margin-bottom: 0.6rem;
   }
-  .deck-tools-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
   .deck-tags-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
   .deck-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
 
@@ -653,7 +644,7 @@ layout: default
   }
   .pn-next { flex-direction: row-reverse; text-align: right; }
 
-  /* Kill any inherited link underline (UA a:hover etc.) — only the title ::after underlines on hover */
+  /* Kill any inherited link underline (UA a:hover etc.) - only the title ::after underlines on hover */
   .pn-card, .pn-card:hover, .pn-card:focus-visible,
   .pn-card span, .pn-card i { text-decoration: none; border-bottom: none; }
 
@@ -670,7 +661,7 @@ layout: default
                 filter var(--dur-base) var(--ease-out-expo);
   }
 
-  /* Veil — surface-tinted gradient keeps text legible over the image */
+  /* Veil - surface-tinted gradient keeps text legible over the image */
   .pn-veil {
     position: absolute;
     inset: 0;
@@ -688,7 +679,7 @@ layout: default
       color-mix(in srgb, var(--bg-surface) 10%, transparent) 100%);
   }
 
-  /* Direction rail — phosphor accent on the leading edge; glows on hover */
+  /* Direction rail - phosphor accent on the leading edge; glows on hover */
   .pn-rail {
     position: absolute;
     top: 16px;
@@ -743,7 +734,7 @@ layout: default
     color: var(--ink);
     transition: color var(--dur-base) var(--ease-out-expo);
   }
-  /* Underline — title only, grows on hover */
+  /* Underline - title only, grows on hover */
   .pn-title::after {
     content: "";
     position: absolute;
@@ -763,7 +754,7 @@ layout: default
     color: var(--ink-mut);
   }
 
-  /* Hover — lift, phosphor border, glow, cover zoom, rail lights, arrow slides, title underline */
+  /* Hover - lift, phosphor border, glow, cover zoom, rail lights, arrow slides, title underline */
   @media (hover: hover) and (pointer: fine) {
     .pn-card:hover {
       transform: translateY(-5px);

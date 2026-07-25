@@ -12,14 +12,14 @@ intro:
   prompt: true
   paragraphs:
     - text: >-
-        I’m **Nuo Chen** — a gameplay programmer who works across both major engines:
+        I’m **Nuo Chen** - a gameplay programmer who works across both major engines:
         **Unity (C#)** and **Unreal Engine 5 (C++)**. I specialize in multiplayer networking, combat systems, and gameplay architecture, with shipped experience ranging from 1v1 online shooters to LAN card games. More recently, I’ve also been exploring AI engineering through image generation, large language models, and prompt engineering, applying these tools to accelerate development workflows and prototype gameplay ideas.
     - text: >-
-        Beyond games, I design and ship full-stack web platforms end-to-end — most recently **ForzaDrift**, a production Next.js / PostgreSQL leaderboard service with custom authentication, anti-abuse systems (rate limiting, dual CAPTCHA), and Cloudflare deployment.
+        Beyond games, I design and ship full-stack web platforms end-to-end - most recently **ForzaDrift**, a production Next.js / PostgreSQL leaderboard service with custom authentication, anti-abuse systems (rate limiting, dual CAPTCHA), and Cloudflare deployment.
     - text: >-
-        I’ve operated at both ends of the scale — as lead programmer coordinating indie game dev teams (architecture, code integration, cross-level consistency), and as a solo developer building entire games end-to-end. This range is deliberate: I want to understand how games work at every layer, from little piece of code to the player experience, while embracing new technologies that can improve how games are designed and built.
+        I’ve operated at both ends of the scale - as lead programmer coordinating indie game dev teams (architecture, code integration, cross-level consistency), and as a solo developer building entire games end-to-end. This range is deliberate: I want to understand how games work at every layer, from little piece of code to the player experience, while embracing new technologies that can improve how games are designed and built.
     - text: >-
-        My Data Analytics minor shapes how I approach systems — I break down complex mechanics methodically, whether that’s a game economy, a networking pipeline, a player behavior dataset, or an AI-assisted content workflow. I enjoy understanding not only how systems function, but also how they can be made more efficient, scalable, and enjoyable for both developers and players.
+        My Data Analytics minor shapes how I approach systems - I break down complex mechanics methodically, whether that’s a game economy, a networking pipeline, a player behavior dataset, or an AI-assisted content workflow. I enjoy understanding not only how systems function, but also how they can be made more efficient, scalable, and enjoyable for both developers and players.
     - text: >-
         Outside of code, I study why great games feel great to play, experiment with emerging AI technologies, pick up new languages (both human and programming), and prototype my next mechanic. I'm always looking for opportunities to combine traditional game development with modern AI tools to build richer experiences and smarter development pipelines.
 
@@ -92,7 +92,7 @@ experience:
       to: 2023
       description: >-
         Led programming for a 3D exploration detective game (Unity, C#) in a
-        five-person team. Architected the complete game system — gameplay loop,
+        five-person team. Architected the complete game system - gameplay loop,
         interaction framework, UI, and progression across five themed levels.
         Designed and built the tutorial and first level while managing team
         coordination and code integration.

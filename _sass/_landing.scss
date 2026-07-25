@@ -75,10 +75,8 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba($phosphor, 0.45);
-  border-bottom: 1px dashed rgba($phosphor, 0.14);
-  padding-bottom: 0.35rem;
 
-  [data-theme="light"] & { color: rgba($carbon, 0.4); border-bottom-color: rgba($carbon, 0.14); }
+  [data-theme="light"] & { color: rgba($carbon, 0.4); }
 }
 .hud-cell { white-space: nowrap; }
 .hud-cell .blink { animation: blink 1.1s steps(1) infinite; color: $phosphor; }
@@ -276,32 +274,6 @@
   [data-theme="light"] & { color: $print-phosphor; text-shadow: none; }
 }
 
-// ---- Scroll cue (refined) ----
-.scroll-cue {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  opacity: 0;
-  animation: boot-in 0.6s $ease-out-expo 2s forwards;
-}
-.scroll-cue-label { font-size: 0.58rem; color: var(--ink-faint); letter-spacing: 0.24em; }
-.scroll-cue-line {
-  width: 1px;
-  height: 36px;
-  background: linear-gradient(to bottom, transparent, var(--phosphor));
-  animation: scroll-line 1.8s ease-in-out infinite;
-}
-@keyframes scroll-line {
-  0%, 100% { transform: scaleY(0.4); transform-origin: top; opacity: 0.4; }
-  50%      { transform: scaleY(1); transform-origin: top; opacity: 1; }
-}
-@keyframes boot-in { to { opacity: 1; } }
-
 // ==========================================================
 // Magazine section scaffolding
 // ==========================================================
@@ -312,7 +284,6 @@
   padding: 6rem 0;
   position: relative;
 }
-/* divider moved to .stream-foot (directly under the view-all links) */
 
 .mag-section-head {
   margin-bottom: 3rem;
@@ -356,7 +327,7 @@
 // ==========================================================
 // Unified content stream — projects + articles, one language
 // ==========================================================
-.mag-stream { padding-top: 5rem; }
+.mag-stream { padding-top: 5rem; padding-bottom: 0; }
 
 .stream {
   display: flex;
@@ -535,7 +506,7 @@
   max-width: 52ch;
   [data-theme="light"] & { color: var(--carbon-mut); }
 }
-.fi-tools { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.fi-tools, .fi-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .fi-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.2rem; }
 .fi-ext {
   display: inline-flex;
@@ -581,8 +552,6 @@
   flex-wrap: wrap;
   gap: 2rem;
   justify-content: center;
-  border-bottom: 1px solid color-mix(in srgb, var(--ink) 7%, transparent);
-  padding-bottom: 2.5rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -596,15 +565,8 @@
 // Closing CTA
 // ==========================================================
 .mag-cta {
-  padding: 6rem 0 5rem;
+  padding: 4rem 0 5rem;
   text-align: center;
-}
-.cta-kicker {
-  font-size: 0.66rem;
-  color: var(--cyan);
-  letter-spacing: 0.24em;
-  margin-bottom: 1.25rem;
-  [data-theme="light"] & { color: $print-cyan; }
 }
 .cta-heading {
   font-family: $font-serif;
@@ -657,7 +619,6 @@
 @media (prefers-reduced-motion: reduce) {
   .hero-aurora,
   .hero-glyph,
-  .scroll-cue-line,
   .hud-cell .blink,
   .cover-wordmark .line-inner {
     animation: none !important;
@@ -698,7 +659,7 @@
 
   // Selected work — moderate reduction
   .mag-section { padding: 3.5rem 0; }
-  .mag-stream { padding-top: 2.5rem; }
+  .mag-stream { padding-top: 2.5rem; padding-bottom: 0; }
   .mag-section-head { margin-bottom: 1.75rem; }
   .mag-heading { font-size: clamp(1.7rem, 3.8vw, 2.2rem); }
   .mag-kicker { font-size: 0.6rem; }
@@ -771,7 +732,7 @@
 
   // Section spacing — no more two viewports of empty space between sections
   .mag-section { padding: 2.5rem 0; }
-  .mag-stream { padding-top: 1.75rem; }
+  .mag-stream { padding-top: 1.75rem; padding-bottom: 0; }
   .mag-section-head { margin-bottom: 1.25rem; gap: 0.4rem; }
   .mag-kicker { font-size: 0.55rem; letter-spacing: 0.2em; }
   .mag-heading { font-size: clamp(1.2rem, 5.5vw, 1.5rem); }
@@ -796,13 +757,11 @@
   .stream-foot .mag-all { font-size: 0.6rem; }
 
   // Closing CTA
-  .mag-cta { padding: 3.5rem 0 3rem; }
+  .mag-cta { padding: 2.5rem 0 3rem; }
   .cta-heading { font-size: clamp(1.4rem, 6vw, 2rem); margin-bottom: 1.25rem; }
-  .cta-kicker { margin-bottom: 0.85rem; font-size: 0.6rem; }
 
-  // Perf — aurora lighter and paused on phones
+  // Perf - aurora lighter and paused on phones
   .hero-aurora { filter: blur(16px); animation: none; }
-  .scroll-cue { bottom: 1rem; }
 }
 
 // ---- Tactile feedback on touch (Apple §1: feedback on pointer-down) ----

@@ -1,6 +1,6 @@
-<div class="card-wrap reveal" data-category="{{ project_cat | slugify }}" style="transition-delay: {{ forloop.index0 | modulo: 3 | times: 80 }}ms;">
+<div class="card-wrap reveal" data-category="{{ project_cat | slugify }}" data-visibility="{{ project_vis }}" data-hidden-keys="{{ project_hidden_keys }}" style="transition-delay: {{ forloop.index0 | modulo: 3 | times: 80 }}ms;">
 
-  <a class="project card" href="{{ project_url }}" aria-label="{{ project_name }}">
+  <article class="project card">
 
     {%- if project_img -%}
     <div class="card-media">
@@ -18,14 +18,17 @@
       </div>
       <h3 class="card-title">{{ project_name }}</h3>
       <p class="card-desc">{{ project_desc }}</p>
-      {%- if project_tools and project_tools.size > 0 -%}
-      <div class="card-tools">
-        {%- for tool in project_tools -%}
-          <span class="tag-chip">{{ tool }}</span>
-        {%- endfor -%}
+      {%- if project_tags and project_tags.size > 0 -%}
+      <div class="card-tags">
+        {% include common/tag-chips.html tags=project_tags link_base="/portfolio/?tag=" %}
       </div>
       {%- endif -%}
     </div>
-  </a>
+
+    {%- comment -%} Stretched link: the title's anchor expands to cover the whole
+          card via ::after, so the card is one big click target while the tag
+          chips above stay independently clickable. {% endcomment -%}
+    <a class="card-stretched-link" href="{{ project_url }}" aria-label="Open {{ project_name }}"></a>
+  </article>
 
 </div>

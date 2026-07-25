@@ -14,6 +14,12 @@
 
     <div class="stream" data-random-work data-count="{{ rw.count | default: 3 }}">
 
+      {% comment %} Exclude items matching random_work.hide (tags/categories).
+            Falls back to the site-wide portfolio.hidden_* so anything suppressed
+            on the portfolio stays out of the home stream too. {% endcomment %}
+      {% assign hide_tags = rw.hide.tags | default: site.portfolio.hidden_tags %}
+      {% assign hide_cats = rw.hide.categories | default: site.portfolio.hidden_categories %}
+
       {% comment %} Render every item from the configured types as a hidden
             candidate (.rw-item). JS (initRandomWork) reveals `count` of them
             at random per page load and re-fixes their index + side.
@@ -22,11 +28,20 @@
         {% case t %}
           {% when 'project' %}
             {% for p in site.projects %}
-              {% include stream/project-card.html project=p index=forloop.index side="fi-side-left" labels=labels pool=true %}
+              {%- assign skip = false -%}
+              {%- for ht in hide_tags -%}{%- if p.tags contains ht -%}{%- assign skip = true -%}{%- break -%}{%- endif -%}{%- endfor -%}
+              {%- if hide_cats contains p.category -%}{%- assign skip = true -%}{%- endif -%}
+              {%- unless skip -%}
+                {% include stream/project-card.html project=p index=forloop.index side="fi-side-left" labels=labels pool=true %}
+              {%- endunless -%}
             {% endfor %}
           {% when 'article' %}
             {% for a in site.articles %}
-              {% include stream/article-card.html article=a index=forloop.index labels=labels pool=true %}
+              {%- assign skip = false -%}
+              {%- for ht in hide_tags -%}{%- if a.tags contains ht -%}{%- assign skip = true -%}{%- break -%}{%- endif -%}{%- endfor -%}
+              {%- unless skip -%}
+                {% include stream/article-card.html article=a index=forloop.index labels=labels pool=true %}
+              {%- endunless -%}
             {% endfor %}
         {% endcase %}
       {% endfor %}

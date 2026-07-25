@@ -5,7 +5,11 @@
 @use "variables" as *;
 @use "mixins" as *;
 
-footer {
+// Scoped to the page footer (direct child of #smooth-scroll).
+// Other <footer> elements on the page (e.g. .mag-section-foot.stream-foot
+// inside the Selected Works stream) must NOT inherit this border-top,
+// otherwise it would draw an unwanted divider above the View All row.
+#smooth-scroll > footer {
   border-top: 1px solid rgba($phosphor, 0.18);
   background: transparent;
   position: relative;

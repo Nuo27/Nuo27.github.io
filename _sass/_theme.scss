@@ -68,7 +68,8 @@
     border-color: rgba($ink, 0.10);
   }
 
-  footer {
+  // Same scope as _footer.scss — page footer only, not section footers.
+  #smooth-scroll > footer {
     border-top-color: rgba($phosphor, 0.20);
     color: $ink-mut;
   }

@@ -560,6 +560,29 @@
     });
   }
 
+  // Premium re-entrance: stagger visible cards in (rise + scale + de-blur)
+  // when a filter or visibility toggler is applied. Skips opacity so it
+  // doesn't fight the scroll-reveal observer.
+  function staggerIn(els) {
+    Array.prototype.slice.call(els).forEach(function (el, i) {
+      el.classList.remove('card-in');
+      void el.offsetWidth; // restart the keyframe animation
+      el.style.setProperty('--card-in-delay', ((i % 12) * 35) + 'ms');
+      el.classList.add('card-in');
+    });
+  }
+
+  // Outro: play a deactivation animation on a chip/toggler as it loses
+  // .is-active. Mirrors the intro (shine + pop) so apply/un-apply feel
+  // symmetric. Class is cleared after the longest keyframe finishes.
+  function outro(el) {
+    if (!el || el.classList.contains('is-outro')) return;
+    el.classList.remove('is-outro');
+    void el.offsetWidth;
+    el.classList.add('is-outro');
+    setTimeout(function () { el.classList.remove('is-outro'); }, 700);
+  }
+
   function initTerminalSearch(scope) {
     var scopes = scope.querySelectorAll('[data-terminal-search]');
     if (!scopes.length) return;
@@ -574,35 +597,41 @@
       var listEl = document.querySelector(s.getAttribute('data-search-list'));
       var itemSel = s.getAttribute('data-search-item') || '.article-entry';
       if (!bar || !input || !listEl) return;
+      // Relocate the empty-state line to just above the grid (below the filter
+      // divider) so it reads as a grid status, not part of the search bar.
+      if (empty && empty.parentNode !== listEl.parentNode) {
+        listEl.parentNode.insertBefore(empty, listEl);
+      }
       var items = Array.prototype.slice.call(listEl.querySelectorAll(itemSel));
-      var total = items.length;
 
       function open() { bar.classList.add('active'); setTimeout(function () { input.focus(); }, 150); }
       function close() {
         input.value = '';
         bar.classList.remove('active');
-        if (countEl) countEl.textContent = total + ' entries';
-        listEl.style.display = '';
-        if (empty) empty.style.display = 'none';
-        items.forEach(function (el) { el.style.display = ''; });
+        run();
       }
       function run() {
         var q = input.value.toLowerCase().trim();
         var cat = listEl.dataset.activeCat || 'all';
-        var visible = 0;
+        var visible = 0, effectiveTotal = 0;
         items.forEach(function (el) {
+          // Visibility gate: hidden-by-default cards (e.g. student work)
+          // only count/show when a toggler has added .unhidden to them.
+          var isHidden = el.getAttribute('data-visibility') === 'hidden';
+          var visOk = !isHidden || el.classList.contains('unhidden');
+          if (visOk) effectiveTotal++;
           var textMatch = q === '' || el.textContent.toLowerCase().indexOf(q) !== -1;
           var catMatch = cat === 'all' || el.getAttribute('data-category') === cat;
-          var match = textMatch && catMatch;
+          var match = textMatch && catMatch && visOk;
           el.style.display = match ? '' : 'none';
           if (match) visible++;
         });
         if (q === '' && cat === 'all') {
-          if (countEl) countEl.textContent = total + ' entries';
+          if (countEl) countEl.textContent = effectiveTotal + ' entries';
           listEl.style.display = '';
           if (empty) empty.style.display = 'none';
         } else {
-          if (countEl) countEl.textContent = visible + '/' + total;
+          if (countEl) countEl.textContent = visible + '/' + effectiveTotal;
           listEl.style.display = visible > 0 ? '' : 'none';
           if (empty) empty.style.display = visible === 0 ? '' : 'none';
           if (emptyQuery) emptyQuery.textContent = input.value.trim();
@@ -641,7 +670,10 @@
       chips.forEach(function (chip) {
         chip.addEventListener('click', function () {
           if (chip.classList.contains('is-active')) return;
-          chips.forEach(function (c) { c.classList.remove('is-active'); });
+          chips.forEach(function (c) {
+            if (c.classList.contains('is-active')) outro(c);
+            c.classList.remove('is-active');
+          });
           chip.classList.add('is-active');
           listEl.dataset.activeCat = chip.getAttribute('data-cat');
           if (searchInput) {
@@ -652,9 +684,91 @@
               el.style.display = (active === 'all' || el.getAttribute('data-category') === active) ? '' : 'none';
             });
           }
+          staggerIn(Array.prototype.slice.call(listEl.querySelectorAll(itemSel))
+            .filter(function (el) { return el.style.display !== 'none'; }));
         });
       });
     });
+  }
+
+  // Reveals cards hidden by default, one toggler per hidden key (tag/category).
+  // Togglers sharing the same grid track a space-separated list of revealed
+  // keys on the grid. A hidden card flips to .unhidden when ANY of its
+  // data-hidden-keys is toggled on. The terminal search re-runs afterwards so
+  // counts stay accurate.
+  function initVisibilityToggle(scope) {
+    var groups = {};
+    scope.querySelectorAll('[data-visibility-toggle]').forEach(function (btn) {
+      var sel = btn.getAttribute('data-target');
+      (groups[sel] = groups[sel] || []).push(btn);
+    });
+    Object.keys(groups).forEach(function (sel) {
+      var listEl = document.querySelector(sel);
+      if (!listEl) return;
+      var btns = groups[sel];
+      var searchInput = document.querySelector('[data-terminal-search][data-search-list="' + sel + '"] .search-input');
+
+      function revealed() {
+        return (listEl.getAttribute('data-revealed-keys') || '').split(/\s+/).filter(Boolean);
+      }
+      function apply() {
+        var keys = revealed();
+        var newlyShown = [];
+        listEl.querySelectorAll('[data-visibility="hidden"]').forEach(function (el) {
+          var cardKeys = (el.getAttribute('data-hidden-keys') || '').split(/\s+/).filter(Boolean);
+          var on = cardKeys.length > 0 && cardKeys.some(function (k) { return keys.indexOf(k) !== -1; });
+          var wasOn = el.classList.contains('unhidden');
+          el.classList.toggle('unhidden', on);
+          // scroll-reveal skipped these while collapsed — show them now.
+          if (on) el.classList.add('visible', 'is-visible');
+          if (on && !wasOn) newlyShown.push(el);
+        });
+        if (newlyShown.length) staggerIn(newlyShown);
+        if (searchInput) searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+
+      btns.forEach(function (btn) {
+        var key = btn.getAttribute('data-reveal-key');
+        // Chip label is static (tag name + count, set server-side); only the
+        // active state flips — same paradigm as the category filter chips.
+        function setActive(on) {
+          btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+          btn.classList.toggle('is-active', on);
+        }
+        setActive(revealed().indexOf(key) !== -1);
+        btn.addEventListener('click', function () {
+          var keys = revealed();
+          var i = keys.indexOf(key);
+          var turningOn = i === -1;
+          if (!turningOn) outro(btn);
+          if (turningOn) keys.push(key); else keys.splice(i, 1);
+          listEl.setAttribute('data-revealed-keys', keys.join(' '));
+          setActive(turningOn);
+          apply();
+        });
+      });
+    });
+  }
+  // Apply a ?tag= filter on arrival: pre-fills the terminal search with the
+  // tag name (grid filters by text) and, if that tag is a hidden key, flips
+  // its reveal toggle so the hidden cards become searchable too.
+  function initTagFilter(scope) {
+    var tag;
+    try { tag = new URLSearchParams(window.location.search).get('tag'); } catch (err) { return; }
+    if (!tag) return;
+    var searchScope = scope.querySelector('[data-terminal-search]');
+    if (!searchScope) return;
+    var input = searchScope.querySelector('.search-input');
+    if (!input) return;
+    input.value = tag;
+    var bar = searchScope.querySelector('.search-bar');
+    if (bar) bar.classList.add('active');
+    // Reveal the matching hidden-key toggle (portfolio), if any.
+    var slug = tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    var toggle = scope.querySelector('[data-visibility-toggle][data-reveal-key="' + slug + '"]');
+    if (toggle && toggle.getAttribute('aria-pressed') !== 'true') toggle.click();
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    try { input.focus(); } catch (e) {}
   }
 
   // Reads the guided-scroll target set by the previous page's
@@ -711,6 +825,8 @@
     initCardParallax(scope);
     initTerminalSearch(scope);
     initCategoryFilter(scope);
+    initVisibilityToggle(scope);
+    initTagFilter(scope);
     initGuidedScroll();
   }
 

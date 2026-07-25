@@ -1,5 +1,5 @@
 {%- comment -%}
-  Stream card — article. Text-led (no media). Params: article, index (stream position), labels.
+  Stream card - article. Text-led (no media). Params: article, index (stream position), labels.
 {%- endcomment -%}
 {%- assign a = include.article -%}
 <article class="featured-item featured-item--article reveal{% if include.pool %} rw-item{% endif %}"
@@ -12,8 +12,8 @@
     <h3 class="fi-title"><a href="{{ a.url | relative_url }}">{{ a.title }}</a></h3>
     <p class="fi-desc">{{ a.description }}</p>
     {%- if a.tags and a.tags.size > 0 -%}
-    <div class="fi-tools">
-      {% include common/tag-chips.html tags=a.tags %}
+    <div class="fi-tags">
+      {% include common/tag-chips.html tags=a.tags link_base="/articles/?tag=" %}
     </div>
     {%- endif -%}
     <a class="fi-link mono" href="{{ a.url | relative_url }}">

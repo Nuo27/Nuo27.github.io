@@ -1,12 +1,11 @@
 ---
 layout: project
 name: Wistful
-tools: [C#, Unity]
+tags: [C#, Unity, Student Work]
 image: /assets/image/projects/wistful.png
-description: 3D exploration puzzle game (Unity/C#) — selected for the 2022 UTS Tech Festival.
+description: 3D exploration puzzle game (Unity/C#) - selected for the 2022 UTS Tech Festival.
 category: Game
 status: "2022"
-tags: [Student Work]
 external_links:
   - { name: "Live Demo", url: "https://k1ngslayer.itch.io/wistful-group-6", icon: "external-link-alt" }
   - { name: "Source",    url: "https://github.com/SpazyPear/Wistful", icon: "github", prefix: "fab" }
@@ -26,14 +25,14 @@ Gameplay Programmer (6-person team)
 
 ## Technical Challenges
 
-- **Hand-rolled the first-person controller.** Movement ran on a `Rigidbody` with mouse-look that clamped pitch to ±90° (`Mathf.Clamp`) so the camera couldn't flip, a `canMove` gate for cutscenes and puzzles, and a respawn check — no third-party character asset, just direct input to physics.
-- **Puzzle interactables through inheritance and Unity UI Toolkit.** A base `VaultDoor` held the shared trigger and animation logic, and `PasswordedVaultDoor` subclassed it to pop a `UIDocument`-based password panel (`TextField`) on `OnTriggerEnter` — so a new puzzle was a subclass, not a rewrite.
+- **Hand-rolled the first-person controller.** Movement ran on a `Rigidbody` with mouse-look that clamped pitch to ±90° (`Mathf.Clamp`) so the camera couldn't flip, a `canMove` gate for cutscenes and puzzles, and a respawn check - no third-party character asset, just direct input to physics.
+- **Puzzle interactables through inheritance and Unity UI Toolkit.** A base `VaultDoor` held the shared trigger and animation logic, and `PasswordedVaultDoor` subclassed it to pop a `UIDocument`-based password panel (`TextField`) on `OnTriggerEnter` - so a new puzzle was a subclass, not a rewrite.
 - **Decoupled puzzle progression.** Each puzzle emitted a completion signal that other systems could subscribe to, so new content could react to solved puzzles without hardcoding cross-dependencies between scenes.
 - **Cross-scene save state.** A lightweight store of solved-flags and triggered events was read on each level's load, keeping level scenes independent while preserving puzzle continuity between them.
 
 ## Lessons Learned
 
-- Working on a six-person team taught me to over-communicate on small decisions — a quick message saved hours of re-integration later.
+- Working on a six-person team taught me to over-communicate on small decisions - a quick message saved hours of re-integration later.
 - Would invest earlier in shared tooling for level designers; even a small in-editor validator would have caught a few cross-level inconsistencies before playtest.
 
 ## Recognition

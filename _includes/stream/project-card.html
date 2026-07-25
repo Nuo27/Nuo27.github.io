@@ -1,5 +1,5 @@
 {%- comment -%}
-  Stream card — project. Params: project, index (stream position), side (fi-side-left/right), labels.
+  Stream card - project. Params: project, index (stream position), side (fi-side-left/right), labels.
 {%- endcomment -%}
 {%- assign p = include.project -%}
 <article class="featured-item featured-item--project {{ include.side }} reveal{% if include.pool %} rw-item{% endif %}"
@@ -18,9 +18,9 @@
     </div>
     <h3 class="fi-title"><a href="{{ p.url | relative_url }}">{{ p.name }}</a></h3>
     <p class="fi-desc">{{ p.description }}</p>
-    {%- if p.tools -%}
-    <div class="fi-tools">
-      {% include common/tag-chips.html tags=p.tools %}
+    {%- if p.tags and p.tags.size > 0 -%}
+    <div class="fi-tags">
+      {% include common/tag-chips.html tags=p.tags link_base="/portfolio/?tag=" %}
     </div>
     {%- endif -%}
     {%- if p.external_links and p.external_links.size > 0 -%}

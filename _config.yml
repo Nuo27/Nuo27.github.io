@@ -53,6 +53,21 @@ defaults:
       layout: "article"
 
 
+### Portfolio visibility (site-wide defaults) ###
+# Tags/categories listed here are suppressed on the portfolio grid unless the
+# viewer flips the toggler. `hidden_*` collapse cards behind the toggle;
+# `dimmed_*` render them de-emphasized (half-hidden). Page front matter
+# (pages/projects.html → `portfolio:`) overrides these per-field.
+portfolio:
+  hidden_tags: ["Student Work"]
+  hidden_categories: []
+  dimmed_tags: []
+  dimmed_categories: []
+  hidden_label: "student work"   # short noun; shown uppercased in the toggle button
+  filter_label: "FILTER"         # the // label over the category chips
+  show_label: "SHOW"             # the // label over the reveal-toggle chips
+
+
 ### Exclude from processing ###
 exclude:
   - README.md

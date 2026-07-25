@@ -19,9 +19,7 @@ layout: default
         {% endif %}
         {% if page.tags.size > 0 %}
         <div class="article-tags">
-          {% for tag in page.tags %}
-          <span class="article-tag mono">{{ tag }}</span>
-          {% endfor %}
+          {% include common/tag-chips.html tags=page.tags link_base="/articles/?tag=" %}
         </div>
         {% endif %}
       </header>
@@ -82,16 +80,6 @@ layout: default
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
-  }
-
-  .article-tag {
-    font-size: 0.62rem;
-    padding: 0.25rem 0.55rem;
-    background: color-mix(in srgb, var(--phosphor-soft) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--phosphor-soft) 28%, transparent);
-    border-radius: var(--radius-xs);
-    color: var(--phosphor-soft);
-    letter-spacing: 0.06em;
   }
 
   .article-body {

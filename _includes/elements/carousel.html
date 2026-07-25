@@ -3,7 +3,7 @@
   Usage:
     {% capture carousel_images %}/a.png\n/b.png{% endcapture %}
     {% include elements/carousel.html %}
-  Markup only — styles live in _sass/_gallery.scss, behaviour in main.js (initGalleries).
+  Markup only - styles live in _sass/_gallery.scss, behaviour in main.js (initGalleries).
   Each slide is lightbox-enabled (data-lightbox) grouped by the page slug.
 {%- endcomment -%}
 {%- assign images = carousel_images | strip | newline_to_br | split: '<br />' -%}

@@ -8,16 +8,21 @@ hero:
   cta_primary:   { label: "View Projects", url: "/portfolio/" }
   cta_secondary: { label: "About Me",      url: "/about/" }
 
-# Random work stream — picks `count` items at random (per page load) from the
+# Random work stream - picks `count` items at random (per page load) from the
 # listed `types`. To add a new type: add it here, add a {% when %} branch in
 # _includes/landing/stream.html, and add _includes/stream/<type>-card.html.
+# `hide` excludes matching items from the random pool (falls back to the
+# site-wide portfolio.hidden_* in _config.yml).
 random_work:
   types: [project, article]
   count: 3
+  hide:
+    tags: [Student Work]
+    categories: []
 
 stream:
   kicker: "RANDOM_WORK"
-  heading: "Random work"
+  heading: "Some of my works"
   labels:
     read_project: "Read case"
     read_article: "Read article"
@@ -27,7 +32,7 @@ stream:
 cta:
   kicker: "LET’S BUILD"
   heading: "Have a system that needs to feel <em>just right</em>?"
-  primary:   { label: "View Work",    url: "/portfolio/" }
+  primary:   { label: "View Projects", url: "/portfolio/" }
   secondary: { label: "Get in touch", url: "/about/#contact" }
 ---
 
