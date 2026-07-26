@@ -228,8 +228,38 @@
   }
 
   function onPopState(e) {
+    // Browser-managed entry (same-page hash nav, e.g. footnote links) has no
+    // router state. Don't re-fetch — just scroll to the anchor target, since
+    // scrollRestoration:'manual' disables the browser's native scroll-on-pop.
+    if (!e.state || !e.state.url) {
+      if (location.hash) {
+        var t = document.getElementById(location.hash.slice(1));
+        if (t) {
+          // Inline refs (sup/a) → centre of viewport so context is visible.
+          // Block targets (li/div) → top of viewport so they read from start.
+          var block = (t.tagName === 'SUP' || t.tagName === 'A') ? 'center' : 'start';
+          t.scrollIntoView({ block: block });
+        }
+      } else {
+        window.scrollTo(0, 0);
+      }
+      return;
+    }
     var to = (e.state && typeof e.state.scrollY === 'number') ? e.state.scrollY : 0;
     navigate(location.href, { pop: true, skipTransition: true, toScroll: to });
+  }
+
+  // hashchange fires for same-page anchor clicks (footnote refs, back-links).
+  // Belt-and-braces alongside the browser's native scroll, in case
+  // scrollRestoration:'manual' or the smooth-scroll wrapper interferes.
+  function onHashChange() {
+    if (!location.hash) return;
+    var t = document.getElementById(location.hash.slice(1));
+    if (!t) return;
+    var block = (t.tagName === 'SUP' || t.tagName === 'A') ? 'center' : 'start';
+    requestAnimationFrame(function () {
+      t.scrollIntoView({ behavior: 'smooth', block: block });
+    });
   }
 
   function prefetch(url) {
@@ -248,6 +278,7 @@
   function initRouter() {
     document.addEventListener('click', onLinkClick);
     window.addEventListener('popstate', onPopState);
+    window.addEventListener('hashchange', onHashChange);
     document.addEventListener('mouseover', onPrefetchIntent);
     document.addEventListener('focusin', onPrefetchIntent);
     document.addEventListener('touchstart', onPrefetchIntent, { passive: true });
