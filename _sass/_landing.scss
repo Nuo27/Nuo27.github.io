@@ -184,40 +184,19 @@
               border-color $dur-fast $ease-out-expo;
 }
 .btn-primary-custom {
-  background: $phosphor-soft;
-  color: $bg-void;
-  border: 1px solid $phosphor-soft;
-  box-shadow: 0 0 0 0 rgba($phosphor, 0.5);
-  &:hover {
-    transform: translateY(-2px);
-    background: $phosphor;
-    border-color: $phosphor;
-    box-shadow: 0 8px 28px rgba($phosphor, 0.35), 0 0 30px rgba($phosphor, 0.25);
-    color: $bg-void;
-  }
+  // All colors via CSS variables (theme-aware via _tokens.scss).
+  background: var(--phosphor-soft);
+  color: var(--bg-void);
+  border: 1px solid var(--phosphor-soft);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--phosphor) 50%, transparent);
+  @include cta-primary-hover;
   &:active { transform: translateY(0) scale(0.98); }
-  [data-theme="light"] & {
-    background: $print-phosphor-soft;
-    border-color: $print-phosphor-soft;
-    color: $paper;
-    &:hover { background: $print-phosphor; border-color: $print-phosphor; color: $paper; box-shadow: 0 8px 24px rgba($carbon, 0.2); }
-  }
 }
 .btn-secondary-custom {
   background: transparent;
-  border: 1px solid rgba($ink, 0.3);
-  color: $ink;
-  &:hover {
-    border-color: $cyan;
-    color: $cyan;
-    transform: translateY(-2px);
-    box-shadow: 0 0 24px rgba($cyan, 0.18);
-  }
-  [data-theme="light"] & {
-    border-color: rgba($carbon, 0.3);
-    color: $carbon;
-    &:hover { border-color: $print-cyan; color: $print-cyan; box-shadow: none; }
-  }
+  border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent);
+  color: var(--ink);
+  @include cta-secondary-hover;
 }
 .btn-bracket { opacity: 0.6; font-weight: 400; }
 .btn-prompt { color: $phosphor; [data-theme="light"] & { color: $print-phosphor; } }
@@ -320,9 +299,9 @@
   text-decoration: none;
   text-transform: uppercase;
   [data-theme="light"] & { color: $print-phosphor; }
-  &:hover { color: var(--cyan); }
+  &.is-hover { color: var(--cyan); }
   i { transition: transform $dur-base $ease-out-expo; margin-left: 0.4rem; }
-  &:hover i { transform: translateX(4px); }
+  &.is-hover i { transform: translateX(4px); }
 }
 
 // ==========================================================
@@ -357,13 +336,16 @@
 
   // Premium entrance: a phosphor light traces from the cursor's entry
   // angle around the perimeter on hover-enter (~0.85s), then dissolves
-  // into the steady-state phosphor-soft + bloom. Drives the same
-  // --trace-spread / --trace-entry properties that .project.card uses,
-  // so JS only has to look at the resolved hover target.
+  // into the steady-state phosphor-soft + bloom. Visibility is gated
+  // entirely on `.is-traced` (set by the resolver) — never on CSS
+  // `:hover::before` — so the resolver stays the single source of
+  // truth for this card's animated state.
   @include border-trace;
   [data-theme="light"] & { background: var(--paper-raised); border-color: rgba($carbon, 0.14); }
 
-  &:hover {
+  // &.is-hover is set by the JS resolver whenever the cursor is over
+  // any element inside the card. No CSS `:hover` here.
+  &.is-hover {
     transform: translateY(-6px);
     border-color: var(--phosphor-soft);
     @include border-lightup(0 24px 56px rgba(0, 0, 0, 0.4));
@@ -372,11 +354,10 @@
     }
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    &:active {
-      transform: translateY(0) scale(0.98);
-      transition: transform 0.12s $ease-out-expo;
-    }
+  // Press is a separate transient state (pointerdown/up).
+  &:active {
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.12s $ease-out-expo;
   }
 }
 
@@ -445,7 +426,7 @@
   transition: opacity 0.4s $ease-out-expo, transform 0.4s $ease-out-expo, color 0.3s $ease-out-expo;
   display: inline-flex; align-items: center; gap: 0.4rem;
 }
-.featured-item:hover {
+.featured-item.is-hover {
   .fi-media img { transform: scale(1.04); filter: grayscale(0) contrast(1.06); }
   .fi-overlay { opacity: 1; }
   .fi-view { opacity: 1; transform: translateY(0); color: var(--cat); }
@@ -513,7 +494,7 @@
   border-radius: $radius-xs;
   transition: color 0.3s $ease-out-expo, border-color 0.3s $ease-out-expo, background 0.3s $ease-out-expo;
   i { font-size: 0.58rem; }
-  &:hover { color: var(--phosphor); border-color: var(--phosphor); background: color-mix(in srgb, var(--phosphor) 8%, transparent); }
+  &.is-hover { color: var(--phosphor); border-color: var(--phosphor); background: color-mix(in srgb, var(--phosphor) 8%, transparent); }
   [data-theme="light"] & { color: var(--print-cyan); border-color: color-mix(in srgb, var(--print-cyan) 40%, transparent); }
 }
 
@@ -533,7 +514,7 @@
   padding-top: 0.4rem;
   transition: color 0.4s $ease-out-expo;
   i { transition: transform 0.4s $ease-out-expo; }
-  &:hover { color: var(--cat); i { transform: translateX(4px); } }
+  &.is-hover { color: var(--cat); i { transform: translateX(4px); } }
 }
 
 // ---- Stream footer ----

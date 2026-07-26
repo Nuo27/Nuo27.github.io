@@ -32,7 +32,7 @@
   }
   .navbar-nav .nav-link {
     @include themed(color, $carbon-mut, $ink-mut);
-    &:hover { @include themed(color, $carbon, $ink); }
+    &.is-hover { @include themed(color, $carbon, $ink); }
   }
 }
 
@@ -51,7 +51,7 @@
   // carry their own text colors and must not inherit the phosphor hover here.
   a:not([class*="btn"]) {
     color: $cyan;
-    &:hover { color: $phosphor; }
+    &.is-hover { color: $phosphor; }
   }
 
   // Cards — terminal panels w/ hairline borders
@@ -81,7 +81,7 @@
   .btn-outline-primary {
     color: $phosphor;
     border-color: $phosphor;
-    &:hover {
+    &.is-hover {
       background-color: $phosphor;
       color: $bg-void;
     }

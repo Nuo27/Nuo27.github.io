@@ -6,9 +6,6 @@
 @use "mixins" as *;
 
 // Scoped to the page footer (direct child of #smooth-scroll).
-// Other <footer> elements on the page (e.g. .mag-section-foot.stream-foot
-// inside the Selected Works stream) must NOT inherit this border-top,
-// otherwise it would draw an unwanted divider above the View All row.
 #smooth-scroll > footer {
   border-top: 1px solid rgba($phosphor, 0.18);
   background: transparent;
@@ -31,9 +28,9 @@
   small .fa-map-marker-alt { color: $cyan; [data-theme="light"] & { color: $print-cyan; } }
 }
 
-// Social icons — terminal chip style (contact / footer / inline use).
-// Same border-lightup language as the cards: phosphor border traces in
-// smoothly, a phosphor bloom + inset top highlight ignite on hover.
+// Social icons — terminal chip style. Hover driven by the resolver's
+// `.is-hover` class (the resolver finds `.social` via HOVER_SEL).
+// All colours via CSS variables (theme-aware via _tokens.scss).
 .social {
   text-decoration: none !important;
   display: inline-flex;
@@ -42,33 +39,19 @@
   width: 38px;
   height: 38px;
   border-radius: $radius-xs !important;
-  border: 1px solid rgba($ink, 0.14);
-  background: $bg-surface;
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  background: var(--bg-surface);
   transition: transform    $dur-base    $ease-out-back,
               border-color $dur-lightup $ease-out-expo,
               background   $dur-lightup $ease-out-expo,
               color        $dur-lightup $ease-out-expo,
               box-shadow   $dur-lightup $ease-out-expo;
 
-  [data-theme="light"] & {
-    border-color: rgba($carbon, 0.18);
-    background: $paper-raised;
-  }
-
-  &:hover {
-    transform: translateY(-3px);
-    border-color: var(--phosphor) !important;
-    background: color-mix(in srgb, var(--phosphor) 10%, transparent) !important;
-    color: var(--ink) !important;
-    @include border-lightup($bloom: 18px, $bloom-alpha: 24%, $top: 38%);
-    [data-theme="light"] & {
-      color: $print-phosphor !important;
-      @include border-lightup($bloom: 14px, $bloom-alpha: 22%, $top: 35%);
-    }
-  }
+  @include icon-hover;
 }
 
-// Back to top — HUD button
+// Back to top — HUD button. Hover driven by `.is-hover` (the resolver
+// finds `#backToTop` because it's a <button> in HOVER_SEL).
 .back-to-top {
   position: fixed;
   bottom: 1.5rem;
@@ -76,9 +59,9 @@
   width: 44px;
   height: 44px;
   border-radius: $radius-xs;
-  background: $bg-surface;
-  color: $phosphor;
-  border: 1px solid rgba($phosphor, 0.35);
+  background: var(--bg-surface);
+  color: var(--phosphor);
+  border: 1px solid color-mix(in srgb, var(--phosphor) 35%, transparent);
   cursor: pointer;
   opacity: 0;
   visibility: hidden;
@@ -91,50 +74,27 @@
   z-index: 100;
   font-size: 0.85rem;
 
-  [data-theme="light"] & {
-    background: $paper-raised;
-    color: $print-phosphor;
-    border-color: rgba($carbon, 0.35);
-  }
-
   &.visible {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
   }
 
-  &:hover {
-    background: $phosphor;
-    color: $bg-void;
-    border-color: $phosphor;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 24px rgba($phosphor, 0.35);
-    [data-theme="light"] & {
-      background: $print-phosphor;
-      color: $paper;
-      box-shadow: 0 8px 18px rgba($carbon, 0.18);
-    }
-  }
-
-  &:active { transform: translateY(0) scale(0.95); }
+  @include back-to-top-hover;
 }
 
-// Scroll progress — phosphor telemetry bar
+// Scroll progress — phosphor telemetry bar (driven by smooth-scroll
+// subscription, not by hover state — stays CSS-variable-driven).
 .scroll-progress {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 2px;
-  background: $phosphor;
-  box-shadow: 0 0 10px rgba($phosphor, 0.6);
+  background: var(--phosphor);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--phosphor) 60%, transparent);
   z-index: 9999;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.1s linear;
-
-  [data-theme="light"] & {
-    background: $print-phosphor;
-    box-shadow: none;
-  }
 }

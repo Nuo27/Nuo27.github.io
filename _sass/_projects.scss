@@ -56,14 +56,19 @@
 
   // Premium entrance: a phosphor light traces from the cursor's entry
   // angle around the perimeter on hover-enter (~0.85s), then dissolves
-  // into the steady-state phosphor-soft + bloom.
+  // into the steady-state phosphor-soft + bloom. Visibility is gated
+  // entirely on `.is-traced` (set by the resolver) — never on CSS
+  // `:hover::before` — so the resolver stays the single source of
+  // truth for this card's animated state.
   @include border-trace;
   [data-theme="light"] & {
     background: $paper-raised;
     border-color: rgba($carbon, 0.16);
   }
 
-  &:hover {
+  // &.is-hover is set by the JS resolver whenever the cursor is over
+  // any element inside the card. No CSS `:hover` here.
+  &.is-hover {
     transform: translateY(-6px);
     border-color: var(--phosphor-soft);
     @include border-lightup(0 22px 50px rgba(0, 0, 0, 0.4));
@@ -75,11 +80,10 @@
     .card-arrow { opacity: 1; transform: translateX(0); }
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    &:active {
-      transform: translateY(0) scale(0.98);
-      transition: transform 0.12s $ease-out-expo;
-    }
+  // Press is a separate transient state (pointerdown/up), not hover.
+  &:active {
+    transform: translateY(0) scale(0.98);
+    transition: transform 0.12s $ease-out-expo;
   }
 }
 
@@ -123,7 +127,7 @@
   transform: translateX(6px);
   transition: opacity $dur-base $ease-out-expo, transform $dur-base $ease-out-expo, color $dur-fast $ease-out-expo;
 }
-.project.card:hover .card-arrow { color: var(--phosphor); }
+.project.card.is-hover .card-arrow { color: var(--phosphor); }
 
 .card-body {
   padding: 1.35rem 1.4rem 1.45rem;
@@ -222,7 +226,7 @@
   }
 
   @include chip-hover;
-  &:hover::before { transform: translateX(120%); }
+  &.is-hover::before { transform: translateX(120%); }
 
   [data-theme="light"] &::before {
     background: linear-gradient(115deg, transparent 0%, transparent 38%, rgba($carbon, 0.18) 50%, transparent 62%, transparent 100%);
@@ -249,7 +253,7 @@
   .tag-chip,
   .tag-chip--accent,
   .tag-chip::before { transition: none !important; animation: none !important; }
-  .tag-chip:hover::before { transform: translateX(-120%); }
+  .tag-chip.is-hover::before { transform: translateX(-120%); }
 }
 
 // ---- Card wrapper (positioning context, reserved for future overlays) ----
@@ -296,7 +300,7 @@
               border-color $dur-fast $ease-out-expo,
               background $dur-fast $ease-out-expo,
               transform $dur-fast $ease-out-back;
-  &:hover {
+  &.is-hover {
     color: var(--phosphor);
     border-color: var(--phosphor-soft);
     transform: translateY(-1px);
@@ -376,7 +380,7 @@
     border-color: rgba($print-cyan, 0.42);
     color: $print-cyan;
   }
-  &:hover {
+  &.is-hover {
     color: var(--cyan);
     border-color: var(--cyan);
   }

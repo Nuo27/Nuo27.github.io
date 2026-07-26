@@ -172,12 +172,55 @@
 
   function applyHoverState() {
     var s = hoverState;
-    var drag = !!(s.down && s.hover && typeof s.hover.matches === 'function' && s.hover.matches(DRAG_SEL));
+    var newHover = s.hover;
+    // Find a card ancestor of the hovered element so we can run the
+    // border-trace animation and the card-level "is-hover" treatment
+    // (border-lightup + lift + image zoom) when the cursor is over
+    // any descendant of the card — not only when it's directly over
+    // a link. This keeps the JS resolver and the CSS rules that read
+    // `.is-hover` in lockstep: the same set of elements light up.
+    var newCard = (newHover && typeof newHover.closest === 'function')
+      ? newHover.closest('.project.card, .featured-item')
+      : null;
+    var prevHover = s.prevHover;
+    var prevCard = (prevHover && typeof prevHover.closest === 'function')
+      ? prevHover.closest('.project.card, .featured-item')
+      : null;
 
-    // Drive the inline cursor (see _includes/head.html §5).
+    // ---- Single source of truth: drive `is-hover` / `is-traced` on
+    //      both the deepest interactive and its card ancestor.
+    //      No CSS `:hover` rules are involved at the resolver layer:
+    //      the only thing the browser computes here is what's under
+    //      the cursor, and we propagate that result to the DOM.
+    if (newHover !== prevHover) {
+      if (prevHover && prevHover.classList) prevHover.classList.remove('is-hover');
+      if (newHover && newHover.classList) newHover.classList.add('is-hover');
+    }
+    if (newCard !== prevCard) {
+      if (prevCard && prevCard.classList) prevCard.classList.remove('is-hover', 'is-traced');
+      if (newCard && newCard.classList) {
+        newCard.classList.add('is-hover');
+        // The border-trace pseudo is gated entirely on `.is-traced`
+        // (NOT on CSS `:hover::before`) so the WAAPI animation and
+        // the pseudo-fade run only when the JS resolver decides to.
+        newCard.classList.add('is-traced');
+      }
+      cancelTrace(prevCard);
+      if (newCard) {
+        fireTrace(newCard, computeEntryAngle(newCard, s.cursorX, s.cursorY));
+      }
+    } else if (newCard && !newCard.classList.contains('is-traced')) {
+      // Same card as last time but the resolver re-ran (e.g. the cursor
+      // moved inside the same card). The class may have been removed
+      // out-of-band; re-add to keep pseudo-fade state coherent.
+      newCard.classList.add('is-hover', 'is-traced');
+    }
+
+    // ---- Cursor visuals (visual-state of the custom cursor itself).
+    var drag = !!(s.down && newHover && typeof newHover.matches === 'function' && newHover.matches(DRAG_SEL));
     if (window.__cursor && typeof window.__cursor.setStates === 'function') {
       window.__cursor.setStates({
-        hover: !!s.hover,
+        hover: !!newHover,
         zoom:  !!s.zoom,
         pulse: !!s.pulse,
         drag:  drag,
@@ -185,20 +228,6 @@
       });
     }
 
-    // Border trace — fire on card hover-enter, cancel on leave.
-    var newCard = (s.hover && typeof s.hover.closest === 'function')
-      ? s.hover.closest('.project.card, .featured-item')
-      : null;
-    var prevCard = (s.prevHover && typeof s.prevHover.closest === 'function')
-      ? s.prevHover.closest('.project.card, .featured-item')
-      : null;
-
-    if (newCard !== prevCard) {
-      cancelTrace(prevCard);
-      if (newCard) {
-        fireTrace(newCard, computeEntryAngle(newCard, s.cursorX, s.cursorY));
-      }
-    }
     s.prevHover = s.hover;
   }
 

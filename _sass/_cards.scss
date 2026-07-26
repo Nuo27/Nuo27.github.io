@@ -23,7 +23,7 @@ a:hover { text-decoration: none; }
 .card-title-link {
   @include editorial-underline;
   color: inherit;
-  &:hover { color: var(--card-accent, #{$phosphor}); }
+  &.is-hover { color: var(--card-accent, #{$phosphor}); }
 }
 
 @media (prefers-reduced-motion: reduce) {

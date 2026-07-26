@@ -157,20 +157,7 @@
     color: $carbon;
   }
 
-  &:hover {
-    background: color-mix(in srgb, var(--phosphor) 16%, transparent);
-    border-color: var(--phosphor);
-    color: var(--ink);
-    transform: translateY(-1px);
-    @include border-lightup($bloom: 16px, $bloom-alpha: 26%, $top: 38%);
-
-    [data-theme="light"] & {
-      background: color-mix(in srgb, var(--ink) 6%, transparent);
-      border-color: var(--carbon);
-      color: var(--carbon);
-      @include border-lightup($bloom: 12px, $bloom-alpha: 24%, $top: 35%);
-    }
-  }
+  @include icon-hover($lift-y: -1px, $wash: 16%, $bloom: 16px, $bloom-alpha: 26%, $top: 38%);
 
   &:active { transform: translateY(0) scale(0.96); }
   &:focus-visible {
