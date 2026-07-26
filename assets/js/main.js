@@ -649,12 +649,26 @@
     if (parallaxBound) return;
     var portrait = scope.querySelector('.cover-portrait');
     if (!portrait) return;
+    if (reduceMotion || isTouch) return;
     parallaxBound = true;
+    // Publish --mx / --my in [-0.5, 0.5]; halo + future layers read them
+    // independently. rAF-throttled so we don't write on every pixel.
+    var raf = 0;
+    var lastEvent = null;
+    function apply() {
+      raf = 0;
+      var e = lastEvent;
+      if (!e) return;
+      var cx = e.clientX / window.innerWidth - 0.5;
+      var cy = e.clientY / window.innerHeight - 0.5;
+      portrait.style.setProperty('--mx', cx.toFixed(3));
+      portrait.style.setProperty('--my', cy.toFixed(3));
+    }
     window.addEventListener('mousemove', function (e) {
-      var cx = (e.clientX / window.innerWidth - 0.5);
-      var cy = (e.clientY / window.innerHeight - 0.5);
-      portrait.style.transform = 'translate3d(' + (cx * -14) + 'px,' + (cy * -10) + 'px,0)';
-    });
+      lastEvent = e;
+      if (raf) return;
+      raf = requestAnimationFrame(apply);
+    }, { passive: true });
   }
 
   var heroScrollBound = false;

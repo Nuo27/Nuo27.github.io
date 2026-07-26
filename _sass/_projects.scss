@@ -66,9 +66,13 @@
     border-color: rgba($carbon, 0.16);
   }
 
-  // &.is-hover is set by the JS resolver whenever the cursor is over
-  // any element inside the card. No CSS `:hover` here.
-  &.is-hover {
+  // Hover triggers via EITHER the JS resolver (.is-hover) OR pure CSS
+  // :hover — so the card lights up even when the cursor is over its
+  // body/padding rather than directly on a link. The border-trace
+  // pseudo above remains JS-only because its entry angle depends on
+  // cursor geometry.
+  &.is-hover,
+  &:hover {
     transform: translateY(-6px);
     border-color: var(--phosphor-soft);
     @include border-lightup(0 22px 50px rgba(0, 0, 0, 0.4));
@@ -127,7 +131,8 @@
   transform: translateX(6px);
   transition: opacity $dur-base $ease-out-expo, transform $dur-base $ease-out-expo, color $dur-fast $ease-out-expo;
 }
-.project.card.is-hover .card-arrow { color: var(--phosphor); }
+.project.card.is-hover .card-arrow,
+.project.card:hover .card-arrow { color: var(--phosphor); }
 
 .card-body {
   padding: 1.35rem 1.4rem 1.45rem;
