@@ -7,6 +7,7 @@
 // ==========================================================
 
 @use "variables" as *;
+@use "mixins" as *;
 
 // ---- Reading column measure (article + project bodies) ----
 .article-body,
@@ -76,8 +77,9 @@
   text-decoration: none;
   transition: color var(--dur-base, 0.32s) var(--ease-out-expo, ease-out);
   i { transition: transform var(--dur-base, 0.32s) var(--ease-out-expo, ease-out); }
-  &.is-hover { color: var(--cyan); }
-  &.is-hover i { transform: translateX(-4px); }
+  &.is-hover, &:hover { color: var(--cyan); }
+  &.is-hover i, &:hover i { transform: translateX(-4px); }
+  @include focus-ring;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -54,13 +54,16 @@
 }
 
 .navbar-brand:hover b,
-.navbar-brand.active b {
+.navbar-brand.active b,
+.navbar-brand:focus-visible b {
   &::before, &::after { opacity: 1; transform: translateX(0); }
 }
 .navbar-brand.active b {
   color: $phosphor;
   [data-theme="light"] & { color: $print-phosphor; }
 }
+.navbar-brand:focus-visible { outline: none; }
+.navbar-brand:focus-visible b { color: $phosphor; [data-theme="light"] & { color: $print-phosphor; } }
 
 // Nav links — mono, framed brackets on hover
 .navbar-nav .nav-link {
@@ -95,6 +98,14 @@
   }
 
   &:hover {
+    &::before, &::after { opacity: 1; transform: translateX(0); }
+  }
+
+  // Keyboard focus mirrors hover/active: brackets fade in + phosphor.
+  &:focus-visible {
+    outline: none;
+    color: $phosphor;
+    [data-theme="light"] & { color: $print-phosphor; }
     &::before, &::after { opacity: 1; transform: translateX(0); }
   }
 

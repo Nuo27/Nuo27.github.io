@@ -53,7 +53,9 @@
     transform-origin: left;
     transition: transform 0.3s $ease-out-expo;
   }
-  &.is-hover::after { transform: scaleX(1); }
+  &.is-hover::after,
+  &:hover::after,
+  &:focus-visible::after { transform: scaleX(1); }
 }
 
 // ---- Chip substrate — the site's ONE tag/skill chip base. ----
@@ -90,7 +92,7 @@
 // `.is-hover` on the chip (or on the chip's wrapping anchor like
 // <a class="tag-chip tag-chip--link">). One source of truth.
 @mixin chip-hover {
-  &.is-hover {
+  &.is-hover, &:hover {
     transform: translateY(-1px);
     border-color: var(--phosphor);
     color: var(--phosphor);
@@ -121,6 +123,30 @@
     box-shadow:
       0 0 #{$bloom} color-mix(in srgb, var(--phosphor) #{$bloom-alpha}, transparent),
       inset 0 1px 0 color-mix(in srgb, var(--phosphor) #{$top}, transparent);
+  }
+}
+
+// ---- Focus ring — the keyboard analogue of border-lightup. ----
+// Mirrors the hover language (phosphor edge + bloom + inset top
+// highlight) WITHOUT the lift, so focus never shifts content. Driven
+// by `:focus-visible` (keyboard / AT); mouse-click focus keeps the
+// browser default outline. The 1px phosphor offset ring guarantees a
+// visible indicator even on borderless interactives. Card containers
+// use the `:focus-within` variant inline (their stretched link is the
+// actual tab target). `outline: none` is set ONLY alongside this ring.
+@mixin focus-ring($bloom: 18px, $bloom-alpha: 32%) {
+  &:focus-visible {
+    outline: none;
+    border-color: var(--phosphor);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--phosphor) 60%, transparent),
+      0 0 #{$bloom} color-mix(in srgb, var(--phosphor) #{$bloom-alpha}, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--phosphor) 38%, transparent);
+    transition: border-color var(--dur-lightup, 0.45s) var(--ease-out-expo, cubic-bezier(0.16,1,0.3,1)),
+                box-shadow   var(--dur-lightup, 0.45s) var(--ease-out-expo, cubic-bezier(0.16,1,0.3,1));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &:focus-visible { transition: none !important; }
   }
 }
 
@@ -244,7 +270,7 @@
 // `&.is-hover` because including the mixin under a `[data-theme="light"]`
 // scope would double-prefix the selector.
 @mixin cta-primary-hover {
-  &.is-hover {
+  &.is-hover, &:hover {
     transform: translateY(-2px);
     background: var(--phosphor);
     border-color: var(--phosphor);
@@ -260,7 +286,7 @@
 
 // Secondary CTA — outline lights up cyan with a soft cyan bloom.
 @mixin cta-secondary-hover {
-  &.is-hover {
+  &.is-hover, &:hover {
     transform: translateY(-2px);
     border-color: var(--cyan);
     color: var(--cyan);
@@ -277,7 +303,7 @@
 // the phosphor wash opacity, and the bloom dimensions. Theme-aware
 // via CSS variables.
 @mixin icon-hover($lift-y: -3px, $wash: 10%, $bloom: 18px, $bloom-alpha: 24%, $top: 38%) {
-  &.is-hover {
+  &.is-hover, &:hover {
     transform: translateY($lift-y);
     border-color: var(--phosphor) !important;
     background: color-mix(in srgb, var(--phosphor) $wash, transparent) !important;
@@ -288,7 +314,7 @@
 
 // Solid-phosphor pill that fills on hover — used by `#backToTop`.
 @mixin back-to-top-hover {
-  &.is-hover {
+  &.is-hover, &:hover {
     background: var(--phosphor);
     color: var(--bg-void);
     border-color: var(--phosphor);

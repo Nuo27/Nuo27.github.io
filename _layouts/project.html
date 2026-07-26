@@ -172,13 +172,18 @@ layout: default
     inset: 0;
     transform-origin: 62% 38%;
     will-change: opacity, transform, filter;
-    opacity: 0;
-    filter: blur(8px);
-    transform: scale(1.10);
     transition:
       opacity 1.2s var(--ease-out-expo) 200ms,
       filter 1.2s var(--ease-out-expo) 200ms,
       transform 1.2s var(--ease-out-expo) 200ms;
+  }
+  // Hidden start state only when JS is alive (it owns the .is-visible
+  // reveal). No-JS falls through to the natural visible state so the
+  // hero cover never disappears behind a stuck opacity:0.
+  .js-reveal-ready .hero-image-wrap {
+    opacity: 0;
+    filter: blur(8px);
+    transform: scale(1.10);
   }
   .hero-image-wrap.is-visible {
     opacity: 1;
@@ -206,7 +211,7 @@ layout: default
     position: absolute;
     inset: 14px;
     border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
     pointer-events: none;
     opacity: 0.5;
   }

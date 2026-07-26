@@ -11,26 +11,23 @@
 
 <body class="h-100 d-flex flex-column">
 
-  <!-- smooth-scroll wrapper - navbar + main + footer. assets/js/smooth-scroll.js
-       translates this node via translate3d while body.height is rebuilt to match,
-       so native scroll stays the source of truth and the wrapper just glides.
-       Fixed overlays (CRT, HUD, lightbox, hero-aurora, #backToTop) live as
-       siblings on body / documentElement and are NOT transformed. -->
+  <a href="#app" class="skip-link">Skip to content</a>
+
+  <!-- Content wrapper - navbar + main + footer. Scrolling is native;
+       this is a plain container, no longer a transform target. Fixed
+       overlays (CRT, HUD, lightbox, hero-aurora, #backToTop) live as
+       siblings on body / documentElement. -->
   <div id="smooth-scroll">
     <div class="container mt-4 flex-shrink-0">
       {% include navbar.html %}
     </div>
-    <main id="app" class="flex-shrink-0 container">
+    <main id="app" class="flex-shrink-0 container" tabindex="-1">
       {{ content }}
     </main>
     {% include footer.html %}
   </div>
 
   {% include scripts.html %}
-
-  <!-- Smooth-scroll inertia - loads before the router so the wrapper transform
-       is live before any navigation can swap <main>. -->
-  <script src="{{ "/assets/js/smooth-scroll.js" | relative_url }}"></script>
 
   <!-- Soft router (intercepts in-app navigation, keeps the document shell alive) -->
   <script src="{{ "/assets/js/router.js" | relative_url }}"></script>

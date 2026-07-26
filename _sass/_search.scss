@@ -4,6 +4,9 @@
 // (initTerminalSearch). Styles are token-driven (runtime CSS vars only).
 // ==========================================================
 
+@use "variables" as *;
+@use "mixins" as *;
+
 .search-scope { margin-bottom: 1.5rem; }
 
 // Expandable bar that grows from the / badge.
@@ -90,6 +93,7 @@
   border-color: color-mix(in srgb, var(--phosphor) 40%, transparent);
   color: var(--phosphor);
 }
+.search-toggle { @include focus-ring(16px, 30%); }
 .search-bar.active .search-toggle {
   border-color: transparent;
   color: var(--ink-faint);

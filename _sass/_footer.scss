@@ -48,6 +48,7 @@
               box-shadow   $dur-lightup $ease-out-expo;
 
   @include icon-hover;
+  @include focus-ring(20px, 34%);
 }
 
 // Back to top — HUD button. Hover driven by `.is-hover` (the resolver
@@ -81,6 +82,7 @@
   }
 
   @include back-to-top-hover;
+  @include focus-ring(22px, 38%);
 }
 
 // Scroll progress — phosphor telemetry bar (driven by smooth-scroll

@@ -75,13 +75,16 @@ layout: default
     margin-bottom: 0.7rem;
   }
   .article-title {
-    font-family: var(--font-display);
+    font-family: var(--font-serif);
     font-size: clamp(1.9rem, 5.2vw, 2.9rem);
-    font-weight: 700;
+    font-weight: 600;
     margin: 0;
     color: var(--ink);
-    letter-spacing: -0.032em;
-    line-height: 1.1;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    text-transform: none;
+    text-wrap: balance;
+    font-feature-settings: "liga", "kern";
   }
 
   /* ---- Deck wrapper padding (grid + meta are shared) ---- */

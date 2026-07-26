@@ -146,6 +146,47 @@
     #cursor-root.is-drag .cursor-aurora-inner { opacity: 1; }
     #cursor-root.is-pulse .cursor-outline { animation: cursor-pulse 1.15s ease-in-out infinite; }
 
+    /* ---- :has()-driven cursor visuals — Pattern D.
+       Browser tracks :hover through scroll, layout, and DOM mutations
+       for free, so cursor visuals stay synced with zero JS. Mirrors
+       the .is-hover/.is-zoom/.is-pulse class rules above; the class
+       paths remain as fallback for older browsers without :has()
+       support. JS still owns .is-down/.is-drag (input state) and
+       .is-zoom (renderer internal stateMul needs the local zoom flag). */
+    html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+             .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+             [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root { --glow: 0.42; --cursor-outline-scale: 1; }
+    html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+             .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+             [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root .cursor-outline { opacity: 0.9; }
+    html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+             .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+             [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root .cursor-aurora-outer-halo { opacity: 0.85; }
+    html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+             .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+             [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root .cursor-aurora-outer-core { opacity: 0.95; }
+    html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+             .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+             [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root .cursor-aurora-inner { opacity: 0; }
+    html:has(a:hover, button:hover, label[for]:hover, .nav-link:hover,
+             .social:hover, .skill-tag:hover, input:hover, textarea:hover,
+             [data-cursor="hover"]:hover, [contenteditable]:hover) #cursor-root .cursor-core {
+      fill: transparent; stroke: var(--phosphor); stroke-width: 1.4;
+    }
+    html:has(a:hover, button:hover, [role="button"]:hover,
+             .btn-primary-custom:hover, .btn-secondary-custom:hover,
+             .btn-project:hover, [data-magnetic]:hover) #cursor-root .cursor-outline {
+      animation: cursor-pulse 1.15s ease-in-out infinite;
+    }
+    html:has(.gallery-slide:hover, [data-lightbox]:hover,
+             .featured-item--project img:hover, [data-cursor="zoom"]:hover) #cursor-root { --glow: 0.55; --cursor-outline-scale: 1.12; }
+    html:has(.gallery-slide:hover, [data-lightbox]:hover,
+             .featured-item--project img:hover, [data-cursor="zoom"]:hover) #cursor-root .cursor-outline { opacity: 1; }
+    html:has(.gallery-slide:hover, [data-lightbox]:hover,
+             .featured-item--project img:hover, [data-cursor="zoom"]:hover) #cursor-root .cursor-aurora-outer-halo { opacity: 0.9; }
+    html:has(.gallery-slide:hover, [data-lightbox]:hover,
+             .featured-item--project img:hover, [data-cursor="zoom"]:hover) #cursor-root .cursor-aurora-outer-core { opacity: 1; }
+
     @keyframes cursor-flow { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
     @keyframes cursor-pulse {
       0%, 100% { transform: scale(var(--cursor-outline-scale)); }

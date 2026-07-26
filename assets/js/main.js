@@ -39,111 +39,86 @@
   }
 
   // ============================================================
-  // VIEWPORT-POSITION HOVER
+  // CURSOR + TRACE INTERACTION LAYER
   //
-  // The hovered element is whatever is currently under the cursor in
-  // the viewport. There is exactly ONE source of truth: a continuous
-  // rAF loop that runs elementsFromPoint every frame, against the
-  // cursor's last-known viewport coords (updated by mousemove).
-  //
-  // Why this shape — not event listeners on scroll / pointermove /
-  // wheel / smooth-scroll.subscribe:
-  //
-  //   · smooth-scroll translates the wrapper via CSS transform. The
-  //     document does NOT actually scroll (window.scrollY never
-  //     changes), so a 'scroll' listener on window never fires
-  //     during the user's own scrolling input. Subscribing to
-  //     smooth-scroll's tick also has gaps: it only ticks while
-  //     smooth=true AND the loop is awake AND the diff is above
-  //     threshold. Any of those fail-closed conditions would freeze
-  //     hover.
-  //   · Native pointer / scroll / focus events tell us when the
-  //     INPUT happened, not what's under the cursor right now.
-  //     That's the wrong question.
-  //
-  // elementsFromPoint, on the other hand, asks exactly the right
-  // question ("what's at viewport (x,y) at this moment?") and it
-  // forces a synchronous layout that reflects the post-transform
-  // visual position — so smooth-scroll's translate3d, BFCache
-  // restore, router swaps, focus-induced scrolls, and the rest are
-  // all handled correctly without us having to subscribe to any of
-  // them. One loop, one hit-test, one state.
-  //
-  // Steady-state cost: one elementsFromPoint per frame (~0.02 ms
-  // for a normal page). The diff against the previous result skips
-  // state propagation on idle frames.
+  // Architecture (one source of truth per concept):
+  //   · Cursor visual state: CSS `:has(:hover)` in _includes/head.html
+  //     (browser-native; zero JS).
+  //   · Card hover visual: JS-only `.is-hover` (no CSS `:hover` on cards).
+  //     updateScrollHover on scroll + pointermove tracks the element
+  //     under the cursor. Chromium 149+ doesn't re-evaluate CSS :hover
+  //     during scroll, so cards rely entirely on JS-driven .is-hover.
+  //   · Card trace (.is-traced + WAAPI --trace-spread): direct
+  //     `pointerenter`/`pointerleave` on each card. Gated behind
+  //     `(hover: hover) and (pointer: fine)` and
+  //     `prefers-reduced-motion: reduce`. Bound once at init; rebound
+  //     by router swap (no MutationObserver).
+  //   · Cursor renderer's internal `zoom`/`down` locals: JS pointer
+  //     events + a single `elementFromPoint` per scroll frame.
+  //   · `is-down` / `is-drag` on cursor: pointerdown/up (input state).
   // ============================================================
 
-  var HOVER_SEL = 'a,button,label[for],.nav-link,.social,.skill-tag,input,textarea,[data-cursor="hover"],[contenteditable]';
   var ZOOM_SEL  = '.gallery-slide,[data-lightbox],.featured-item--project img,[data-cursor="zoom"]';
-  var PULSE_SEL = 'a,button,[role="button"],.btn-primary-custom,.btn-secondary-custom,.btn-project,[data-magnetic]';
   var DRAG_SEL  = '.gallery-stage,[data-cursor="drag"]';
+  var TRACE_SEL = '.project.card, .featured-item';
 
-  var hoverState = {
-    cursorX: -1,
-    cursorY: -1,
-    hover: null,
-    zoom: null,
-    pulse: null,
-    down: false,
-    prevHover: null,
-  };
+  // ---- cursor viewport coords (trace angle + scroll refresh) ----
+  var cursorX = -1, cursorY = -1;
+  window.addEventListener('mousemove', function (e) {
+    cursorX = e.clientX; cursorY = e.clientY;
+  }, { passive: true });
+  window.addEventListener('pointermove', function (e) {
+    if (e.pointerType === 'mouse') { cursorX = e.clientX; cursorY = e.clientY; }
+  }, { passive: true });
 
-  // Exposed for diagnostics — window.__hoverState in DevTools.
-  window.__hoverState = hoverState;
+  // ---- JS-tracked state ----
+  var zoomTarget = null;
+  var isDown = false, isDrag = false;
+  var curTraceCard = null;
 
-  function resolveHover(x, y) {
-    var hover = null, zoom = null, pulse = null;
-    if (x < 0 || y < 0 || typeof document.elementsFromPoint !== 'function') {
-      return { hover: hover, zoom: zoom, pulse: pulse };
-    }
-    var stack;
-    try {
-      stack = document.elementsFromPoint(x, y);
-    } catch (e) {
-      return { hover: hover, zoom: zoom, pulse: pulse };
-    }
-    // Walk from the topmost element down. The cursor overlay
-    // (position:fixed, z-index 10003, pointer-events:none) sits at
-    // the top of the stack at this exact point, but it has no
-    // HOVER/ZOOM/PULSE ancestor — closest() returns null and we
-    // skip it. The real interactive is the next element down.
-    for (var i = 0; i < stack.length; i++) {
-      var el = stack[i];
-      if (!el || el === document.documentElement || el === document.body) break;
-      if (typeof el.closest !== 'function') continue;
-      if (!hover) { var h = el.closest(HOVER_SEL); if (h) hover = h; }
-      if (!zoom)  { var z = el.closest(ZOOM_SEL);  if (z) zoom  = z; }
-      if (!pulse) { var p = el.closest(PULSE_SEL); if (p) pulse = p; }
-      if (hover && zoom && pulse) break;
-    }
-    return { hover: hover, zoom: zoom, pulse: pulse };
+  function syncCursorState() {
+    if (!window.__cursor || typeof window.__cursor.setStates !== 'function') return;
+    window.__cursor.setStates({
+      hover: false,
+      zoom:  !!zoomTarget,
+      pulse: false,
+      drag:  isDrag,
+      down:  isDown,
+    });
   }
 
-  // ---- Border-trace helpers -------------------------------------
-  // The trace pseudo-element is owned by CSS (_mixins.scss ::before).
-  // JS only sets the entry angle and animates --trace-spread from
-  // 0deg → 180deg via the Web Animations API; CSS handles the paint,
-  // which is masked to the 1px border ring (no card content overpaint).
+  // ============================================================
+  // WAAPI BORDER-TRACE — entry-angle animation on cards.
+  // ============================================================
+
   function cancelTrace(card) {
     if (!card) return;
+    // Animation is interruptible: when the user leaves mid-flight,
+    // cancel() removes the WAAPI effect cleanly. If the animation
+    // already finished, onfinish wrote the final --trace-spread as
+    // an inline style via commitStyles(); removeProperty clears it
+    // so the @property initial-value (0deg) takes over.
     if (card.__traceAnim) {
       try { card.__traceAnim.cancel(); } catch (e) {}
       card.__traceAnim = null;
     }
-    // Restore defaults; pseudo's opacity transition handles the fade-out.
     card.style.removeProperty('--trace-spread');
     card.style.removeProperty('--trace-entry');
   }
 
   function fireTrace(card, angleDeg) {
     if (!card) return;
+    // Touch devices and reduced-motion users don't get the WAAPI
+    // animation. CSS @media already hides the trace pseudo; we
+    // just persist the final state so it stays visually complete.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+        !window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      card.style.setProperty('--trace-entry', angleDeg + 'deg');
+      card.style.setProperty('--trace-spread', '180deg');
+      return;
+    }
     card.style.setProperty('--trace-entry', angleDeg + 'deg');
     card.style.setProperty('--trace-spread', '0deg');
-    // Sync reflow: paint the 0deg state before the WAAPI animation
-    // interpolates, so the spread grows from a real pinpoint instead
-    // of interpolating from 'unset'.
-    void card.offsetWidth;
     var anim;
     try {
       anim = card.animate(
@@ -151,14 +126,23 @@
           { '--trace-spread': '0deg' },
           { '--trace-spread': '180deg' }
         ],
-        { duration: 850, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+        { duration: 240, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'none' }
       );
     } catch (e) {
       card.style.setProperty('--trace-spread', '180deg');
       return;
     }
     card.__traceAnim = anim;
-    anim.onfinish = function () { card.__traceAnim = null; };
+    anim.onfinish = function () {
+      // === guard so a stale onfinish from a cancelled-and-replaced
+      // animation doesn't null the new reference. commitStyles() writes
+      // the final animation value (180deg) as inline style; cancelTrace
+      // removes it reliably via removeProperty.
+      if (card.__traceAnim === anim) {
+        try { anim.commitStyles(); } catch (e) {}
+        card.__traceAnim = null;
+      }
+    };
   }
 
   function computeEntryAngle(card, x, y) {
@@ -170,116 +154,152 @@
     return ang;
   }
 
-  function applyHoverState() {
-    var s = hoverState;
-    var newHover = s.hover;
-    // Find a card ancestor of the hovered element so we can run the
-    // border-trace animation and the card-level "is-hover" treatment
-    // (border-lightup + lift + image zoom) when the cursor is over
-    // any descendant of the card — not only when it's directly over
-    // a link. This keeps the JS resolver and the CSS rules that read
-    // `.is-hover` in lockstep: the same set of elements light up.
-    var newCard = (newHover && typeof newHover.closest === 'function')
-      ? newHover.closest('.project.card, .featured-item')
-      : null;
-    var prevHover = s.prevHover;
-    var prevCard = (prevHover && typeof prevHover.closest === 'function')
-      ? prevHover.closest('.project.card, .featured-item')
-      : null;
-
-    // ---- Single source of truth: drive `is-hover` / `is-traced` on
-    //      both the deepest interactive and its card ancestor.
-    //      No CSS `:hover` rules are involved at the resolver layer:
-    //      the only thing the browser computes here is what's under
-    //      the cursor, and we propagate that result to the DOM.
-    if (newHover !== prevHover) {
-      if (prevHover && prevHover.classList) prevHover.classList.remove('is-hover');
-      if (newHover && newHover.classList) newHover.classList.add('is-hover');
+  function setTraceCard(card) {
+    if (card === curTraceCard) return;
+    if (curTraceCard) {
+      curTraceCard.classList.remove('is-traced');
+      cancelTrace(curTraceCard);
     }
-    if (newCard !== prevCard) {
-      if (prevCard && prevCard.classList) prevCard.classList.remove('is-hover', 'is-traced');
-      if (newCard && newCard.classList) {
-        newCard.classList.add('is-hover');
-        // The border-trace pseudo is gated entirely on `.is-traced`
-        // (NOT on CSS `:hover::before`) so the WAAPI animation and
-        // the pseudo-fade run only when the JS resolver decides to.
-        newCard.classList.add('is-traced');
-      }
-      cancelTrace(prevCard);
-      if (newCard) {
-        fireTrace(newCard, computeEntryAngle(newCard, s.cursorX, s.cursorY));
-      }
-    } else if (newCard && !newCard.classList.contains('is-traced')) {
-      // Same card as last time but the resolver re-ran (e.g. the cursor
-      // moved inside the same card). The class may have been removed
-      // out-of-band; re-add to keep pseudo-fade state coherent.
-      newCard.classList.add('is-hover', 'is-traced');
+    curTraceCard = card;
+    if (card) {
+      card.classList.add('is-traced');
+      fireTrace(card, computeEntryAngle(card, cursorX, cursorY));
     }
-
-    // ---- Cursor visuals (visual-state of the custom cursor itself).
-    var drag = !!(s.down && newHover && typeof newHover.matches === 'function' && newHover.matches(DRAG_SEL));
-    if (window.__cursor && typeof window.__cursor.setStates === 'function') {
-      window.__cursor.setStates({
-        hover: !!newHover,
-        zoom:  !!s.zoom,
-        pulse: !!s.pulse,
-        drag:  drag,
-        down:  s.down,
-      });
-    }
-
-    s.prevHover = s.hover;
   }
 
-  // ---- THE single source of truth: one continuous rAF loop ----
-  // Every frame: ask elementsFromPoint what's at (cursorX, cursorY),
-  // diff against the previous result, propagate on change. The
-  // browser's hit-test automatically reflects every transform /
-  // scroll / route swap / animation; we don't subscribe to any of
-  // them.
-  (function hoverLoop() {
-    requestAnimationFrame(hoverLoop);
-    if (document.hidden) return;
-    var cx = hoverState.cursorX, cy = hoverState.cursorY;
-    if (cx < 0 || cy < 0) return;
-    var r = resolveHover(cx, cy);
-    if (r.hover === hoverState.hover &&
-        r.zoom  === hoverState.zoom  &&
-        r.pulse === hoverState.pulse) return;
-    hoverState.hover = r.hover;
-    hoverState.zoom  = r.zoom;
-    hoverState.pulse = r.pulse;
-    applyHoverState();
-  })();
+  // ============================================================
+  // EVENT WIRING
+  // ============================================================
 
-  // Track cursor position. The loop above already keeps hover
-  // state current from these coords; no scroll/smooth-scroll
-  // subscribers needed.
-  window.addEventListener('mousemove', function (e) {
-    hoverState.cursorX = e.clientX;
-    hoverState.cursorY = e.clientY;
-  }, { passive: true });
-  window.addEventListener('pointermove', function (e) {
-    if (e.pointerType === 'mouse') {
-      hoverState.cursorX = e.clientX;
-      hoverState.cursorY = e.clientY;
-    }
+  // Delegated pointerover: tracks the cursor renderer's `zoom` local
+  // (head.html reads it for per-frame stateMul). Card trace and body
+  // hover are handled by direct card events + CSS `:hover` respectively.
+  document.addEventListener('pointerover', function (e) {
+    if (!e.target || !e.target.closest) return;
+    var zoom = e.target.closest(ZOOM_SEL);
+    if (zoom !== zoomTarget) { zoomTarget = zoom; syncCursorState(); }
   }, { passive: true });
 
-  // Pointer-down / up flip the cursor's transient `is-down` state.
-  function pressStart() { hoverState.down = true; applyHoverState(); }
-  function pressEnd()   {
-    if (!hoverState.down) return;
-    hoverState.down = false;
-    applyHoverState();
+  // pointerdown/up → down + drag state (input state, pure JS)
+  function onPressStart(e) {
+    isDown = true;
+    if (e.target && e.target.closest && e.target.closest(DRAG_SEL)) isDrag = true;
+    syncCursorState();
   }
-  window.addEventListener('pointerdown', pressStart);
-  window.addEventListener('pointerup', pressEnd);
-  window.addEventListener('pointercancel', pressEnd);
+  function onPressEnd() {
+    if (!isDown) return;
+    isDown = false;
+    isDrag = false;
+    syncCursorState();
+  }
+  window.addEventListener('pointerdown', onPressStart);
+  window.addEventListener('pointerup', onPressEnd);
+  window.addEventListener('pointercancel', onPressEnd);
+
+  // ============================================================
+  // Direct pointerenter/pointerleave on cards (sameerasw pattern).
+  // pointerenter doesn't bubble, so we bind each card. Rebinding
+  // happens at the router swap boundary (initPageFeatures calls
+  // bindCards()), not via a DOM-wide MutationObserver — that would
+  // re-fire on every CSS animation tick during scroll.
+  // ============================================================
+  function onCardEnter(e) { setTraceCard(e.currentTarget); }
+  function onCardLeave(e) {
+    var related = e.relatedTarget;
+    if (!related || !e.currentTarget.contains(related)) setTraceCard(null);
+  }
+  function bindCards() {
+    cardEls.forEach(function (card) {
+      card.removeEventListener('pointerenter', onCardEnter);
+      card.removeEventListener('pointerleave', onCardLeave);
+    });
+    cardEls = Array.prototype.slice.call(document.querySelectorAll(TRACE_SEL));
+    cardEls.forEach(function (card) {
+      card.addEventListener('pointerenter', onCardEnter);
+      card.addEventListener('pointerleave', onCardLeave);
+    });
+  }
+  var cardEls = [];
+
+  // ============================================================
+  // SCROLL REFRESH — one elementFromPoint per scroll frame (rAF-coalesced).
+  // pointerenter doesn't fire when content scrolls under a stationary
+  // pointer. We refresh:
+  //   · WAAPI trace target (in case cursor is over a card that
+  //     pointerenter didn't fire on)
+  //   · cursor renderer's zoom local
+  // Body hover is CSS-native and not refreshed here.
+  // ============================================================
+  var scrollRefRaf = 0;
+  function refreshFromScroll() {
+    scrollRefRaf = 0;
+    if (cursorX < 0) return;
+    var el = document.elementFromPoint(cursorX, cursorY);
+    if (!el || !el.closest) return;
+    setTraceCard(el.closest(TRACE_SEL));
+    var z = el.closest(ZOOM_SEL);
+    if (z !== zoomTarget) { zoomTarget = z; syncCursorState(); }
+  }
+  window.addEventListener('scroll', function () {
+    if (scrollRefRaf) return;
+    scrollRefRaf = requestAnimationFrame(refreshFromScroll);
+  }, { passive: true });
+  window.addEventListener('resize', function () {
+    if (scrollRefRaf) return;
+    scrollRefRaf = requestAnimationFrame(refreshFromScroll);
+  }, { passive: true });
+
 
   // ============================================================
   // RUN-ONCE INITIALIZERS — bind to the persistent shell
   // ============================================================
+
+  // rAF-coalesced scroll position — one native scroll listener feeds
+  // every scroll-coupled feature. Each consumer is seeded with the
+  // current scrollY on register, then re-fired on scroll (rAF-throttled)
+  // and resize (docHeight may have changed).
+  var scrollRaf = 0;
+  var scrollConsumers = [];
+  function fireScrollConsumers(pos) {
+    for (var i = 0; i < scrollConsumers.length; i++) {
+      try { scrollConsumers[i](pos); } catch (e) {}
+    }
+  }
+  function addScrollConsumer(fn) {
+    scrollConsumers.push(fn);
+    fn(window.scrollY);
+  }
+  window.addEventListener('scroll', function () {
+    if (scrollRaf) return;
+    scrollRaf = requestAnimationFrame(function () {
+      scrollRaf = 0;
+      fireScrollConsumers(window.scrollY);
+    });
+  }, { passive: true });
+  window.addEventListener('resize', function () { fireScrollConsumers(window.scrollY); }, { passive: true });
+
+  // Chromium 149+: CSS :hover doesn't re-evaluate during scroll when the
+  // mouse is stationary. Card hover is JS-only (.is-hover) — driven by
+  // updateScrollHover on both scroll and pointermove — so no stale
+  // CSS :hover can stick. See SCSS: &:hover removed from card selectors.
+  var curScrollHover = null;
+  function updateScrollHover() {
+    if (cursorX < 0) return;
+    var el = document.elementFromPoint(cursorX, cursorY);
+    var target = el;
+    while (target && !target.matches(TRACE_SEL)) {
+      target = target.parentElement;
+    }
+    if (target !== curScrollHover) {
+      if (curScrollHover) curScrollHover.classList.remove('is-hover');
+      if (target) target.classList.add('is-hover');
+      curScrollHover = target;
+    }
+  }
+  if (!isTouch) {
+    window.addEventListener('scroll', updateScrollHover, { passive: true });
+    window.addEventListener('pointermove', updateScrollHover, { passive: true });
+  }
 
   function injectAtmosphere() {
     var frag = document.createDocumentFragment();
@@ -303,32 +323,21 @@
     var progressBar = document.createElement('div');
     progressBar.className = 'scroll-progress';
     document.body.prepend(progressBar);
-    function update(pos) {
+    addScrollConsumer(function (pos) {
       var docHeight = document.documentElement.scrollHeight - window.innerHeight;
       var progress = docHeight > 0 ? (pos / docHeight) * 100 : 0;
       progressBar.style.transform = 'scaleX(' + (progress / 100) + ')';
-    }
-    // Driven by the smooth-scroll render position so the bar tracks what
-    // the user actually sees, not the raw native scrollY (which is ahead
-    // of the wrapper during the LERP catch-up).
-    window.addEventListener('resize', function () { update(window.__smoothScroll.getPosition()); }, { passive: true });
-    window.__smoothScroll.subscribe(function (s) { update(s.pos); });
+    });
   }
 
   function initBackToTop() {
     var btn = document.getElementById('backToTop');
     if (!btn) return;
-    window.__smoothScroll.subscribe(function (s) {
-      btn.classList.toggle('visible', s.pos > 500);
+    addScrollConsumer(function (pos) {
+      btn.classList.toggle('visible', pos > 500);
     });
     btn.addEventListener('click', function () {
-      // When smooth-scroll is active, jump native scrollY to 0 instantly
-      // and let the wrapper LERP — avoids browser-easing on top of our
-      // own. In pass-through mode (touch / reduced-motion), keep the
-      // original behavior.
-      var smooth = window.__smoothScroll && window.__smoothScroll.isSmooth();
-      if (smooth) window.scrollTo(0, 0);
-      else window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
     });
   }
 
@@ -337,8 +346,8 @@
     if (!navbar) return;
     // .navbar-themed lives on the persistent shell — never swapped by the
     // router — so no isConnected guard needed.
-    window.__smoothScroll.subscribe(function (s) {
-      navbar.classList.toggle('scrolled', s.pos > 50);
+    addScrollConsumer(function (pos) {
+      navbar.classList.toggle('scrolled', pos > 50);
     });
   }
 
@@ -633,12 +642,14 @@
     if (reduceMotion) return;
     var el = scope.querySelector('[data-glitch]');
     if (!el) return;
-    function burst() {
+    // Signature chromatic-aberration burst — fires ONCE on load as a boot
+    // flourish, then retires so it never distracts from the work on repeat
+    // visits. (The resolver's is-hover path still lights the wordmark.)
+    setTimeout(function () {
+      if (!el.isConnected) return;
       el.classList.add('glitching');
       setTimeout(function () { el.classList.remove('glitching'); }, 320);
-      setTimeout(burst, 3500 + Math.random() * 4000);
-    }
-    setTimeout(burst, 2800);
+    }, 2800);
   }
 
   // Cover-portrait parallax — binds once. After swap the captured
@@ -677,20 +688,16 @@
     var hero = scope.querySelector('.landing-wrapper');
     if (!hero) return;
     heroScrollBound = true;
-    var vh = window.innerHeight;
-    function update(y) {
+    addScrollConsumer(function (pos) {
       // hero is a child of <main> (router-swapped). Bail once it's gone
       // so we don't keep writing to a detached node across navigations.
       if (!hero.isConnected) return;
-      if (y >= vh) return;
-      var pp = Math.min(y / vh, 1);
+      var vh = window.innerHeight;
+      if (pos >= vh) return;
+      var pp = Math.min(pos / vh, 1);
       hero.style.opacity = String(1 - pp * 0.55);
-      hero.style.transform = 'scale(' + (1 - pp * 0.03) + ') translate3d(0,' + (y * 0.16) + 'px,0)';
-    }
-    // Subscribe to the smoothed render position so the hero scales in
-    // lockstep with the wrapper transform instead of running ahead of it.
-    window.addEventListener('resize', function () { vh = window.innerHeight; update(window.__smoothScroll.getPosition()); }, { passive: true });
-    window.__smoothScroll.subscribe(function (s) { update(s.pos); });
+      hero.style.transform = 'scale(' + (1 - pp * 0.03) + ') translate3d(0,' + (pos * 0.16) + 'px,0)';
+    });
   }
 
   function initHeroAurora(scope) {
@@ -1035,16 +1042,9 @@
     if (!el) return;
 
     window.scrollTo(0, 0);
-    if (window.__smoothScroll) window.__smoothScroll.snapTo(0);
-
-    // When smooth-scroll is active, jump the native position instantly and
-    // let the wrapper LERP to the target — avoids the browser's own easing
-    // competing with ours. Otherwise fall back to the original native
-    // scrollIntoView({behavior:'smooth'}) (or instant on reduced-motion).
-    var smooth = !!(window.__smoothScroll && window.__smoothScroll.isSmooth());
     setTimeout(function () {
-      el.scrollIntoView({ behavior: smooth ? 'auto' : (reduceMotion ? 'auto' : 'smooth'), block: 'start' });
-    }, smooth ? 500 : (reduceMotion ? 0 : 500));
+      el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    }, 500);
   }
 
   // ============================================================
@@ -1081,6 +1081,13 @@
     initVisibilityToggle(scope);
     initTagFilter(scope);
     initGuidedScroll();
+    // Rebind direct pointerenter/pointerleave on cards in the new
+    // <main>. Router swaps replace <main>; cards in the old scope
+    // are gone, so we re-query and re-bind here.
+    bindCards();
+    // A route swap replaced <main>; what's under the cursor changed,
+    // so the trace target + zoom local must be re-resolved next frame.
+    refreshFromScroll();
   }
 
   window.__initPageFeatures = initPageFeatures;

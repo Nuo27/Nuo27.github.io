@@ -66,22 +66,6 @@ skills_detailed:
     title: Web & Backend
     items: [Next.js / React, TypeScript, PostgreSQL + Prisma, NextAuth / JWT, Docker + Cloudflare Tunnel, REST / Server Actions]
 
-# ── 04 · Education ──
-education:
-  eyebrow: "04"
-  title: Education
-  items:
-    - qualification: "B.Sc. Game Development"
-      institution: "UTS, Sydney"
-      from: 2020
-      to: 2023
-      description: >-
-        Graduated with a Bachelor of Science majoring in Game Development, minor in
-        Data Analytics. Coursework included Game Design Studio I & II, iOS App
-        Development, and Data Structures. Shipped four game projects across Unity
-        (C#) and Unreal Engine 5 (C++). “Wistful” was selected for presentation at
-        the 2022 UTS Tech Festival.
-
 # ── 04 · Experience ──
 experience:
   eyebrow: "04"

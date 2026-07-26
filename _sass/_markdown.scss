@@ -42,7 +42,7 @@
   a:not(.btn):not([class^="carousel-"]):not([class^="list-"]):not(.no-underline):not(.tag-chip) {
     @include editorial-underline;
     color: var(--cyan);
-    &.is-hover { color: var(--phosphor); }
+    &.is-hover, &:hover { color: var(--phosphor); }
   }
 
   // ---- Lists ----

@@ -43,16 +43,16 @@
   display: flex;
   flex-direction: column;
   text-decoration: none !important;
-  border-radius: 6px;
+  border-radius: $radius-md;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
   background: var(--bg-surface);
   overflow: hidden;
   position: relative;
   // transform stays at $dur-base (the lift); border-color + box-shadow use
   // $dur-lightup so the edge feels like it ignites after the card rises.
-  transition: transform $dur-base $ease-out-expo,
-              border-color $dur-lightup $ease-out-expo,
-              box-shadow   $dur-lightup $ease-out-expo;
+  transition: transform 0.18s $ease-out-expo,
+              border-color 0.2s $ease-out-expo,
+              box-shadow   0.2s $ease-out-expo;
 
   // Premium entrance: a phosphor light traces from the cursor's entry
   // angle around the perimeter on hover-enter (~0.85s), then dissolves
@@ -66,13 +66,11 @@
     border-color: rgba($carbon, 0.16);
   }
 
-  // Hover triggers via EITHER the JS resolver (.is-hover) OR pure CSS
-  // :hover — so the card lights up even when the cursor is over its
-  // body/padding rather than directly on a link. The border-trace
-  // pseudo above remains JS-only because its entry angle depends on
-  // cursor geometry.
-  &.is-hover,
-  &:hover {
+  // Hover triggers via JS-managed .is-hover only. CSS :hover removed
+  // because Chromium 149 doesn't update it during scroll, causing
+  // stale hover on the first card. The border-trace pseudo above
+  // remains JS-only because its entry angle depends on cursor geometry.
+  &.is-hover {
     transform: translateY(-6px);
     border-color: var(--phosphor-soft);
     @include border-lightup(0 22px 50px rgba(0, 0, 0, 0.4));
@@ -88,6 +86,19 @@
   &:active {
     transform: translateY(0) scale(0.98);
     transition: transform 0.12s $ease-out-expo;
+  }
+
+  // Keyboard focus — same phosphor chassis as hover (border + bloom +
+  // arrow reveal), without the lift so focus never shifts content. The
+  // stretched title link is the tab target; :focus-within lights the card.
+  &:focus-within {
+    border-color: var(--phosphor-soft);
+    @include border-lightup(0 22px 50px rgba(0, 0, 0, 0.4));
+    [data-theme="light"] & {
+      @include border-lightup(0 22px 40px rgba($carbon, 0.16));
+      border-color: $print-phosphor-soft;
+    }
+    .card-arrow { opacity: 1; transform: translateX(0); color: var(--phosphor); }
   }
 }
 
@@ -110,7 +121,7 @@
   object-fit: contain;
   display: block;
   filter: grayscale(0.25) contrast(1.04);
-  transition: transform $dur-base $ease-out-expo, filter $dur-base $ease-out-expo;
+  transition: transform 0.18s $ease-out-expo, filter 0.18s $ease-out-expo;
 }
 .card-arrow {
   position: absolute;
@@ -129,10 +140,9 @@
   -webkit-backdrop-filter: blur(6px);
   opacity: 0;
   transform: translateX(6px);
-  transition: opacity $dur-base $ease-out-expo, transform $dur-base $ease-out-expo, color $dur-fast $ease-out-expo;
+  transition: opacity 0.18s $ease-out-expo, transform 0.18s $ease-out-expo, color 0.12s $ease-out-expo;
 }
-.project.card.is-hover .card-arrow,
-.project.card:hover .card-arrow { color: var(--phosphor); }
+.project.card.is-hover .card-arrow { color: var(--phosphor); }
 
 .card-body {
   padding: 1.35rem 1.4rem 1.45rem;
@@ -231,7 +241,8 @@
   }
 
   @include chip-hover;
-  &.is-hover::before { transform: translateX(120%); }
+  @include focus-ring(14px, 30%);
+  &.is-hover::before, &:hover::before { transform: translateX(120%); }
 
   [data-theme="light"] &::before {
     background: linear-gradient(115deg, transparent 0%, transparent 38%, rgba($carbon, 0.18) 50%, transparent 62%, transparent 100%);
@@ -243,7 +254,7 @@
   border-color: rgba($cyan, 0.42);
   color: var(--cyan);
   background: rgba($cyan, 0.06);
-  animation: tag-pulse 3.6s ease-in-out infinite;
+  animation: tag-pulse 5s ease-in-out infinite;
   [data-theme="light"] & {
     border-color: rgba($print-cyan, 0.5);
     color: $print-cyan;
@@ -252,13 +263,13 @@
 }
 @keyframes tag-pulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba($cyan, 0.0); }
-  50%      { box-shadow: 0 0 14px 0 rgba($cyan, 0.22); }
+  50%      { box-shadow: 0 0 10px 0 rgba($cyan, 0.14); }
 }
 @media (prefers-reduced-motion: reduce) {
   .tag-chip,
   .tag-chip--accent,
   .tag-chip::before { transition: none !important; animation: none !important; }
-  .tag-chip.is-hover::before { transform: translateX(-120%); }
+  .tag-chip.is-hover::before, .tag-chip:hover::before { transform: translateX(-120%); }
 }
 
 // ---- Card wrapper (positioning context, reserved for future overlays) ----
@@ -305,7 +316,8 @@
               border-color $dur-fast $ease-out-expo,
               background $dur-fast $ease-out-expo,
               transform $dur-fast $ease-out-back;
-  &.is-hover {
+  @include focus-ring(16px, 30%);
+  &.is-hover, &:hover {
     color: var(--phosphor);
     border-color: var(--phosphor-soft);
     transform: translateY(-1px);
@@ -333,7 +345,7 @@
   margin-bottom: 0.5rem;
 }
 .card-cat {
-  font-size: 0.58rem;
+  font-size: 0.62rem;
   letter-spacing: 0.18em;
   color: var(--ink-mut);
   [data-theme="light"] & { color: $carbon-mut; }
@@ -385,7 +397,7 @@
     border-color: rgba($print-cyan, 0.42);
     color: $print-cyan;
   }
-  &.is-hover {
+  &.is-hover, &:hover {
     color: var(--cyan);
     border-color: var(--cyan);
   }

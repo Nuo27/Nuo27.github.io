@@ -38,6 +38,7 @@
   letter-spacing: -0.028em;
   text-transform: uppercase;
   line-height: 1;
+  text-wrap: balance;
 }
 // .title-prompt lives in _base.scss — the site's one blink rule.
 
@@ -222,7 +223,7 @@
   background: color-mix(in srgb, var(--ink) 3%, transparent);
 }
 .now-label {
-  font-size: 0.58rem;
+  font-size: 0.62rem;
   color: var(--cyan);
   letter-spacing: 0.14em;
   flex-shrink: 0;

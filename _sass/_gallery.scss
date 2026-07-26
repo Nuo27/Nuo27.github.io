@@ -3,6 +3,7 @@
 // ==========================================================
 
 @use "variables" as *;
+@use "mixins" as *;
 
 // ---- Gallery carousel ----
 .gallery {
@@ -13,7 +14,7 @@
 .gallery-stage {
   position: relative;
   overflow: hidden;
-  border-radius: 6px;
+  border-radius: $radius-md;
   border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
   background: var(--bg-raised);
   height: clamp(300px, 56vh, 560px);
@@ -117,7 +118,7 @@
   flex-shrink: 0;
   width: 86px;
   height: 58px;
-  border-radius: 4px;
+  border-radius: $radius-sm;
   border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
   padding: 0;
   cursor: pointer;
@@ -125,6 +126,7 @@
   opacity: 0.5;
   background: var(--bg-raised);
   transition: opacity $dur-fast $ease-out-expo, border-color $dur-fast $ease-out-expo;
+  @include focus-ring(14px, 28%);
 }
 .gallery-thumb:hover { opacity: 0.85; }
 .gallery-thumb.active {
@@ -166,7 +168,7 @@
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  border-radius: 6px;
+  border-radius: $radius-md;
   transform: scale(0.96);
   opacity: 0;
   transition: transform 0.4s $ease-out-expo, opacity 0.3s $ease-out-expo;
@@ -194,6 +196,7 @@
   border-color: rgba(255, 255, 255, 0.5);
 }
 .lightbox-btn:active { transform: scale(0.94); }
+.lightbox-btn { @include focus-ring(16px, 40%); }
 .lightbox-close { top: 1.25rem; right: 1.25rem; }
 .lightbox-prev { left: 1.25rem; top: 50%; transform: translateY(-50%); }
 .lightbox-next { right: 1.25rem; top: 50%; transform: translateY(-50%); }
