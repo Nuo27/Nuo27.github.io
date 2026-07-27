@@ -4,7 +4,7 @@ title: "Notion Sync Test"
 description: "testing"
 tags: ["Notion", "Frontend"]
 category: tech
-lang: zh
+lang: en
 permalink: /articles/notion-sync-test/
 source: notion
 ---
