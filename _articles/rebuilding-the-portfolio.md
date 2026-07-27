@@ -1,8 +1,11 @@
 ---
 name: rebuilding-the-portfolio
+permalink: /articles/rebuilding-the-portfolio/
 title: "Rebuilding the Portfolio: From Theme to Toolkit"
 description: "Why I threw out a working Jekyll theme and built my own — the tactical telemetry aesthetic, the architecture, and the details that took the longest."
 tags: [Design, Jekyll, Frontend, Portfolio]
+category: tech
+lang: en
 ---
 
 For two years my portfolio ran on [portfolYOU](https://github.com/YoussefRaafatNasry/portfolYOU), a clean Jekyll theme that did exactly what a new-grad portfolio needed: projects, blog posts, an about page, and a search box. It was fast, it worked, and I never had to think about it. Then I started thinking about it.

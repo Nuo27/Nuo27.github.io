@@ -1,8 +1,11 @@
 ---
 name: markdown-reference
+permalink: /articles/markdown-reference/
 title: "Markdown Reference"
 description: "Every markdown element rendered in one place — the kitchen sink for styling verification."
 tags: [Reference]
+category: tech
+lang: en
 ---
 
 ## Headings

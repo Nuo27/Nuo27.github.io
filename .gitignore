@@ -24,6 +24,9 @@ dist/
 src/
 public/
 
+# Notion sync — secrets (no .state.json; script derives from committed files)
+.env
+
 # ==========================================================
 # Logs
 # ==========================================================

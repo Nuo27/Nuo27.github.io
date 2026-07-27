@@ -1,8 +1,11 @@
 ---
 name: unity-vs-unreal
+permalink: /articles/unity-vs-unreal/
 title: "Unity vs Unreal: Choosing Your First Engine"
 description: "After shipping projects in both engines, here's how I think about the decision."
 tags: [Unity, Unreal, GameDev]
+category: tech
+lang: en
 ---
 
 I've shipped games in both Unity (C#) and Unreal Engine 5 (C++), and I get asked this question a lot: *which engine should I start with?* The honest answer is - it depends on what you're trying to build and how you learn best. But here's a framework that might help.

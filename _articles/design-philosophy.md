@@ -1,8 +1,11 @@
 ---
 name: design-philosophy
+permalink: /articles/design-philosophy/
 title: "What I Believe About Game Design"
 description: "[ TODO - 1 sentence summary of your design philosophy. ]"
 tags: [Design, GameDev]
+category: tech
+lang: en
 ---
 
 <!-- TODO: Write your design philosophy - see CONTENT-SUPPLEMENT.md §5 -->

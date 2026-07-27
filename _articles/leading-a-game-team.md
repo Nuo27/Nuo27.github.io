@@ -1,8 +1,11 @@
 ---
 name: leading-a-game-team
+permalink: /articles/leading-a-game-team/
 title: "What Leading a Game Team Actually Looks Like"
 description: "Lessons from being team leader and sole programmer on a 5-person student project."
 tags: [Leadership, GameDev, Unity]
+category: tech
+lang: en
 ---
 
 On paper, being "team leader and lead programmer" sounds glamorous. In practice, it means spending half your time in standup meetings and the other half writing code at 2 AM because someone's level script broke the build.

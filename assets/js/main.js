@@ -1031,6 +1031,66 @@
     try { input.focus(); } catch (e) {}
   }
 
+  // Deep-link sync for ?cat=: on load, activate the matching chip; on click,
+  // mirror the active category into the URL. Stacks on the portfolio
+  // initCategoryFilter (shared) without modifying it.
+  function initCatDeepLink(scope) {
+    var nav = scope.querySelector('[data-category-filter]');
+    if (!nav) return;
+    var chips = nav.querySelectorAll('[data-cat]');
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        try {
+          var u = new URL(window.location.href);
+          var cat = chip.getAttribute('data-cat');
+          if (cat === 'all') u.searchParams.delete('cat');
+          else u.searchParams.set('cat', cat);
+          window.history.replaceState({}, '', u);
+        } catch (err) {}
+      });
+    });
+    try {
+      var cat = new URLSearchParams(window.location.search).get('cat');
+      if (cat) {
+        var target = nav.querySelector('[data-cat="' + cat + '"]');
+        if (target && !target.classList.contains('is-active')) target.click();
+      }
+    } catch (err) {}
+  }
+
+  // Tag filter chips: clicking fills the terminal search (grep) with the tag
+  // name, composing with the active category filter (search reads activeCat).
+  // Mirrors ?tag= deep-linking — syncs active state from the search input.
+  function initTagChips(scope) {
+    var chips = scope.querySelectorAll('[data-tag-chip]');
+    if (!chips.length) return;
+    var searchScope = scope.querySelector('[data-terminal-search]');
+    var input = searchScope && searchScope.querySelector('.search-input');
+    if (!input) return;
+    function syncActive() {
+      var q = input.value.trim().toLowerCase();
+      Array.prototype.slice.call(chips).forEach(function (c) {
+        c.classList.toggle('is-active', q !== '' && c.getAttribute('data-tag-chip').toLowerCase() === q);
+      });
+    }
+    Array.prototype.slice.call(chips).forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var tag = chip.getAttribute('data-tag-chip');
+        var target = input.value.trim().toLowerCase() === tag.toLowerCase() ? '' : tag;
+        input.value = target;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        syncActive();
+        try {
+          var u = new URL(window.location.href);
+          if (target) u.searchParams.set('tag', target);
+          else u.searchParams.delete('tag');
+          window.history.replaceState({}, '', u);
+        } catch (err) {}
+      });
+    });
+    syncActive();
+  }
+
   // Reads the guided-scroll target set by the previous page's
   // [data-scroll-to] click, then smooth-scrolls to it.
   function initGuidedScroll() {
@@ -1080,6 +1140,8 @@
     initCategoryFilter(scope);
     initVisibilityToggle(scope);
     initTagFilter(scope);
+    initCatDeepLink(scope);
+    initTagChips(scope);
     initGuidedScroll();
     // Rebind direct pointerenter/pointerleave on cards in the new
     // <main>. Router swaps replace <main>; cards in the old scope
