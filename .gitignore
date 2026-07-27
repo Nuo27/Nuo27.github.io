@@ -1,0 +1,6 @@
+﻿# Ignore everything by default — main branch is intentionally minimal.
+# Only README.md, .gitignore, and .github/ are tracked.
+/*
+!.gitignore
+!README.md
+!.github/

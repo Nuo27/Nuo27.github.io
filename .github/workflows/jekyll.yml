@@ -1,0 +1,77 @@
+# Build and deploy Jekyll
+#
+# Triggers:
+#   push to deploy  — site changes (manual merge from dev)
+#   schedule hourly — Notion → _articles sync + auto-publish
+#   workflow_dispatch — manual run from the Actions tab
+#
+# IMPORTANT (schedule): GitHub runs `schedule` from the repo's DEFAULT branch.
+# This workflow file must therefore also exist on `main`. `main` is kept
+# minimal (README + a copy of this file); the full site lives on `deploy`.
+# checkout `ref: deploy` here so every trigger — regardless of branch — works
+# on the same working tree.
+
+on:
+  push:
+    branches: [deploy]
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: deploy
+      - id: pages
+        uses: actions/configure-pages@v5
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install sync deps
+        working-directory: scripts/notion-sync
+        run: npm ci
+      - name: Sync articles from Notion
+        run: node scripts/notion-sync/index.js
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_TECH: ${{ secrets.NOTION_DB_TECH }}
+          NOTION_DB_NOTES: ${{ secrets.NOTION_DB_NOTES }}
+      - name: Commit synced articles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add _articles
+          if ! git diff --staged --quiet; then
+            git commit -m "chore: sync notion articles"
+            git push
+          fi
+      - run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
