@@ -6,7 +6,7 @@
     link_base -> if set, chips render as <a> links to "{link_base}{url-encoded tag}",
                  e.g. "/portfolio/?tag=". Used on cards so a tag click filters the list page.
 {%- endcomment -%}
-{%- assign accent_list = include.accent | default: "Student Work" -%}
+{%- assign accent_list = include.accent | default: site.portfolio.accent_tag -%}
 {%- for tag in include.tags -%}
   {%- assign slug = tag | downcase | replace: ' ', '-' -%}
   {%- assign is_accent = false -%}

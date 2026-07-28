@@ -2,7 +2,7 @@
 
   <a class="navbar-brand {% if page.url == '/' %}active{% endif %}" href="{{ site.baseurl }}/"><h5><b>{{ site.title }}</b></h5></a>
 
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+  <div class="navbar-collapse" id="navbarNavAltMarkup">
     <div class="navbar-nav ml-auto">
       <a class="nav-item nav-link {% if page.url == '/about.html' or page.url == '/about/' %}active{% endif %}" href="/about/">About</a>
       <a class="nav-item nav-link {% if page.url == '/portfolio/' or page.url contains '/portfolio/' %}active{% endif %}" href="/portfolio/">Portfolio</a>
@@ -14,7 +14,7 @@
   <div class="nav-right">
     <button id="theme-toggler" type="button" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle theme"></button>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" id="nav-toggle" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
       <i class="fas fa-1x fa-bars text-themed"></i>
     </button>
   </div>

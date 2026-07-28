@@ -1,22 +1,22 @@
 ---
 name: notion-as-cms
 title: "Notion as a CMS for a Static Site"
-description: "How I wired Notion into a Jekyll site via the official API: recursive mirroring of the page tree, inline vs full-page databases, link rewriting, and CI plumbing."
+description: "How to wire Notion into a Jekyll site via the official API: recursive mirroring of the page tree, inline vs full-page databases, link rewriting, and CI plumbing."
 tags: [Jekyll, Notion, API, Design]
 category: tech
 lang: en
 permalink: /articles/notion-as-cms/
 excerpt_separator: <!-- end_excerpt -->
 ---
-I wanted to keep writing articles in Notion — the editor, the mobile app, the share-with-a-friend-to-edit flow — without giving up a static site. So I built a sync that mirrors a Notion workspace into a directory of Markdown files. Here is what it actually does and where the sharp edges are.
+The goal: keep writing articles in Notion — the editor, the mobile app, the share-with-a-friend-to-edit flow — without giving up a static site. The solution is a sync that mirrors a Notion workspace into a directory of Markdown files. Here is what it actually does and where the sharp edges are.
 
 ## What you give up by going static
 
-The site you are reading is plain HTML + CSS + a tiny bit of JS. No database, no server, no admin panel. Every article is a Markdown file under `_articles/` with a YAML frontmatter block. Build it with Jekyll, push the result to a CDN, done.
+A typical static site is plain HTML + CSS + a tiny bit of JS. No database, no server, no admin panel. Every article is a Markdown file under `_articles/` with a YAML frontmatter block. Build it with Jekyll, push the result to a CDN, done.
 
-The downside is that writing an article means SSH-ing into a server (or `git push`ing), editing Markdown, waiting for a build, hoping you didn't typo a tag. Notion is the opposite: open the app, type, hit publish. I wanted the second experience without giving up the first.
+The downside is that writing an article means SSH-ing into a server (or `git push`ing), editing Markdown, waiting for a build, hoping you didn't typo a tag. Notion is the opposite: open the app, type, hit publish. The ideal is the second experience without giving up the first.
 
-The obvious move is to build the whole site *in* Notion. NotionNext (the well-known one) does that: it scrapes your workspace, mounts every page as a route, ships a React app. The cost is that Notion becomes the single source of truth and you inherit its constraints — search ranking, performance, uptime, link rot when a share is revoked. I wanted something gentler: write in Notion, build a static site, keep the site canonical.
+The obvious move is to build the whole site *in* Notion. NotionNext (the well-known one) does that: it scrapes your workspace, mounts every page as a route, ships a React app. The cost is that Notion becomes the single source of truth and you inherit its constraints — search ranking, performance, uptime, link rot when a share is revoked. A gentler middle ground: write in Notion, build a static site, keep the site canonical.
 
 ## Why the official API, not `token_v2`
 
@@ -25,9 +25,9 @@ Notion has two access paths:
 1. **Internal integration** — a bot identity with a `ntn_…` token and explicit `Read content` capability. Calls the public REST API at `api.notion.com`. This is the supported, documented way.
 2. **Session cookie (`token_v2`)** — the same one your browser sends. Powers NotionNext, lets you read any workspace the cookie can see. Not supported, can break without notice, and tying your deploy to it means your site dies when the session expires.
 
-I went with (1). It is slower to set up — you create an integration, share each database with it, copy a token — but the surface is small and stable. Rate limits are documented (~3 req/s). Errors are typed.
+Option (1) is the better fit. It is slower to set up — creating an integration, sharing each database with it, copying a token — but the surface is small and stable. Rate limits are documented (~3 req/s). Errors are typed.
 
-The one annoyance: you must share each database explicitly with the integration. The integration can read anything you share, nothing else. For the tech blog this is one database; for a heavier workspace, every nested database needs its own share too, which is the single biggest source of "why is this not showing up" confusion. (We will come back to it.)
+The one annoyance: each database must be shared explicitly with the integration. The integration can read anything shared with it, nothing else. For a single-section blog this is one database; for a heavier workspace, every nested database needs its own share too, which is the single biggest source of "why is this not showing up" confusion. (We will come back to it.)
 
 ## The shape of a Notion page
 
@@ -80,7 +80,7 @@ Two things matter here that are easy to get wrong.
 
 **First**, the recursion is depth-first and queries run in series. If page A references page B, and page B is also a top-level published article, the recursion reaches B *as a child of A* before the top-level pass gets to it. B ends up nested under A and the top-level B is skipped as a duplicate. The fix is to pre-collect every top-level page id into a set, and inside the recursion skip any reference whose target is in that set. The link in A still points to the right URL — the URL comes from the global `pageIdToMeta` map, which the top-level pass filled in.
 
-**Second**, an embedded database looks the same as a top-level one in the API. Both are `child_database` blocks. To distinguish them I check the database's own `is_inline` field (returned by `databases.retrieve`). Inline databases render as a table inside the parent body; full-page databases become their own nested page with the rows hanging off it. If the field is missing (it was for a while on some block objects), I fall back to probing with `pages.retrieve` — a full-page database is also a page, so a successful probe means full-page, a failure means inline.
+**Second**, an embedded database looks the same as a top-level one in the API. Both are `child_database` blocks. To distinguish them the script checks the database's own `is_inline` field (returned by `databases.retrieve`). Inline databases render as a table inside the parent body; full-page databases become their own nested page with the rows hanging off it. If the field is missing (it was for a while on some block objects), it falls back to probing with `pages.retrieve` — a full-page database is also a page, so a successful probe means full-page, a failure means inline.
 
 **Third** — and this took a few iterations to get right — *pages need a stable identity that survives slug renames*. Tracking files by disk path is fragile: rename a Notion `Slug` property from `test` to `test-note` and you get a new file at the new path while the old file lingers. The fix is to store the Notion page UUID in the frontmatter (`notion_id:`) and treat that as the authoritative identity. Orphan detection then becomes ID-based: scan existing files, build a `notionId → filepath/path/lastEdited` map, delete any file whose `notionId` is no longer in the current Notion query. Slug renames become a stale-location check: same `notionId`, different `path` → delete old file, write new one. As a bonus, you can skip re-rendering a page whose `last_edited` hasn't changed (NotionNext uses the same trick for its cache key).
 
@@ -99,9 +99,9 @@ _articles/notion/notion-sync-test.md                      → /articles/notion-s
 
 Notice that `notion-sync-test` is a top-level article — even though `notion-link-test` links to it. The recursion skipped the link (top-level set), the top-level pass claimed it, and the parent's link resolved to `/articles/notion-sync-test/`. Same logic works at any depth.
 
-For each block fetched during pass one, I also collect its blocks once and cache them — `notion-to-md` will re-fetch them later when converting to Markdown, and for a deep tree the duplicate API calls add up.
+For each block fetched during pass one, the script also collects its blocks once and caches them — `notion-to-md` will re-fetch them later when converting to Markdown, and for a deep tree the duplicate API calls add up.
 
-Notion content becomes Markdown via `notion-to-md`, a thin wrapper around the Notion API that knows how to convert each block type to its Markdown equivalent. It handles headings, paragraphs, lists, tables, code, callouts, toggles, images, etc. The custom-transformers hook lets you override specific block types — I use it for `child_database` and `link_to_page` because the defaults (database → just the title, link_to_page → ugly default text) are not what you want.
+Notion content becomes Markdown via `notion-to-md`, a thin wrapper around the Notion API that knows how to convert each block type to its Markdown equivalent. It handles headings, paragraphs, lists, tables, code, callouts, toggles, images, etc. The custom-transformers hook lets you override specific block types — the script uses it for `child_database` and `link_to_page` because the defaults (database → just the title, link_to_page → ugly default text) are not what you want.
 
 After rendering, a single regex pass replaces every `notion.so/<pageId>` markdown link with `/articles/<path>/`. That handles inline @-mentions and `link_to_page` blocks in one go.
 
@@ -120,7 +120,7 @@ After rendering, a single regex pass replaces every `notion.so/<pageId>` markdow
 
 Sub-pages are reachable via their parent's link, via the URL, and via search. They are deliberately absent from the listing.
 
-## Orphans, restructuring, and "did I delete everything?"
+## Orphans, restructuring, and "did everything get deleted?"
 
 Deletion is the hard case. If you unpublish a page in Notion, the next sync should remove its file. If you move a page (Notion allows renaming sub-pages), the next sync should rewrite the file at the new path. If you delete a database, every file under it should go.
 
@@ -170,7 +170,7 @@ jobs:
 
 ## The trade-offs you should know about
 
-**Notion-hosted images expire.** The official API returns signed S3 URLs that live about an hour. For a daily-updated site that is fine. For a post that sits in an archive, it is not. The accepted workaround for now is to leave the URLs alone; the real fix is downloading images into `assets/articles/<slug>/` during sync, which is a one-day project I have not done yet.
+**Notion-hosted images expire.** The official API returns signed S3 URLs that live about an hour. For a daily-updated site that is fine. For a post that sits in an archive, it is not. The accepted workaround for now is to leave the URLs alone; the real fix is downloading images into `assets/articles/<slug>/` during sync, which is a one-day project not yet implemented.
 
 **Notion blocks degrade.** A `callout` becomes a blockquote. A `column_list` flattens. An embedded database's children collapse into the database's own row listing. Embedded YouTube / Figma / tweet cards become plain links. If you design your Notion content with these constraints in mind — mostly text, occasional embeds you accept as links — the result reads fine.
 
@@ -190,4 +190,4 @@ Internally, NotionNext caches block fetches with a key like `page_block_<pageId>
 
 This setup does the opposite: Notion is the *editor*, the static site is the *product*. Notion can be down for a day and the site still serves. You can move databases between workspaces. You can migrate off Notion entirely by exporting the database, writing a one-shot Markdown converter, and committing the result — no re-platforming of the site required.
 
-Both are valid. I wanted the second one.
+Both are valid. This setup picks the second one.
