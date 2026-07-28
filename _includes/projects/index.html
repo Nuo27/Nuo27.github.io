@@ -3,7 +3,7 @@
   <header class="projects-header" data-reveal>
     <span class="mag-kicker mono no-select">// SELECTED_WORK</span>
     <h1 class="mag-heading">Portfolio<span class="title-prompt">_</span></h1>
-    <p class="projects-subtitle">Game development projects, experiments &amp; builds.</p>
+    <p class="projects-subtitle">{{ page.subtitle | default: site.portfolio.subtitle }}</p>
   </header>
 
   {%- comment -%} Visibility config: page.portfolio overrides site.portfolio per-field.

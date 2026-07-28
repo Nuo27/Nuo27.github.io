@@ -192,6 +192,17 @@
   }
 }
 
+// Mobile menu — vanilla collapse (no Bootstrap JS).
+// Toggled via .nav-open on #site-navbar; see initNavToggle() in main.js.
+@media (max-width: 991.98px) {
+  .navbar-themed .navbar-collapse {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height $dur-base $ease-out-expo;
+  }
+  .navbar-themed.nav-open .navbar-collapse { max-height: 22rem; }
+}
+
 // On mobile, frame the whole stacked menu with a single bracket pair
 // (mirrors the desktop per-link [ ] hover brackets, but at the container level
 // so one "[" ... "]" wraps the entire dropdown instead of each item).

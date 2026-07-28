@@ -59,6 +59,8 @@ defaults:
 # `dimmed_*` render them de-emphasized (half-hidden). Page front matter
 # (pages/projects.html → `portfolio:`) overrides these per-field.
 portfolio:
+  subtitle: "Game development projects, experiments & builds."
+  accent_tag: "Student Work"
   hidden_tags: ["Student Work"]
   hidden_categories: []
   dimmed_tags: []

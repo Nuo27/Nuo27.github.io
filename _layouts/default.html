@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <!--
-  Nuo.Dev - personal portfolio
+  {{ site.title }} - personal portfolio
   Built on Jekyll. Tactical telemetry UI.
 -->
 
@@ -27,12 +27,10 @@
     {% include footer.html %}
   </div>
 
-  {% include scripts.html %}
-
   <!-- Soft router (intercepts in-app navigation, keeps the document shell alive) -->
   <script src="{{ "/assets/js/router.js" | relative_url }}"></script>
 
-  <!-- Main JS (vanilla, no jQuery) -->
+  <!-- Main JS (vanilla) -->
   <script src="{{ "/assets/js/main.js" | relative_url }}"></script>
 </body>
 

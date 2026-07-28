@@ -352,6 +352,38 @@
   }
 
   // ============================================================
+  // Mobile nav toggle — vanilla collapse (was Bootstrap JS).
+  // Navbar lives on the persistent shell, so bind once.
+  // ============================================================
+  function initNavToggle() {
+    var nav = document.getElementById('site-navbar');
+    var toggle = document.getElementById('nav-toggle');
+    if (!nav || !toggle) return;
+    var collapse = document.getElementById('navbarNavAltMarkup');
+
+    function setOpen(open) {
+      nav.classList.toggle('nav-open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      setOpen(!nav.classList.contains('nav-open'));
+    });
+    if (collapse) {
+      collapse.addEventListener('click', function (e) {
+        if (e.target.closest('a')) setOpen(false);
+      });
+    }
+    document.addEventListener('click', function (e) {
+      if (!nav.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setOpen(false);
+    });
+  }
+
+  // ============================================================
   // Lightbox — overlay mounted once, content discovered via
   // delegation so it picks up images swapped in by the router.
   // ============================================================
@@ -1119,6 +1151,7 @@
     runOnce('scrollProgress', initScrollProgress);
     runOnce('backToTop', initBackToTop);
     runOnce('navbarScroll', initNavbarScroll);
+    runOnce('navToggle', initNavToggle);
     runOnce('lightbox', initLightbox);
     runOnce('terminalSearchKey', bindTerminalSearchKey);
     runOnce('guidedScrollClick', bindGuidedScrollClick);
@@ -1135,6 +1168,7 @@
     initHeroScroll(scope);
     initGalleries(scope);
     augmentMarkdownImages(scope);
+    if (window.__cursor && window.__cursor.bindScrollables) window.__cursor.bindScrollables(scope);
     initCardParallax(scope);
     initTerminalSearch(scope);
     initCategoryFilter(scope);
