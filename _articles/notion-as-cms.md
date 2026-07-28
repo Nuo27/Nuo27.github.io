@@ -145,7 +145,7 @@ The Notion content lives inside a Jekyll-processed file. If a Notion page contai
 ```yaml
 on:
   push: { branches: [deploy] }
-  schedule: [{ cron: '0 * * * *' }]
+  schedule: [{ cron: '*/10 * * * *' }]
   workflow_dispatch:
 jobs:
   build:
