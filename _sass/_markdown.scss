@@ -147,6 +147,48 @@
     code { font-size: 0.85em; }
   }
 
+  // child_page references — rendered as a card, overriding the default
+  // blockquote treatment. Emitted by the Notion sync as:
+  //   > [title](url)
+  //   {: .child-page-link}
+  blockquote.child-page-link {
+    --card-accent: var(--phosphor);
+    border: 1px solid color-mix(in srgb, var(--phosphor-soft) 30%, transparent);
+    border-left: 3px solid var(--phosphor);
+    border-radius: 2px;
+    padding: 0.85rem 1.1rem;
+    margin: 1.5rem 0;
+    font-family: var(--font-display);
+    font-style: normal;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--ink);
+    background: color-mix(in srgb, var(--phosphor-soft) 5%, transparent);
+    transition: border-color 0.25s var(--ease-out-expo, ease-out),
+                background 0.25s var(--ease-out-expo, ease-out);
+    p { margin: 0; }
+    &::before {
+      content: "\\201C";
+      color: var(--phosphor);
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+    a {
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s var(--ease-out-expo, ease-out);
+    }
+    &:hover {
+      border-color: var(--phosphor);
+      background: color-mix(in srgb, var(--phosphor-soft) 10%, transparent);
+      a { color: var(--phosphor); }
+    }
+  }
+
   img:not(.emoji) {
     display: block;
     max-width: 100%;

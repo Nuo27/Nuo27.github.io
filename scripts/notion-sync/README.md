@@ -72,20 +72,42 @@ _articles/notion/
   <slug>/<db-slug>/<row>.md         ← full-page database row
 ```
 
-Every file has explicit `permalink: /articles/<path>/`. Sub-pages carry
-`nested: true` and are excluded from the `/articles/` listing.
+Every file has explicit `permalink: /articles/<path>/` and the
+**ID-based tracking fields** in frontmatter:
+
+```yaml
+---
+name: notion-link-test
+title: "Notion Link test"
+permalink: /articles/notion-link-test/
+notion_id: 3aa94892d49f80fa9840df349ea57250   # Notion page UUID
+last_edited: 2026-07-27T18:59:00.000Z          # page.last_edited_time
+excerpt_separator: <!-- end_excerpt -->         # suppress Jekyll excerpt warnings
+source: notion
+---
+```
+
+Sub-pages carry `nested: true` and are excluded from the `/articles/` listing.
+The body is wrapped in `{% raw %}…{% endraw %}` so any Liquid syntax
+(`{{ }}`, `{% %}`) in Notion content is not evaluated by Jekyll.
 
 ## Diagnostics
 
 The script prints a compact diagnostic per interesting page:
 
 ```
-… notion-link-test: child_page×1, link_to_page×1, child_database×2
+… notion-link-test: child_page×1, link_to_page×1
+… notion-link-test/inside-page: child_database×2
 … db "inline database" …: db.is_inline=true
 … db "page database"   …: db.is_inline=false
 ○ skip (already synced, link will point to first path): <id>
 ○ top-level page, skip recurse: <id>
+○ db already synced: <id>
 ✗ skip db "x" <id>: unreachable (<err>)
+= notion-link-test/inside-page/123         ← unchanged (last_edited same)
+✓ [tech/en] notion-link-test/inside-page
+↻ relocated notion-link-test → test-note     ← slug renamed, old path deleted
+− orphan (id: <id>) notion-link-test/test.md ← unpublished / page deleted
 ```
 
 If you see `✗ skip db … unreachable`, the integration can't see that database
@@ -101,25 +123,77 @@ If you see `✗ skip db … unreachable`, the integration can't see that databas
 | `✗ skip db … unreachable` | DB not shared with integration | Share the DB → ⋯ → Connections. Works recursively for nested DBs. |
 | `✗ … path.page_id should be a valid uuid, instead was "undefined"` | Bare id passed to SDK | Bug — report. Should not happen after rate-limit rewrite. |
 | Cron doesn't fire | Workflow file not on default branch (`main`) | This repo keeps `main` minimal (README + workflow). Mirror `.github/workflows/jekyll.yml` to `main`. |
+| `node` throws "Cannot find package '@notionhq/client'" | `node_modules` was cleaned (e.g. branch switch) | `cd scripts/notion-sync && npm install && cd ../..` |
+| `Excerpt modified in <file>! Found a Liquid block containing …` during build | Stale notion files (pre-excerpt_separator) missing the field | Re-run sync — the script writes `excerpt_separator: <!-- end_excerpt -->` to all files |
 | Images broken after an hour | Notion S3 URLs expire | Known accepted trade-off. Future: download to `assets/articles/<slug>/` (not implemented). |
 | `dirs N > 0` in stats | Orphan cleanup removed empty directories after deletes | Normal. |
+| Old file `test.md` survives re-sync | File was generated before ID tracking — no `notion_id` in frontmatter, sync can't identify it | `git rm _articles/notion/test.md` (one-time cleanup) |
 
 ## Implementation notes
 
-- **Two-pass**: `collectTree` pre-registers all top-level pages in `topLevelIds`
-  so nested `link_to_page` references to them resolve to the top-level path
-  (no duplicate nested copies).
+- **Three-phase sync**:
+  - *Pass 0 (`scanExisting`)*: walk `_articles/notion/**/*.md`, parse frontmatter, build
+    `existingById = { notion_id → { filepath, lastEdited, path } }`. Enables ID-based
+    tracking without a separate index file.
+  - *Pass 1 (`collectTree`)*: pre-register all top-level page ids in `topLevelIds`
+    so nested `link_to_page` references to them resolve to the top-level path
+    (no duplicate nested copies). Recursively walk `child_page` / `link_to_page`
+    / `child_database` blocks. Each visited page's id is added to `currentPageIds`.
+  - *Pass 2 (`renderAndWrite`)*: render + write per page, grouped by category.
+
+- **ID-based page identity (`notion_id` + `last_edited`)**: every generated file
+  stores `notion_id: <page.id>` and `last_edited: <page.last_edited_time>` in
+  frontmatter. This makes the file track the *Notion page*, not the disk path —
+  so renaming a slug moves the file to the new path cleanly (stale-location
+  detection deletes the old file at the old path). It also enables the
+  incremental-skip optimization: if `existingById[id].lastEdited === last_edited`,
+  the page is unchanged and we skip rendering entirely (just register the path
+  for link rewriting). For personal sites this is small; for a workspace with
+  hundreds of pages it is significant.
+
 - **Recursive walk** with `visited` set for cycle detection, `seenPaths` for
   duplicate-slug detection, `RESERVED_SLUGS` (category slugs) to prevent URL
   collisions.
+
 - **Inline vs full-page databases** distinguished via `db.is_inline` from
   `databases.retrieve`. Fallback: `pages.retrieve` probe (full-page DBs are
   themselves pages). Unreachable DBs (unshared, throw on both) are skipped.
+  Inline databases render as a table inside the parent body; full-page
+  databases become their own nested page with the rows hanging off it.
+
 - **Internal link rewriting**: `pageIdToMeta` (built during walk) maps every
   page id → its path. A post-process regex replaces `notion.so/<id>` markdown
   links with `/articles/<path>/` and fills empty/ugly text with the title.
-- **Orphan cleanup**: tracks the set of disk paths written this run (`currentFiles`);
-  scans all of `_articles/`, deletes notion-managed `.md` files not in
-  `currentFiles` (handles restructure / deletion automatically).
-- **Rate limiting**: `p-limit` caps concurrency at 3 (matches Notion's ~3 req/s
-  budget). Retries on 429 / 5xx with exponential backoff, honouring `Retry-After`.
+
+- **Stale-location detection** (slug-rename): when writing a page, if
+  `existingById[id]` exists at a different `path` (e.g. user changed the
+  Notion `Slug` property), the old file is deleted before the new file is
+  written. `stats.relocated` increments.
+
+- **ID-based orphan cleanup**: after all pages are rendered, any file in
+  `existingById` whose `notion_id` is NOT in `currentPageIds` is deleted
+  (page unpublished, deleted, or moved out of the synced DBs). Robust to
+  `git` restoring old files — the next sync will remove them again.
+
+- **Liquid raw wrapping** (`{% raw %}…{% endraw %}`): every generated file
+  wraps the body so any Liquid syntax (`{{ }}`, `{% %}`) in Notion content
+  is *not* evaluated by Jekyll. Mitigates Liquid injection from a Notion
+  author with a typo or a malicious editor. Edge case: if a body literally
+  contains the string `{% endraw %}`, the wrap breaks. For a personal site
+  this is acceptable.
+
+- **`excerpt_separator`**: each generated file sets a custom
+  `excerpt_separator: <!-- end_excerpt -->` to suppress Jekyll's auto-excerpt
+  warnings about Liquid blocks containing the default `\n\n` separator.
+
+- **`esc()`** escapes `\\`, `"`, and `\n` so multi-line titles/descriptions
+  don't break frontmatter YAML.
+
+- **Rate limiting**: `p-limit(3)` caps concurrency at 3 (matches Notion's
+  ~3 req/s budget). Retries on 429 / 5xx with exponential backoff, honouring
+  `Retry-After`. All Notion API calls go through `notionCall(label, fn)`.
+
+- **Branch model**: deploy holds the full site, main holds only README +
+  workflow file (so `schedule` triggers on the default branch). The
+  workflow's `checkout: ref: deploy` means every trigger operates on the
+  same working tree.
