@@ -79,7 +79,7 @@ function slugify(s) {
     .replace(/^-+|-+$/g, "");
 }
 function esc(s) {
-  return '"' + String(s ?? "").replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"';
+  return '"' + String(s ?? "").replace(/\\/g, "\\\\").replace(/"/g, '\\"').replace(/\n/g, " ") + '"';
 }
 function plain(list) {
   return (list ?? []).map((t) => t.plain_text).join("");
@@ -191,8 +191,9 @@ async function queryPublished(dbId) {
 
 // pageIdToMeta: { [id]: { slug, path, title } } — global map for link rewriting.
 const pageIdToMeta = {};
-const stats = { added: 0, updated: 0, unchanged: 0, skipped: 0, deleted: 0, dirs: 0 };
-const currentFiles = new Set();
+const stats = { added: 0, updated: 0, unchanged: 0, skipped: 0, deleted: 0, relocated: 0, dirs: 0 };
+const currentPageIds = new Set();
+const existingById = {};
 const seenPaths = new Set();
 const visited = new Set();
 const topLevelIds = new Set();
@@ -301,12 +302,13 @@ async function collectTree() {
   return all;
 }
 
-async function walk(page, parentPath, category, lang, depth, all) {
+async function walk(page, parentPath, category, lang, depth, all, parentTitle) {
   if (visited.has(page.id)) {
     console.warn(`  ○ skip (already synced, link will point to first path): ${page.id}`);
     return;
   }
   visited.add(page.id);
+  currentPageIds.add(page.id);
   const slug = computeSlug(page);
   const path = parentPath ? `${parentPath}/${slug}` : slug;
   const title = titleOf(page);
@@ -330,7 +332,7 @@ async function walk(page, parentPath, category, lang, depth, all) {
   } catch (e) {
     console.warn(`  ✗ blocks fetch failed ${path}: ${e.message}`);
   }
-  all.push({ page, slug, path, title, category, lang, depth, blocks });
+  all.push({ page, slug, path, title, category, lang, depth, blocks, parentPath, parentTitle: parentPath ? parentTitle : null });
 
   if (depth >= MAX_DEPTH) {
     console.warn(`  ! max depth reached at ${path}`);
@@ -353,7 +355,7 @@ async function walk(page, parentPath, category, lang, depth, all) {
         const childPage = await notionCall("pages.retrieve", () =>
           notion.pages.retrieve({ page_id: b.id })
         );
-        await walk(childPage, path, category, lang, depth + 1, all);
+        await walk(childPage, path, category, lang, depth + 1, all, title);
       } catch (e) {
         console.warn(`  ✗ child_page recurse failed ${path}/${b.id}: ${e.message}`);
       }
@@ -389,7 +391,7 @@ async function walk(page, parentPath, category, lang, depth, all) {
         if (inline) {
           const rows = await queryDatabase(b.id);
           for (const row of rows) {
-            await walk(row, path, category, lang, depth + 1, all);
+            await walk(row, path, category, lang, depth + 1, all, title);
           }
         } else {
           if (visited.has(b.id)) { console.warn(`  ○ db already synced: ${b.id}`); continue; }
@@ -397,10 +399,11 @@ async function walk(page, parentPath, category, lang, depth, all) {
           const dbSlug = slugify(dbTitle);
           const dbPath = `${path}/${dbSlug}`;
           pageIdToMeta[b.id] = { slug: dbSlug, path: dbPath, title: dbTitle };
-          all.push({ page: null, slug: dbSlug, path: dbPath, title: dbTitle, category, lang, depth: depth + 1, blocks: [], isDatabase: true, dbId: b.id });
+          currentPageIds.add(b.id);
+          all.push({ page: null, slug: dbSlug, path: dbPath, title: dbTitle, category, lang, depth: depth + 1, blocks: [], isDatabase: true, dbId: b.id, parentPath: path, parentTitle: title });
           const rows = await queryDatabase(b.id);
           for (const row of rows) {
-            await walk(row, dbPath, category, lang, depth + 2, all);
+            await walk(row, dbPath, category, lang, depth + 2, all, dbTitle);
           }
         }
       } catch (e) {
@@ -416,11 +419,11 @@ async function walk(page, parentPath, category, lang, depth, all) {
           const childPage = await notionCall("pages.retrieve", () =>
             notion.pages.retrieve({ page_id: ref.page_id })
           );
-          await walk(childPage, path, category, lang, depth + 1, all);
+          await walk(childPage, path, category, lang, depth + 1, all, title);
         } else if (ref.type === "database_id") {
           const rows = await queryDatabase(ref.database_id);
           for (const row of rows) {
-            await walk(row, path, category, lang, depth + 1, all);
+            await walk(row, path, category, lang, depth + 1, all, title);
           }
         }
       } catch (e) {
@@ -434,7 +437,7 @@ function renderChildPageLink(block) {
   const title = String(block.child_page?.title || "page").replace(/[\[\]]/g, "");
   const meta = pageIdToMeta[block.id];
   const url = meta ? `/articles/${meta.path}/` : `https://www.notion.so/${block.id}`;
-  return `[${title}](${url})`;
+  return `> [${title}](${url})\n{: .child-page-link}`;
 }
 
 async function renderBlocks(segment) {
@@ -457,9 +460,31 @@ function rewriteInternalLinks(body) {
 }
 
 // PASS 2: render each page (segment-walk for child_page, n2m for the rest,
-// link rewrite at the end) and write to _articles/<path>.md.
+// link rewrite at the end) and write to _articles/notion/<path>.md.
 async function renderAndWrite(item) {
   const { page, slug, path, title, category, lang, depth, blocks, isDatabase, dbId } = item;
+
+  const notionId = page?.id || dbId || "";
+  const lastEdited = page?.last_edited_time || "";
+
+  // Stale-location: if a prior file with the same notion_id exists at a
+  // different path (slug renamed), delete the old file before writing new.
+  if (notionId && existingById[notionId] && existingById[notionId].path && existingById[notionId].path !== path) {
+    try {
+      unlinkSync(existingById[notionId].filepath);
+      stats.relocated++;
+      console.log(`  ↻ relocated ${existingById[notionId].path} → ${path}`);
+    } catch (e) {
+      console.warn(`  ✗ stale-location delete failed: ${e.message}`);
+    }
+  }
+
+  // Incremental: skip rendering if page unchanged (same notion_id + lastEdited).
+  if (notionId && existingById[notionId] && existingById[notionId].lastEdited === lastEdited && existingById[notionId].lastEdited && existingById[notionId].filepath) {
+    stats.unchanged++;
+    console.log(`  = ${path}`);
+    return;
+  }
 
   let body;
   if (isDatabase) {
@@ -493,16 +518,22 @@ async function renderAndWrite(item) {
     `category: ${category}`,
     `lang: ${lang}`,
     `permalink: /articles/${path}/`,
+    `notion_id: ${notionId}`,
+    `last_edited: ${lastEdited}`,
     nested ? "nested: true" : null,
+    nested && item.parentPath ? `parent_url: /articles/${item.parentPath}/` : null,
+    nested && item.parentTitle ? `parent_title: ${esc(item.parentTitle)}` : null,
+    "excerpt_separator: <!-- end_excerpt -->",
     "source: notion",
     "---",
     "",
   ].filter((l) => l !== null).join("\n");
-  const content = frontmatter + body + (body.endsWith("\n") ? "" : "\n");
+  // Wrap body in {% raw %} so any Liquid syntax ({{ }}) in Notion content is
+  // not evaluated by Jekyll. Mitigates V1 (Liquid injection).
+  const content = frontmatter + "{% raw %}\n" + body + "\n{% endraw %}\n";
 
   const filepath = join(ARTICLES_DIR, "notion", ...path.split("/")) + ".md";
   mkdirSync(dirname(filepath), { recursive: true });
-  currentFiles.add(filepath);
 
   if (existsSync(filepath)) {
     if (readFileSync(filepath, "utf8") === content) stats.unchanged++;
@@ -517,26 +548,17 @@ async function renderAndWrite(item) {
   console.log(`  ✓ [${category}/${lang}] ${path}`);
 }
 
+// ID-based orphan cleanup: delete any notion-managed file whose notion_id
+// is NOT in the current sync's page set. Robust to slug changes (handled
+// separately by stale-location detection in renderAndWrite).
 function deleteOrphans() {
-  const files = [];
-  function scan(dir) {
-    let entries;
-    try { entries = readdirSync(dir, { withFileTypes: true }); } catch { return; }
-    for (const e of entries) {
-      const full = join(dir, e.name);
-      if (e.isDirectory()) scan(full);
-      else if (e.name.endsWith(".md")) files.push(full);
-    }
-  }
-  scan(ARTICLES_DIR);
-  for (const f of files) {
-    if (!isNotionManaged(f)) continue;
-    if (currentFiles.has(f)) continue;
-    const rel = relative(ARTICLES_DIR, f).replace(/\\/g, "/");
+  for (const [id, info] of Object.entries(existingById)) {
+    if (currentPageIds.has(id)) continue;
+    const rel = relative(ARTICLES_DIR, info.filepath).replace(/\\/g, "/");
     try {
-      unlinkSync(f);
+      unlinkSync(info.filepath);
       stats.deleted++;
-      console.log(`  − orphan ${rel}`);
+      console.log(`  − orphan (id: ${id}) ${rel}`);
     } catch (e) {
       console.warn(`  ✗ delete failed ${rel}: ${e.message}`);
     }
@@ -561,8 +583,41 @@ function deleteOrphans() {
   prune(ARTICLES_DIR);
 }
 
+// Scan existing notion-managed markdown files to build existingById map.
+// Used for ID-based orphan detection, stale-location detection, and the
+// incremental-skip optimization (skip render if last_edited unchanged).
+function scanExisting() {
+  function walk(dir) {
+    let entries;
+    try { entries = readdirSync(dir, { withFileTypes: true }); } catch { return; }
+    for (const e of entries) {
+      const full = join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.name.endsWith(".md") && isNotionManaged(full)) {
+        const fm = readFileSync(full, "utf8").split("---\n", 3)[1] || "";
+        const idMatch = fm.match(/^notion_id:\s*(.+)$/m);
+        if (!idMatch) continue;
+        const id = idMatch[1].trim();
+        const editedMatch = fm.match(/^last_edited:\s*(.+)$/m);
+        const pathMatch = fm.match(/^permalink:\s*\/articles\/(.+)\/\s*$/m);
+        existingById[id] = {
+          filepath: full,
+          lastEdited: editedMatch ? editedMatch[1].trim() : "",
+          path: pathMatch ? pathMatch[1] : null,
+        };
+      }
+    }
+  }
+  walk(ARTICLES_DIR);
+}
+
 (async () => {
   mkdirSync(ARTICLES_DIR, { recursive: true });
+
+  // Pass 0: scan existing notion-managed files to build existingById
+  // (→ enables ID-based orphan detection, stale-location detection, and
+  // incremental sync via last_edited comparison).
+  scanExisting();
 
   const all = await collectTree();
 
@@ -585,6 +640,6 @@ function deleteOrphans() {
   deleteOrphans();
 
   console.log(
-    `\n=== done: +${stats.added} ~${stats.updated} =${stats.unchanged} -${stats.deleted} (skipped ${stats.skipped}, dirs ${stats.dirs}) ===`
+    `\n=== done: +${stats.added} ~${stats.updated} =${stats.unchanged} ↻${stats.relocated} -${stats.deleted} (skipped ${stats.skipped}, dirs ${stats.dirs}) ===`
   );
 })();

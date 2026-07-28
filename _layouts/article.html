@@ -6,9 +6,15 @@ layout: default
   <section class="article-content-section">
     <div class="container">
       <div class="article-back-row">
+        {% if page.nested and page.parent_url %}
+        <a href="{{ page.parent_url }}" class="back-link">
+          <i class="fas fa-arrow-left"></i> Back to {{ page.parent_title }}
+        </a>
+        {% else %}
         <a href="/articles/" class="back-link">
           <i class="fas fa-arrow-left"></i> Back to Articles
         </a>
+        {% endif %}
       </div>
 
       <header class="article-header">
