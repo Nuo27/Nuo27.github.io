@@ -7,6 +7,13 @@ baseurl             : ""
 repository          : nuo27/nuo27.github.io
 
 
+### Navbar (rendered by _includes/navbar.html) ###
+nav:
+  - { label: About, url: /about/ }
+  - { label: Portfolio, url: /portfolio/ }
+  - { label: Articles, url: /articles/ }
+
+
 ### Author Info ###
 author:
   name              : Nuo Chen
