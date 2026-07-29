@@ -422,9 +422,19 @@
 }
 .pn-next { flex-direction: row-reverse; text-align: right; }
 
-/* Kill any inherited link underline (UA a:hover etc.) - only the title ::after underlines on hover */
+/* Kill any inherited link underline (UA a:hover etc.) - only the title ::after underlines on hover.
+   NOTE: do NOT reset border-bottom here — that wipes the 1px card chassis on the bottom edge. */
 .pn-card, .pn-card:hover, .pn-card:focus-visible,
-.pn-card span, .pn-card i { text-decoration: none; border-bottom: none; }
+.pn-card span, .pn-card i { text-decoration: none; }
+
+/* No-image variant (e.g. ForzaDrift has no cover yet) — hide the cover/veil
+   rather than rendering a broken <img>, and give the chassis a subtle tint so
+   the rail + title still read. */
+.pn-card--no-image .pn-veil,
+.pn-card--no-image .pn-cover { display: none; }
+.pn-card--no-image {
+  background: color-mix(in srgb, var(--bg-surface) 70%, transparent);
+}
 
 /* Full-bleed cover image */
 .pn-cover {
