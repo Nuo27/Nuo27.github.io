@@ -6,6 +6,7 @@ description: "[ TODO - 1 sentence summary of your design philosophy. ]"
 tags: [Design, GameDev]
 category: tech
 lang: en
+published: false
 ---
 
 <!-- TODO: Write your design philosophy - see CONTENT-SUPPLEMENT.md §5 -->
