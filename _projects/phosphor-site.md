@@ -1,12 +1,13 @@
 ---
 layout: project
 name: Phosphor
-# image: /assets/image/projects/phosphor-site.png   # TODO: drop a 1280×800 screenshot here, then uncomment
+image: /assets/image/projects/phosphor-site.svg
 description: Magazine-grade Jekyll personal-site template with a tactical-telemetry aesthetic - the open-source base behind this very portfolio.
 category: Web
 status: "2026"
 tags: [Jekyll, Vanilla JS, Bootstrap, SCSS]
 external_links:
+  - { name: "Live Demo", url: "https://nuo27.github.io/phosphor-site/", icon: "external-link-alt" }
   - { name: "Source", url: "https://github.com/Nuo27/phosphor-site", icon: "github", prefix: "fab" }
 ---
 
