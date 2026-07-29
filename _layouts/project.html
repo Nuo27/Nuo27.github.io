@@ -106,14 +106,16 @@ layout: default
   </section>
 
   <section class="project-nav container">
-    <a class="back-link" href="/portfolio/">
+    <a class="back-link" href="{{ '/portfolio/' | relative_url }}">
       <i class="fas fa-arrow-left"></i> Back to Portfolio
     </a>
 
     {% if prev_proj %}
-    <a class="pn-card pn-prev reveal-left" href="{{ prev_proj.url | relative_url }}">
+    <a class="pn-card pn-prev reveal-left{% unless prev_proj.image %} pn-card--no-image{% endunless %}" href="{{ prev_proj.url | relative_url }}">
+      {%- if prev_proj.image -%}
       <img class="pn-cover" src="{{ prev_proj.image }}" alt="" loading="lazy" />
       <span class="pn-veil" aria-hidden="true"></span>
+      {%- endif -%}
       <span class="pn-rail" aria-hidden="true"></span>
       <i class="pn-arrow fas fa-arrow-left" aria-hidden="true"></i>
       <span class="pn-text">
@@ -125,9 +127,11 @@ layout: default
     {% endif %}
 
     {% if next_proj %}
-    <a class="pn-card pn-next reveal-right" href="{{ next_proj.url | relative_url }}">
+    <a class="pn-card pn-next reveal-right{% unless next_proj.image %} pn-card--no-image{% endunless %}" href="{{ next_proj.url | relative_url }}">
+      {%- if next_proj.image -%}
       <img class="pn-cover" src="{{ next_proj.image }}" alt="" loading="lazy" />
       <span class="pn-veil" aria-hidden="true"></span>
+      {%- endif -%}
       <span class="pn-rail" aria-hidden="true"></span>
       <i class="pn-arrow fas fa-arrow-right" aria-hidden="true"></i>
       <span class="pn-text">
