@@ -2,7 +2,7 @@
 #
 # Triggers:
 #   push to deploy  — site changes (manual merge from dev)
-#   schedule hourly — Notion → _articles sync + auto-publish
+#   schedule twice-hourly — Notion → _articles sync + auto-publish
 #   workflow_dispatch — manual run from the Actions tab
 #
 # IMPORTANT (schedule): GitHub runs `schedule` from the repo's DEFAULT branch.
@@ -15,7 +15,7 @@ on:
   push:
     branches: [deploy]
   schedule:
-    - cron: '*/10 * * * *'
+    - cron: '17,47 * * * *'
   workflow_dispatch:
 
 permissions:
