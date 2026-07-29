@@ -2,7 +2,7 @@
 layout: project
 name: ForzaDrift
 tags: [Next.js, TypeScript, PostgreSQL, Prisma]
-# image: /assets/image/projects/forzadrift.png   # TODO: drop a 1280×800 screenshot here, then uncomment
+image: /assets/image/projects/forzadrift.png
 description: Community-driven Forza Horizon 6 drift leaderboards (Next.js/PostgreSQL) - submit a run with a video link, community-verifies the score.
 category: Web
 status: "2026"
