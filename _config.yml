@@ -5,6 +5,7 @@ description         : >-
                       Unity (C#) and Unreal Engine 5 (C++). UTS Game Development graduate, Sydney.
 baseurl             : ""
 repository          : nuo27/nuo27.github.io
+url                 : "https://nuo27.github.io"
 
 
 ### Navbar (rendered by _includes/navbar.html) ###
@@ -58,6 +59,12 @@ defaults:
       type: "articles"
     values:
       layout: "article"
+
+
+### Plugins ###
+# jekyll-sitemap → /sitemap.xml for search engines
+plugins:
+  - jekyll-sitemap
 
 
 ### Portfolio visibility (site-wide defaults) ###
