@@ -7,32 +7,45 @@ description: 1v1 multiplayer movement shooter (UE5/C++) - Epic Online Services, 
 category: Game
 status: "2022"
 external_links:
-  - { name: "Live Demo", url: "https://k1ngslayer.itch.io/shatter", icon: "external-link-alt" }
+  - {
+      name: "Live Demo",
+      url: "https://k1ngslayer.itch.io/shatter",
+      icon: "external-link-alt",
+    }
 ---
 
 **Shatter** is a high-octane 1v1 movement shooter developed in **Unreal Engine 5** for UTS Game Design Studio II. Players wield a coin in one hand and a revolver in the other - toss the coin, shoot it mid-air. Four hot-swappable abilities combined with a knockback multiplier system create fast-paced, physics-driven combat. First to five points wins.
 
 ## Role
 
-Gameplay Programmer
+**UI & Interaction Programmer** (same team and role as [Wistful](/portfolio/wistful))
+
+Developed gameplay UI systems, interaction frameworks, and responsive visual feedback in Unreal Engine 5.
+
+---
 
 ## Contributions
 
-- Implemented online multiplayer networking via **Epic Online Services** using C++ and Blueprints
-- Built ability systems, knockback mechanics, scoring, and game mode logic
-- Integrated adaptive audio middleware (**FMOD**) in collaboration with UTS music students
+- Implemented the gameplay UI and interaction system.
+- Developed a modular UI animation framework using custom lerping for reusable transitions and feedback.
+- Designed and implemented the dynamic crosshair system.
+- Built reusable UI components to standardize interactions and improve iteration speed.
+- Collaborated with designers to integrate gameplay feedback into the HUD.
+
+---
 
 ## Technical Challenges
 
-- **EOS P2P networking with resilient sessions.** Built on Epic Online Services (OnlineSubsystem EOS) as a 1v1 listen-server topology. The hard part was session discovery and recovering from a dropped peer - I treated each match as a resilient session and rebuilt voice + combat state from a snapshot on reconnect, so a brief disconnect didn't end the round.
-- **C++ / Blueprint split for speed without sprawl.** Simulation, replication (`UPROPERTY(Replicated)` + `OnRep_` callbacks), and performance-critical paths lived in C++; designer-facing tuning - ability cooldowns, FX hooks, feel - stayed in Blueprints, so iteration stayed fast for designers without the core simulation leaking into asset graphs.
-- **Hot-swappable ability components over a shared resource layer.** The four abilities were a small set of base component classes that could be swapped at runtime, all funnelling through one shared cooldown + resource manager, so abilities could mix without bespoke wiring per pairing.
-- **Deterministic knockback via fixed-timestep impulses.** Knockback was applied as a physics impulse on a fixed timestep so both clients agreed on trajectory; the edge case was stacked mid-air impulses, which I clamped so players couldn't be launched out of bounds - keeping the knockback multiplier system fair.
+- Built a reusable UI animation system upon the Unreal's default Widget Animations, enabling procedural interpolation for consistent transitions.
+- Designed gameplay feedback that remained readable during high-speed movement and combat.
+- Created modular interaction components to reduce duplicated Blueprint logic and simplify future UI expansion.
+
+---
 
 ## Lessons Learned
 
-- Collaboration with non-programmer teammates (audio designers using FMOD) went much smoother once the integration points were documented upfront - would formalize that contract earlier on future projects.
-- The biggest takeaway was that shipping a small, polished feature beats a large, half-finished one; the four-ability kit with tight feel shipped stronger than an eight-ability draft would have.
+- Fast-paced games rely heavily on clear visual feedback. Building reusable UI systems instead of one-off implementations not only improved consistency across the project but also made iteration significantly faster as development progressed.
+- Because we were doing heavy final polishing just before the deadline, major merge conflicts arose that we couldn't fix in time. The primary bottleneck was caused by inconsistent and slow synchronization across team branches. As a compromise, we rolled out only the basic UI from earlier stages along with the gameplay parts, holding off on merging the refined UI and feedback systems. This was a tough learning experience for us regarding how to manage our Git workflow better next time.
 
 ---
 

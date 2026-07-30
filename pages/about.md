@@ -12,64 +12,63 @@ intro:
   prompt: true
   paragraphs:
     - text: >-
-        I’m **Nuo Chen** - a gameplay programmer who works across both major engines:
-        **Unity (C#)** and **Unreal Engine 5 (C++)**. I specialize in multiplayer networking, combat systems, and gameplay architecture, with shipped experience ranging from 1v1 online shooters to LAN card games. More recently, I’ve also been exploring AI engineering through image generation, large language models, and prompt engineering, applying these tools to accelerate development workflows and prototype gameplay ideas.
+        I'm **Nuo Chen** - a gameplay programmer who works across both major engines:
+        **Unity (C#)** and **Unreal Engine 5 (C++)**. I specialize in multiplayer networking,
+        combat systems, and gameplay architecture, with shipped experience ranging from
+        1v1 online shooters to LAN card games. More recently, I've moved into AI
+        engineering — context engineering, prompt engineering, and agent harness design —
+        and shipped LLM-powered tools like PotPlayer Ollama Translate that fold local
+        and cloud LLMs into real workflows.
     - text: >-
-        Beyond games, I design and ship full-stack web platforms end-to-end - most recently **ForzaDrift**, a production Next.js / PostgreSQL leaderboard service with custom authentication, anti-abuse systems (rate limiting, dual CAPTCHA), and Cloudflare deployment.
+        Beyond games, I design and ship full-stack web platforms end-to-end - most
+        recently **ForzaDrift**, a production Next.js / PostgreSQL leaderboard service
+        with custom authentication, anti-abuse systems (rate limiting, dual CAPTCHA),
+        and Cloudflare deployment.
     - text: >-
-        I’ve operated at both ends of the scale - as lead programmer coordinating indie game dev teams (architecture, code integration, cross-level consistency), and as a solo developer building entire games end-to-end. This range is deliberate: I want to understand how games work at every layer, from little piece of code to the player experience, while embracing new technologies that can improve how games are designed and built.
-    - text: >-
-        My Data Analytics minor shapes how I approach systems - I break down complex mechanics methodically, whether that’s a game economy, a networking pipeline, a player behavior dataset, or an AI-assisted content workflow. I enjoy understanding not only how systems function, but also how they can be made more efficient, scalable, and enjoyable for both developers and players.
-    - text: >-
-        Outside of code, I study why great games feel great to play, experiment with emerging AI technologies, pick up new languages (both human and programming), and prototype my next mechanic. I'm always looking for opportunities to combine traditional game development with modern AI tools to build richer experiences and smarter development pipelines.
+        I've worked at both ends of the scale - leading programming on indie game dev
+        teams and shipping entire games solo - and currently I'm pursuing a Master's
+        in AI engineering, studying context engineering, agent harness design, and LLM
+        evals while prototyping how these fold into the game-dev pipeline.
 
 # ── 02 · Currently ──
 currently:
   eyebrow: "02"
   title: Currently
   items:
-    - { label: LEARNING, value: "AI Engineering" }
+    - { label: LEARNING, value: "Context Engineering · Agent Harness Design · LLM Evals" }
     - { label: BUILDING, value: "An Indie Game in Unity" }
     - { label: PLAYING,  value: "Forza Horizon 6" }
-    - { label: READING,  value: "book / article / paper" }
 
 # ── 03 · Skills ──
 skills:
   eyebrow: "03"
   title: Skills
   items:
-    - Gameplay Programming (C# / C++)
+    - Gameplay Programming (Unity / Unreal, C# / C++)
     - Multiplayer Networking (Mirror, EOS)
-    - Unity 3D Engine Development
-    - Unreal Engine 5 / Blueprints
+    - UI / HUD Implementation
     - Game Systems Architecture
-    - UI/HUD Implementation
     - FMOD Audio Integration
-    - Full-Stack Web Development (Next.js / React)
-    - TypeScript
-    - Authentication & Session Security (NextAuth, JWT)
-    - Web Security & Anti-Abuse (Rate Limiting, CAPTCHA, CSP)
-    - PostgreSQL & Prisma ORM
-    - Docker & Cloudflare Tunnel Deployment
-    - Version Control (Git)
+    - AI Engineering (Context Engineering, Prompt Engineering, Local LLMs)
+    - Full-Stack Web Development (Next.js, TypeScript, PostgreSQL)
+    - Web Security & Anti-Abuse (Rate Limiting, CAPTCHA)
     - iOS Development (Swift)
-    - Data Analytics (Python, SQL)
 
 skills_detailed:
   programming:
     title: Programming Languages
-    items: [C#, C++, TypeScript, Python, Java, Swift, SQL]
+    items: [C#, C++, TypeScript, Python, SQL]
   tools:
     title: Tools & Technologies
-    items: [Unity 3D, Unreal Engine 5, Git & GitHub, FMOD, iOS / Xcode, Mirror Networking]
+    items: [Unity 3D, Unreal Engine 5, Git & GitHub, FMOD, Mirror Networking]
   web:
     title: Web & Backend
-    items: [Next.js / React, TypeScript, PostgreSQL + Prisma, NextAuth / JWT, Docker + Cloudflare Tunnel, REST / Server Actions]
+    items: [Next.js / React, PostgreSQL + Prisma, NextAuth / JWT, Docker + Cloudflare Tunnel, REST / Server Actions]
 
 # ── 04 · Experience ──
 experience:
   eyebrow: "04"
-  title: Life
+  title: Experience
   items:
     - title: "B.Sc. Game Development in UTS"
       from: 2020
@@ -123,8 +122,7 @@ education:
         Graduated with a Bachelor of Science majoring in Game Development, minor in
         Data Analytics. Coursework included Game Design Studio I & II, iOS App
         Development, and Data Structures. Shipped four game projects across Unity
-        (C#) and Unreal Engine 5 (C++). “Wistful” was selected for presentation at
-        the 2022 UTS Tech Festival.
+        (C#) and Unreal Engine 5 (C++).
 
 # ── 06 · Languages ──
 languages:
