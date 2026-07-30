@@ -2,16 +2,34 @@
 layout: project
 name: PotPlayer Ollama Translate
 # image: /assets/image/projects/potplayer-ollama-translate.png   # TODO: drop a 1280×800 screenshot here, then uncomment
-description: PotPlayer real-time subtitle-translation plugin (Angel Script) supporting Ollama, LM Studio, and OpenAI- and Anthropic-compatible APIs.
+description: Real-time PotPlayer subtitle translation plugin (Angel Script) built around a three-slot prompt template, a rolling bilingual context history, and a provider-agnostic request pipeline for Ollama, LM Studio, and OpenAI- and Anthropic-compatible APIs.
 category: Tool
 status: "2025"
-tags: [Angel Script, Ollama, OpenAI API, PotPlayer]
+tags:
+  [
+    Angel Script,
+    Ollama,
+    OpenAI API,
+    PotPlayer,
+    Prompt Engineering,
+    Context Engineering,
+    Open Source,
+  ]
 external_links:
-  - { name: "Source",   url: "https://github.com/Nuo27/Potplayer-Ollama-Translate", icon: "github", prefix: "fab" }
-  - { name: "Releases", url: "https://github.com/Nuo27/Potplayer-Ollama-Translate/releases", icon: "download" }
+  - {
+      name: "Source",
+      url: "https://github.com/Nuo27/Potplayer-Ollama-Translate",
+      icon: "github",
+      prefix: "fab",
+    }
+  - {
+      name: "Releases",
+      url: "https://github.com/Nuo27/Potplayer-Ollama-Translate/releases",
+      icon: "download",
+    }
 ---
 
-**PotPlayer Ollama Translate** is a real-time subtitle-translation plugin for PotPlayer, written in Angel Script. It sends each subtitle line to a local or cloud LLM and renders the translation alongside the original, so you can watch content in any language without leaving the player. It supports Ollama (native and Cloud), LM Studio REST, and OpenAI- and Anthropic-compatible endpoints, and builds on the v1 PotPlayer_ollama_Translate with a rewritten config and prompt system.
+**PotPlayer Ollama Translate** is a real-time subtitle-translation plugin for PotPlayer, written in Angel Script. It sends each subtitle line to a local or cloud LLM through a custom three-slot prompt template and a rolling bilingual context history, and renders the translation alongside the original so you can watch content in any language without leaving the player. The v3 rewrite builds on v1 with a fully redesigned prompt and context system, a provider-agnostic pipeline, and supports Ollama (native and Cloud), LM Studio REST, and OpenAI- and Anthropic-compatible endpoints.
 
 ## Role
 
@@ -19,23 +37,23 @@ Solo Developer
 
 ## Contributions
 
-- Built **real-time subtitle translation** inside PotPlayer's extension model - each subtitle line is translated on the fly and displayed alongside the original.
-- Wrote a **multi-provider API abstraction** supporting four protocols from one codebase: Ollama native, LM Studio REST, OpenAI-compatible, and Anthropic-compatible, switchable via a single `apiFormat` field in the `Config` class.
-- Added a **context-history** mechanism that feeds prior subtitle lines back to the model so translation stays coherent across a scene, rather than translating each line in isolation.
-- Designed a **prompt-template system** with variables {% raw %}(`{{from}}`, `{{to}}`, `{{text_to_translate}}`, `{{optional_reference_context}}`, `{{context_prompt}}`){% endraw %} so users can reshape the prompt without touching translation logic.
-- Exposed **model selection, inference parameters, and endpoint config** through the `Config` class, with clear split between what PotPlayer's settings UI surfaces and what's edited directly in the `.as` file.
+- Built **real-time subtitle translation** inside PotPlayer's extension model — each subtitle line is sent to an LLM, translated on the fly, and rendered next to the original.
+- Wrote a **multi-provider API abstraction** that feeds the same prompt + context through four protocols (Ollama native, LM Studio REST, OpenAI-compatible, Anthropic-compatible), switchable via a single `apiFormat` field rather than four parallel implementations.
+- Designed a **rolling bilingual context history**: every line is stored as `source ⇒ translation` and the most recent N entries are re-injected on the next request, so the model uses its own prior output as a style and term anchor instead of translating each line in isolation.
+- Built a **three-slot prompt-template system** (`systemPrompt` / `userPrompt` / `contextPrompt`) with placeholder variables for source language, target language, the current line, and the optional context block — so translation behavior is shaped by editing prompts, not translation logic.
 
 ## Technical Challenges
 
-- **Working within Angel Script.** PotPlayer extensions run in Angel Script, a statically-typed embedded language with none of the HTTP/client ergonomics of a general-purpose runtime. The plugin hand-rolls the request/response flow against that constraint, which shaped how much logic could live client-side vs be pushed into prompt engineering.
-- **Auto-completing API paths per provider.** Each protocol expects a different endpoint shape (`/api/chat` for Ollama, `/v1/chat/completions` for OpenAI-compatible, etc.). Rather than make users type full URLs, the plugin takes a bare host (e.g. `http://localhost:1234`) and completes the path from `apiFormat`, so switching providers is a one-field change. These two fields (`apiFormat`, `customEndpoint`) deliberately live outside PotPlayer's login UI - they're edited in the `.as` file and take effect on next PotPlayer restart.
-- **Coherent translation under real-time constraints.** Translating each line in isolation reads like a machine; sending too much context blows latency and the context window. The context-history mechanism keeps a small rolling window of prior lines as `{% raw %}{{optional_reference_context}}{% endraw %}`, trading a little latency for scene-coherent output.
-- **Config split between UI and file.** PotPlayer's settings panel can surface the model name and API key, but not arbitrary endpoint/format fields. Deciding what lives in the UI (the things every user sets) vs the `.as` file (the things only advanced users touch) kept the install path simple while still allowing LM Studio, OpenAI, and Anthropic backends.
+- **Prompt design in an embedded scripting host.** PotPlayer extensions run in Angel Script with no real client-side tooling, so almost all of the translation behavior lives in the prompt — disallowing explanations, forbidding the model from translating the context block, enforcing single-line output, and preserving names/numbers/code are rules baked into `systemPrompt` rather than enforced by the client.
+- **Context as a two-axis knob.** Real-time translation is a latency-vs-quality dial, not a toggle: `contextCount` controls how many prior lines are sent per request, `contextMaxSize` controls how many the buffer keeps; the two are deliberately separate, so a user with a small local model can shrink per-request payload without losing long-window coherence.
+- **Bilingual history as a style anchor.** Storing `source ⇒ translation` (rather than source only) gives the model its own previous output to mimic, which stabilizes tone, register, and term choice across a scene; the trade is a few extra tokens per request, paid back several times over in consistency.
+- **Provider isolation so prompts stay single-source.** Four API formats expect four request shapes; by keeping request construction as a thin builder and prompt/context assembly above it, every new backend is a builder, not a prompt rewrite.
 
 ## Lessons Learned
 
-- Building provider support as an `apiFormat` switch from the start - instead of an Ollama-only plugin later retrofitted for "other APIs" - made every additional backend a config change rather than a rewrite.
-- Real-time translation is a latency-vs-quality dial, not a toggle; exposing the context window and prompt template to the user let them tune that dial per machine and per model instead of hard-coding one tradeoff.
+- The v1→v3 rewrite's real leverage was the prompt and context system, not the API plumbing — the moment translation behavior moved into editable templates, the plugin stopped being "Ollama with extras" and became a general LLM translator.
+- Bilingual rolling context was a small change with an outsized effect; exposing `contextCount` and `contextPrompt` to the user (not just `temperature`) turned the plugin from "configure the model" into "configure the translation".
+- Building provider support as a single `apiFormat` switch from the start — instead of an Ollama-only plugin later retrofitted for "other APIs" — made every additional backend a config change rather than a rewrite.
 
 ---
 

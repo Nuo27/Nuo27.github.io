@@ -5,8 +5,8 @@ permalink: /
 hero:
   eyebrow: "GAMEPLAY PROGRAMMER · SYDNEY, AU"
   skills: [C#, C++, UNITY, UNREAL, PYTHON]
-  cta_primary:   { label: "View Projects", url: "/portfolio/" }
-  cta_secondary: { label: "About Me",      url: "/about/" }
+  cta_primary: { label: "View Projects", url: "/portfolio/" }
+  cta_secondary: { label: "About Me", url: "/about/" }
 
 # Random work stream - picks `count` items at random (per page load) from the
 # listed `types`. To add a new type: add it here, add a {% when %} branch in
@@ -18,7 +18,7 @@ random_work:
   count: 3
   hide:
     tags: [Student Work]
-    categories: []
+    categories: [notes]
 
 stream:
   kicker: "RANDOM_WORK"
@@ -32,7 +32,7 @@ stream:
 cta:
   kicker: "LET’S BUILD"
   heading: "Have a system that needs to feel <em>just right</em>?"
-  primary:   { label: "View Projects", url: "/portfolio/" }
+  primary: { label: "View Projects", url: "/portfolio/" }
   secondary: { label: "Get in touch", url: "/about/#contact" }
 ---
 

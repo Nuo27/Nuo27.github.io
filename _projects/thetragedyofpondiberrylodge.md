@@ -7,8 +7,17 @@ description: 3D exploration detective game (Unity/C#) - lead programmer, 5-perso
 category: Game
 status: "2022-2023"
 external_links:
-  - { name: "Live Demo", url: "https://nuochen.itch.io/the-tragedy-of-pondiberry-lodge", icon: "external-link-alt" }
-  - { name: "Source",    url: "https://github.com/Nuo27/The-Tragedy-of-Pondiberry-lodge", icon: "github", prefix: "fab" }
+  - {
+      name: "Live Demo",
+      url: "https://nuochen.itch.io/the-tragedy-of-pondiberry-lodge",
+      icon: "external-link-alt",
+    }
+  - {
+      name: "Source",
+      url: "https://github.com/Nuo27/The-Tragedy-of-Pondiberry-lodge",
+      icon: "github",
+      prefix: "fab",
+    }
 ---
 
 **The Tragedy of Pondiberry Lodge** is a 3D exploration detective game developed in Unity as the final project for UTS Game Design. Players explore a mysterious house, uncovering clues and solving environmental puzzles across five themed levels to uncover its secret and escape.
@@ -20,16 +29,16 @@ Team Leader & Lead Programmer (5-person team)
 ## Contributions
 
 - Architected the complete game system: core gameplay loop, interaction framework, UI, and level progression
-- Designed and built the tutorial level and first main level
+- Designed and built the tutorial level and first main level / level template
 - Managed team coordination, task assignment, and code integration across all five levels
 - Implemented all game logic as the sole programmer on the team
 
 ## Technical Challenges
 
-- **A polymorphic interaction framework so designers never touched code.** Every interactable - doors, drawers, keys - derived from a base `Thing` class with a virtual `OnEDown()`, and the player's E-key input dispatched polymorphically to whichever `Thing` was in range. A designer added a new interactable by subclassing `Thing` and dropping it into a scene, with no core code changes.
-- **Build-index-driven level progression.** `LevelManager` tracked each level's completion as a static flag and resolved the active level through `SceneManager.GetActiveScene().buildIndex`, gating the next level on the previous one's objective - a minimal, predictable unlock model across all five levels.
-- **Context-sensitive prompts via trigger zones.** `PromptManager` surfaced the right TextMeshPro action hint on `OnTriggerEnter`/`Exit` for whatever `Thing` the player was facing, so the interaction target was always unambiguous.
-- **Stable-ID save state to survive scene reloads.** The hardest cross-level bug was a stale Unity reference after an asset's instance ID changed between scenes; I routed inter-level state through a small manager keyed on stable string IDs instead of object references.
+- **Polymorphic interaction framework for designer extensibility.** Every interactable (doors, drawers, keys) derived from a shared base with virtual hooks; player input dispatched polymorphically to whichever was in range. A new interactable was a subclass dropped into a scene, with no core code changes.
+- **Build-order level progression.** Each level's completion tracked as a static flag and the active level resolved by scene build index; the next level gated on the previous one's objective — a minimal, predictable unlock model across all five levels.
+- **Context-sensitive prompts in trigger zones.** A prompt manager surfaced the right action hint on trigger enter/exit for whichever interactable the player was facing, so the interaction target was always unambiguous.
+- **Cross-scene state on stable IDs.** The hardest bug was a stale Unity reference after an asset's instance ID changed between scenes; inter-level state routed through a small manager keyed on stable string IDs instead of object references.
 
 ## Lessons Learned
 

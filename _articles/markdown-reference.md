@@ -4,7 +4,7 @@ permalink: /articles/markdown-reference/
 title: "Markdown Reference"
 description: "Every markdown element rendered in one place — the kitchen sink for styling verification."
 tags: [Reference]
-category: tech
+category: notes
 lang: en
 ---
 
@@ -24,9 +24,9 @@ lang: en
 
 ## Inline Formatting
 
-Body text with **bold**, *italic*, ***bold italic***, ~~strikethrough~~, `inline code`, and [a link](https://example.com).
+Body text with **bold**, _italic_, **_bold italic_**, ~~strikethrough~~, `inline code`, and [a link](https://example.com).
 
-A paragraph mixing everything: **bold with *italic* and `code` inside**, followed by [a link **with bold**](https://example.com) and ~~deleted text~~.
+A paragraph mixing everything: **bold with _italic_ and `code` inside**, followed by [a link **with bold**](https://example.com) and ~~deleted text~~.
 
 ## Lists
 
@@ -69,8 +69,12 @@ Inline: run `bundle exec jekyll serve` to start.
   color: $bg-void;
   padding: 1rem 2rem;
 
-  &:hover { background: $phosphor-bright; }
-  &:active { transform: translateY(1px); }
+  &:hover {
+    background: $phosphor-bright;
+  }
+  &:active {
+    transform: translateY(1px);
+  }
 }
 ```
 
@@ -94,7 +98,7 @@ Should still render readably.
 
 ## Blockquotes
 
-> A blockquote with **bold**, *italic*, and `code` inside it.
+> A blockquote with **bold**, _italic_, and `code` inside it.
 >
 > Second paragraph in the same quote.
 >
@@ -102,12 +106,12 @@ Should still render readably.
 
 ## Tables
 
-| Element | Dark Mode | Light Mode |
-|---|---|---|
-| Body text | `--ink` | `--carbon` |
-| Accent | `--phosphor` | `--print-phosphor` |
-| Substrate | `--bg-void` | `--paper` |
-| Code bg | `--bg-deep` | `--paper-deep` |
+| Element   | Dark Mode    | Light Mode         |
+| --------- | ------------ | ------------------ |
+| Body text | `--ink`      | `--carbon`         |
+| Accent    | `--phosphor` | `--print-phosphor` |
+| Substrate | `--bg-void`  | `--paper`          |
+| Code bg   | `--bg-deep`  | `--paper-deep`     |
 
 ## Horizontal Rule
 
@@ -137,6 +141,7 @@ Rouge
 The site uses a PJAX router for soft navigation[^1]. It also supports a custom cursor[^2] on fine-pointer devices.
 
 [^1]: Intercepts link clicks, fetches HTML, swaps `<main id="app">`.
+
 [^2]: Inverted ring with per-element state changes — hover, zoom, pulse, drag.
 
 ## Keyboard & Special
