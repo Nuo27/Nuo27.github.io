@@ -1,7 +1,7 @@
 # notion-sync
 
 Syncs published pages from Notion databases into `_articles/notion/<path>.md`,
-ready for the Jekyll build. See `notion-as-cms.md` in `_articles/` for the
+ready for the Jekyll build. See `building-phosphor.md` in `_articles/` for the
 design rationale.
 
 ## Quick start (local)
