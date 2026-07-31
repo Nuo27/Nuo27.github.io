@@ -27,14 +27,17 @@ social:
   - name            : Email
     icon            : envelope
     url             : "mailto:nuoch3n@gmail.com"
+    brand           : "#2BE4FF"
   - name            : GitHub
     icon            : github
     prefix          : fab
     url             : "https://github.com/nuo27"
+    brand           : "#30363d"
   - name            : LinkedIn
     icon            : linkedin-in
     prefix          : fab
     url             : "https://www.linkedin.com/in/nuochen27"
+    brand           : "#0A66C2"
 
 
 ### Collections ###
